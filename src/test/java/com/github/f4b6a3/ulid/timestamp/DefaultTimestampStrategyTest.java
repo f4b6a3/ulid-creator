@@ -1,5 +1,12 @@
 package com.github.f4b6a3.ulid.timestamp;
 
+import static org.junit.Assert.assertTrue;
+
+import org.junit.Test;
+
 public class DefaultTimestampStrategyTest {
-	// TODO
+	@Test
+	public void testVoid() {
+		assertTrue("void test", true);
+	}
 }

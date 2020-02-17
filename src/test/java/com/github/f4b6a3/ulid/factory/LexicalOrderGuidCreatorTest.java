@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.junit.Test;
 
 import com.github.f4b6a3.ulid.exception.UlidCreatorException;
+import com.github.f4b6a3.ulid.factory.LexicalOrderGuidCreator.LexicalOrderGuidException;
 import com.github.f4b6a3.ulid.random.Xorshift128PlusRandom;
 import com.github.f4b6a3.ulid.timestamp.FixedTimestampStretegy;
 
@@ -108,7 +109,7 @@ public class LexicalOrderGuidCreatorTest {
 		assertEquals(String.format("The MSB should be iqual to %s.", expected), expected, randomMsb);
 	}
 
-	@Test(expected = UlidCreatorException.class)
+	@Test(expected = LexicalOrderGuidException.class)
 	public void testShouldThrowOverflowException() {
 
 		long low = MAX_LOW - DEFAULT_LOOP;

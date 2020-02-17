@@ -37,11 +37,9 @@ import com.github.f4b6a3.ulid.util.UlidUtil;
  */
 public class UlidCreator {
 
-
 	private UlidCreator() {
 	}
 
-	// TODO: not working yet
 	public static String getUlid() {
 		UUID guid = getLexicalOrderGuid();
 		return UlidUtil.fromUuidToUlid(guid);
