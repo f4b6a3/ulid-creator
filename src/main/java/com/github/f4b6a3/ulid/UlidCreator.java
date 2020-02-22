@@ -28,7 +28,6 @@ import java.util.UUID;
 
 import com.github.f4b6a3.ulid.exception.UlidCreatorException;
 import com.github.f4b6a3.ulid.guid.GuidCreator;
-import com.github.f4b6a3.ulid.util.UlidUtil;
 
 /**
  * A factory for Universally Unique Lexicographically Sortable Identifiers.
@@ -82,8 +81,7 @@ public class UlidCreator {
 	 * @return a GUID
 	 */
 	public static byte[] getBytes() {
-		UUID guid = getGuid();
-		return UlidUtil.fromUuidToBytes(guid);
+		return GuidCreatorLazyHolder.INSTANCE.createBytes();
 	}
 
 	/**
@@ -92,8 +90,7 @@ public class UlidCreator {
 	 * @return a GUID
 	 */
 	public static byte[] getFastBytes() {
-		UUID guid = getFastGuid();
-		return UlidUtil.fromUuidToBytes(guid);
+		return FastGuidCreatorLazyHolder.INSTANCE.createBytes();
 	}
 
 	/**
