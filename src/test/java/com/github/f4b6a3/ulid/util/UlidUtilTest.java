@@ -7,7 +7,7 @@ import java.util.UUID;
 import org.junit.Test;
 
 import com.github.f4b6a3.ulid.util.UlidUtil.UlidUtilException;
-import com.github.f4b6a3.ulid.util.ByteUtil;
+import com.github.f4b6a3.ulid.UlidCreator;
 
 public class UlidUtilTest {
 
@@ -18,7 +18,7 @@ public class UlidUtilTest {
 	private static final long TIMESTAMP_MAX = 281474976710655l; // 2^48 - 1
 
 	private static final int ULID_LENGTH = 26;
-	private static final int DEFAULT_LOOP_MAX = 10_000;
+	private static final int DEFAULT_LOOP_MAX = 100_000;
 
 	private static final String[] EXAMPLE_DATES = { "1970-01-01T00:00:00.000Z", "1985-10-26T01:16:00.123Z",
 			"2001-09-09T01:46:40.456Z", "2020-01-15T14:30:33.789Z", "2038-01-19T03:14:07.321Z" };
@@ -177,28 +177,25 @@ public class UlidUtilTest {
 		assertFalse("ULID with timestamp greater than (2^48)-1 should be invalid.", UlidUtil.isValid(ulid));
 	}
 
-	// TODO
-	// @Test
-	// public void testToAndFromUlid() {
-	//
-	// for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
-	//
-	// // Use random values
-	// UUID uuid = UuidCreator.getFastRandom();
-	// String ulid = UlidUtil.fromUuidToUlid(uuid);
-	//
-	// assertTrue("ULID is null", ulid != null);
-	// assertTrue("ULID is empty", !ulid.isEmpty());
-	// assertTrue("ULID length is wrong ", ulid.length() == ULID_LENGTH);
-	// assertTrue("ULID is not valid", UlidUtil.isValid(ulid, /* strict */
-	// true));
-	//
-	// UUID result = UlidUtil.fromUlidToUuid(ulid);
-	// assertEquals("Result ULID is different from original ULID", uuid,
-	// result);
-	//
-	// }
-	// }
+	@Test
+	public void testToAndFromUlid() {
+
+		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
+
+			UUID uuid = UlidCreator.getFastGuid();
+			String ulid = UlidUtil.fromUuidToUlid(uuid);
+
+			assertTrue("ULID is null", ulid != null);
+			assertTrue("ULID is empty", !ulid.isEmpty());
+			assertTrue("ULID length is wrong ", ulid.length() == ULID_LENGTH);
+			assertTrue("ULID is not valid", UlidUtil.isValid(ulid, /* strict */
+					true));
+
+			UUID result = UlidUtil.fromUlidToUuid(ulid);
+			assertEquals("Result ULID is different from original ULID", uuid, result);
+
+		}
+	}
 
 	private String leftPad(String unpadded) {
 		return "0000000000".substring(unpadded.length()) + unpadded;

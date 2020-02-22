@@ -22,13 +22,16 @@
  * SOFTWARE.
  */
 
-package com.github.f4b6a3.ulid.factory;
+package com.github.f4b6a3.ulid.guid;
 
 import java.security.SecureRandom;
 import java.util.Random;
 import java.util.UUID;
 
 import com.github.f4b6a3.ulid.timestamp.TimestampStrategy;
+import com.github.f4b6a3.ulid.util.FingerprintUtil;
+import com.github.f4b6a3.ulid.util.UlidUtil;
+import com.github.f4b6a3.ulid.exception.UlidCreatorException;
 import com.github.f4b6a3.ulid.random.Xorshift128PlusRandom;
 import com.github.f4b6a3.ulid.timestamp.DefaultTimestampStrategy;
 
@@ -38,7 +41,7 @@ import com.github.f4b6a3.ulid.timestamp.DefaultTimestampStrategy;
  * 
  * ULID specification: https://github.com/ulid/spec
  */
-public class LexicalOrderGuidCreator {
+public class GuidCreator {
 
 	protected static final long MAX_LOW = 0xffffffffffffffffL; // unsigned
 	protected static final long MAX_HIGH = 0x000000000000ffffL;
@@ -51,18 +54,18 @@ public class LexicalOrderGuidCreator {
 	protected long low;
 	protected long high;
 
-	protected static final String OVERFLOW_MESSAGE = "The system caused an overflow in the generator by requesting too many GUIDs.";
+	protected static final String OVERFLOW_MESSAGE = "The system caused an overflow in the generator by requesting too many IDs.";
 
 	protected TimestampStrategy timestampStrategy;
 
-	public LexicalOrderGuidCreator() {
+	public GuidCreator() {
 		this.reset();
 		this.timestampStrategy = new DefaultTimestampStrategy();
 	}
 
 	/**
 	 * 
-	 * Return a Lexical Order GUID.
+	 * Return a GUID based on the ULID specification.
 	 * 
 	 * It has two parts:
 	 * 
@@ -125,6 +128,26 @@ public class LexicalOrderGuidCreator {
 
 		return new UUID(msb, lsb);
 	}
+	
+	/**
+	 * Return a ULID.
+	 * 
+	 * @return a ULID string
+	 */
+	public synchronized String createUlid() {
+		UUID guid = create();
+		return UlidUtil.fromUuidToUlid(guid);
+	}
+	
+	/**
+	 * Return a ULID as byte sequence.
+	 * 
+	 * @return a byte sequence
+	 */
+	public synchronized byte[] createBytes() {
+		UUID guid = create();
+		return UlidUtil.fromUuidToBytes(guid);
+	}
 
 	/**
 	 * Return the current timestamp and resets or increments the random part.
@@ -169,7 +192,7 @@ public class LexicalOrderGuidCreator {
 			this.high = 0L;
 			// Too many requests
 			if (enableOverflowException) {
-				throw new LexicalOrderGuidException(OVERFLOW_MESSAGE);
+				throw new UlidCreatorException(OVERFLOW_MESSAGE);
 			}
 		}
 	}
@@ -179,11 +202,10 @@ public class LexicalOrderGuidCreator {
 	 * 
 	 * @param timestampStrategy
 	 *            a timestamp strategy
-	 * @return {@link LexicalOrderGuidCreator}
+	 * @return {@link GuidCreator}
 	 */
 	@SuppressWarnings("unchecked")
-	public synchronized <T extends LexicalOrderGuidCreator> T withTimestampStrategy(
-			TimestampStrategy timestampStrategy) {
+	public synchronized <T extends GuidCreator> T withTimestampStrategy(TimestampStrategy timestampStrategy) {
 		this.timestampStrategy = timestampStrategy;
 		return (T) this;
 	}
@@ -201,10 +223,10 @@ public class LexicalOrderGuidCreator {
 	 * 
 	 * @param random
 	 *            a random generator
-	 * @return {@link LexicalOrderGuidCreator}
+	 * @return {@link GuidCreator}
 	 */
 	@SuppressWarnings("unchecked")
-	public synchronized <T extends LexicalOrderGuidCreator> T withRandomGenerator(Random random) {
+	public synchronized <T extends GuidCreator> T withRandomGenerator(Random random) {
 		this.random = random;
 		return (T) this;
 	}
@@ -218,11 +240,12 @@ public class LexicalOrderGuidCreator {
 	 * See {@link Xorshift128PlusRandom} and
 	 * {@link FingerprintUtil#getFingerprint()}
 	 * 
-	 * @return {@link LexicalOrderGuidCreator}
+	 * @return {@link GuidCreator}
 	 */
 	@SuppressWarnings("unchecked")
-	public synchronized <T extends LexicalOrderGuidCreator> T withFastRandomGenerator() {
-		this.random = new Xorshift128PlusRandom();
+	public synchronized <T extends GuidCreator> T withFastRandomGenerator() {
+		final int salt = (int) FingerprintUtil.getFingerprint();
+		this.random = new Xorshift128PlusRandom(salt);
 		return (T) this;
 	}
 
@@ -232,22 +255,14 @@ public class LexicalOrderGuidCreator {
 	 * An exception thrown when too many requests within the same millisecond
 	 * causes an overflow while incrementing the random bits of the GUID.
 	 * 
-	 * @return {@link LexicalOrderGuidCreator}
+	 * @return {@link GuidCreator}
 	 */
 	@SuppressWarnings("unchecked")
-	public synchronized <T extends LexicalOrderGuidCreator> T withoutOverflowException() {
+	public synchronized <T extends GuidCreator> T withoutOverflowException() {
 		this.enableOverflowException = false;
 		return (T) this;
 	}
 
-	public static class LexicalOrderGuidException extends RuntimeException {
-		private static final long serialVersionUID = 1L;
-
-		public LexicalOrderGuidException(String message) {
-			super(message);
-		}
-	}
-	
 	private static class SecureRandomLazyHolder {
 		static final Random INSTANCE = new SecureRandom();
 	}

@@ -6,7 +6,7 @@ import static org.junit.Assert.*;
 
 public class NaiveRandomTest {
 
-	private static final int DEFAULT_LOOP_LIMIT = 10_000;
+	private static final int DEFAULT_LOOP_LIMIT = 100_000;
 	private static final String EXPECTED_BIT_COUNT_RANDOM_LONG = "The average bit count expected for random long values is 32";
 
 	@Test

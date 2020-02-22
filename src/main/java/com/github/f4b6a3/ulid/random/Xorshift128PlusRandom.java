@@ -43,7 +43,7 @@ public class Xorshift128PlusRandom extends Random {
 	public Xorshift128PlusRandom() {
 		this((int) System.nanoTime());
 	}
-	
+
 	/**
 	 * Constructor that receives an integer as 'salt'. This value is combined
 	 * with the current milliseconds and the object hash code to generate two
@@ -58,7 +58,7 @@ public class Xorshift128PlusRandom extends Random {
 		this.seed[0] = (((long) salt) << 32) | (time & 0x00000000ffffffffL);
 		this.seed[1] = (((long) salt) << 32) | (hash & 0x00000000ffffffffL);
 	}
-	
+
 	public Xorshift128PlusRandom(long[] seed) {
 		this.seed = seed;
 	}

@@ -26,47 +26,95 @@ package com.github.f4b6a3.ulid;
 
 import java.util.UUID;
 
-import com.github.f4b6a3.ulid.factory.LexicalOrderGuidCreator;
+import com.github.f4b6a3.ulid.exception.UlidCreatorException;
+import com.github.f4b6a3.ulid.guid.GuidCreator;
 import com.github.f4b6a3.ulid.util.UlidUtil;
 
 /**
  * A factory for Universally Unique Lexicographically Sortable Identifiers.
  * 
  * @see The ULID spec; https://github.com/ulid/spec
- * 
  */
 public class UlidCreator {
 
 	private UlidCreator() {
 	}
 
+	/**
+	 * Returns a ULID.
+	 * 
+	 * @return a ULID
+	 */
 	public static String getUlid() {
-		UUID guid = getLexicalOrderGuid();
-		return UlidUtil.fromUuidToUlid(guid);
+		return GuidCreatorLazyHolder.INSTANCE.createUlid();
 	}
 
 	/**
-	 * Returns a Lexical Order GUID based on the ULID specification.
+	 * Returns a fast ULID.
 	 * 
-	 * If you need a ULID string instead of a GUID, use
-	 * {@link UlidCreator#getUlid()}.
-	 * 
-	 * @return a Lexical Order GUID
+	 * @return a ULID
 	 */
-	public static UUID getLexicalOrderGuid() {
-		return LexicalOrderCreatorLazyHolder.INSTANCE.create();
+	public static String getFastUlid() {
+		return FastGuidCreatorLazyHolder.INSTANCE.createUlid();
 	}
 
 	/**
-	 * Returns a {@link LexicalOrderGuidCreator}.
+	 * Returns ULID as GUID object.
 	 * 
-	 * @return {@link LexicalOrderGuidCreator}
+	 * @return a GUID
 	 */
-	public static LexicalOrderGuidCreator getLexicalOrderCreator() {
-		return new LexicalOrderGuidCreator();
+	public static UUID getGuid() {
+		return GuidCreatorLazyHolder.INSTANCE.create();
 	}
 
-	private static class LexicalOrderCreatorLazyHolder {
-		static final LexicalOrderGuidCreator INSTANCE = getLexicalOrderCreator().withoutOverflowException();
+	/**
+	 * Returns fast ULID as GUID object.
+	 * 
+	 * @return a GUID
+	 */
+	public static UUID getFastGuid() {
+		return FastGuidCreatorLazyHolder.INSTANCE.create();
+	}
+
+	/**
+	 * Returns ULID as byte sequence.
+	 * 
+	 * @return a GUID
+	 */
+	public static byte[] getBytes() {
+		UUID guid = getGuid();
+		return UlidUtil.fromUuidToBytes(guid);
+	}
+
+	/**
+	 * Returns fast ULID as byte sequence.
+	 * 
+	 * @return a GUID
+	 */
+	public static byte[] getFastBytes() {
+		UUID guid = getFastGuid();
+		return UlidUtil.fromUuidToBytes(guid);
+	}
+
+	/**
+	 * Return a GUID creator for direct use.
+	 * 
+	 * This library uses the {@link GuidCreator} internally to generate ULIDs.
+	 * 
+	 * The {@link GuidCreator} throws a {@link UlidCreatorException} when too
+	 * many values are requested in the same millisecond.
+	 * 
+	 * @return a {@link GuidCreator}
+	 */
+	public static GuidCreator getGuidCreator() {
+		return new GuidCreator();
+	}
+
+	private static class GuidCreatorLazyHolder {
+		static final GuidCreator INSTANCE = getGuidCreator().withoutOverflowException();
+	}
+
+	private static class FastGuidCreatorLazyHolder {
+		static final GuidCreator INSTANCE = getGuidCreator().withFastRandomGenerator().withoutOverflowException();
 	}
 }

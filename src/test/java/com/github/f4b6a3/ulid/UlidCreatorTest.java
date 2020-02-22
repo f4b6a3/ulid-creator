@@ -12,7 +12,7 @@ import java.util.HashSet;
 public class UlidCreatorTest {
 
 	private static final int ULID_LENGTH = 26;
-	private static final int DEFAULT_LOOP_MAX = 10_000;
+	private static final int DEFAULT_LOOP_MAX = 100_000;
 
 	@Test
 	public void testGetUlid() {
