@@ -129,7 +129,7 @@ These are some examples of using the `GuidCreator` to create ULIDs:
 
 ```java
 
-// with java random generator (java.util.Random)
+// with the default random generator (java.security.SecureRandom)
 String ulid = UlidCreator.getGuidCreator().createUlid();
     
 // with java random generator (java.util.Random)
