@@ -44,7 +44,17 @@ byte[] ulid = UlidCreator.getFastBytes();
 
 ### Maven dependency
 
-Work in progress.
+Add these lines to your `pom.xml`.
+
+```xml
+<!-- https://search.maven.org/artifact/com.github.f4b6a3/ulid-creator -->
+<dependency>
+  <groupId>com.github.f4b6a3</groupId>
+  <artifactId>ulid-creator</artifactId>
+  <version>1.0.0</version>
+</dependency>
+```
+See more options in [maven.org](https://search.maven.org/artifact/com.github.f4b6a3/ulid-creator) and [mvnrepository.com](https://mvnrepository.com/artifact/com.github.f4b6a3/ulid-creator).
 
 Implementation
 ------------------------------------------------------
