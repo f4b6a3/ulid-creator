@@ -33,6 +33,7 @@ import com.github.f4b6a3.ulid.util.FingerprintUtil;
 import com.github.f4b6a3.ulid.util.UlidUtil;
 import com.github.f4b6a3.ulid.exception.UlidCreatorException;
 import com.github.f4b6a3.ulid.random.Xorshift128PlusRandom;
+import com.github.f4b6a3.ulid.random.XorshiftRandom;
 import com.github.f4b6a3.ulid.timestamp.DefaultTimestampStrategy;
 
 /**
