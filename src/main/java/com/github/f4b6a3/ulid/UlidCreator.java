@@ -32,7 +32,7 @@ import com.github.f4b6a3.ulid.guid.GuidCreator;
 /**
  * A factory for Universally Unique Lexicographically Sortable Identifiers.
  * 
- * @see The ULID spec; https://github.com/ulid/spec
+ * See the ULID spec: https://github.com/ulid/spec
  */
 public class UlidCreator {
 

@@ -143,11 +143,10 @@ public class UlidUtil {
 	 * 
 	 * The validation mode is not strict.
 	 * 
-	 * @see {@link UlidUtil#validate(String, boolean)}.
+	 * See {@link UlidUtil#validate(String, boolean)}.
 	 * 
 	 * @param ulid
 	 *            a ULID
-	 * @return boolean true if valid
 	 */
 	protected static void validate(String ulid) {
 		validate(ulid, false);
@@ -156,11 +155,10 @@ public class UlidUtil {
 	/**
 	 * Checks if the ULID string is a valid.
 	 * 
-	 * @see {@link UlidUtil#validate(String, boolean)}.
+	 * See {@link UlidUtil#validate(String, boolean)}.
 	 * 
 	 * @param ulid
 	 *            a ULID
-	 * @return boolean true if valid
 	 */
 	protected static void validate(String ulid, boolean strict) {
 		if (!isValid(ulid, strict)) {
@@ -173,7 +171,7 @@ public class UlidUtil {
 	 * 
 	 * The validation mode is not strict.
 	 * 
-	 * @see {@link UlidUtil#validate(String, boolean)}.
+	 * See {@link UlidUtil#validate(String, boolean)}.
 	 */
 	public static boolean isValid(String ulid) {
 		return isValid(ulid, false);

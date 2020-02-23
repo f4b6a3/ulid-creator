@@ -209,8 +209,8 @@ public class Base32Util {
 	/**
 	 * Convert a string to an array of bytes using UTF-8.
 	 * 
-	 * @param string
-	 * @return
+	 * @param string a string
+	 * @return a string
 	 */
 	public static byte[] toBytes(String string) {
 		return string.getBytes(StandardCharsets.UTF_8);
@@ -219,8 +219,8 @@ public class Base32Util {
 	/**
 	 * Convert an array of bytes to a string using UTF-8.
 	 * 
-	 * @param bytes
-	 * @return
+	 * @param bytes a byte sequence
+	 * @return a string
 	 */
 	public static String toString(byte[] bytes) {
 		return new String(bytes, StandardCharsets.UTF_8);
