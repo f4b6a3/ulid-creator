@@ -44,18 +44,20 @@ import com.github.f4b6a3.ulid.timestamp.DefaultTimestampStrategy;
  */
 public class GuidCreator {
 
-	protected static final long MAX_LOW = 0xffffffffffffffffL; // unsigned
-	protected static final long MAX_HIGH = 0x000000000000ffffL;
-
-	protected long previousTimestamp;
-	protected boolean enableOverflowException = true;
-
-	protected Random random;
-
 	protected long low;
 	protected long high;
 
-	protected static final String OVERFLOW_MESSAGE = "The system caused an overflow in the generator by requesting too many IDs.";
+	protected long firstLow;
+	protected long firstHigh;
+
+	protected long previousTimestamp;
+	protected boolean enableOverrunException = true;
+
+	protected Random random;
+
+	protected static final long MASK_UNSIGNED_SHORT = 0x000000000000ffffL; // 2^16
+
+	protected static final String OVERRUN_MESSAGE = "The system overran the generator by requesting too many GUIDs.";
 
 	protected TimestampStrategy timestampStrategy;
 
@@ -76,11 +78,13 @@ public class GuidCreator {
 	 * 2. A part of 80 bits that has a random value generated a secure random
 	 * generator.
 	 * 
+	 * The random part is reset to a new value every time the millisecond part
+	 * changes.
+	 * 
 	 * If more than one GUID is generated within the same millisecond, the
 	 * random part is incremented by one.
 	 * 
-	 * The random part is reset to a new value every time the millisecond part
-	 * changes.
+	 * The maximum GUIDs that can be generated per millisecond is 2^80.
 	 * 
 	 * ### Specification of Universally Unique Lexicographically Sortable ID
 	 * 
@@ -110,15 +114,14 @@ public class GuidCreator {
 	 * significant bit position (with carrying).
 	 * 
 	 * If, in the extremely unlikely event that, you manage to generate more
-	 * than 280 ULIDs within the same millisecond, or cause the random component
-	 * to overflow with less, the generation will fail.
+	 * than 2^80 ULIDs within the same millisecond, or cause the random
+	 * component to overflow with less, the generation will fail.
 	 * 
 	 * @return {@link UUID} a UUID value
 	 * 
 	 * @throws UlidCreatorException
-	 *             an overflow exception if too many requests within the same
-	 *             millisecond causes an overflow when incrementing the random
-	 *             bits of the GUID.
+	 *             an overrun exception if too many requests are made within the
+	 *             same millisecond.
 	 */
 	public synchronized UUID create() {
 
@@ -129,7 +132,7 @@ public class GuidCreator {
 
 		return new UUID(msb, lsb);
 	}
-	
+
 	/**
 	 * Return a ULID.
 	 * 
@@ -139,7 +142,7 @@ public class GuidCreator {
 		UUID guid = create();
 		return UlidUtil.fromUuidToUlid(guid);
 	}
-	
+
 	/**
 	 * Return a ULID as byte sequence.
 	 * 
@@ -173,27 +176,35 @@ public class GuidCreator {
 	 * Reset the random part of the GUID.
 	 */
 	protected synchronized void reset() {
+
+		// Get random values
 		if (random == null) {
 			this.low = SecureRandomLazyHolder.INSTANCE.nextLong();
-			this.high = SecureRandomLazyHolder.INSTANCE.nextLong() & MAX_HIGH;
+			this.high = SecureRandomLazyHolder.INSTANCE.nextInt() & MASK_UNSIGNED_SHORT;
 		} else {
 			this.low = random.nextLong();
-			this.high = random.nextLong() & MAX_HIGH;
+			this.high = random.nextInt() & MASK_UNSIGNED_SHORT;
 		}
+
+		// Save the random values
+		this.firstLow = this.low;
+		this.firstHigh = this.high;
 	}
 
 	/**
 	 * Increment the random part of the GUID.
 	 * 
+	 * An exception is thrown when more than 2^80 increment operations are made.
+	 * 
 	 * @throws UlidCreatorException
-	 *             if an overflow happens.
+	 *             if an overrun happens.
 	 */
 	protected synchronized void increment() {
-		if ((this.low++ == MAX_LOW) && (this.high++ == MAX_HIGH)) {
-			this.high = 0L;
+		if ((++this.low == this.firstLow) && (++this.high == this.firstHigh)) {
+			this.reset();
 			// Too many requests
-			if (enableOverflowException) {
-				throw new UlidCreatorException(OVERFLOW_MESSAGE);
+			if (enableOverrunException) {
+				throw new UlidCreatorException(OVERRUN_MESSAGE);
 			}
 		}
 	}
@@ -251,16 +262,16 @@ public class GuidCreator {
 	}
 
 	/**
-	 * Used to disable the overflow exception.
+	 * Used to disable the overrun exception.
 	 * 
-	 * An exception thrown when too many requests within the same millisecond
-	 * causes an overflow while incrementing the random bits of the GUID.
+	 * An exception is thrown when too many requests are made within the same
+	 * millisecond.
 	 * 
 	 * @return {@link GuidCreator}
 	 */
 	@SuppressWarnings("unchecked")
-	public synchronized <T extends GuidCreator> T withoutOverflowException() {
-		this.enableOverflowException = false;
+	public synchronized <T extends GuidCreator> T withoutOverrunException() {
+		this.enableOverrunException = false;
 		return (T) this;
 	}
 
