@@ -193,7 +193,8 @@ public class GuidCreator {
 	/**
 	 * Increment the random part of the GUID.
 	 * 
-	 * An exception is thrown when more than 2^80 increment operations are made.
+	 * An exception is thrown when more than 2^80 increment operations are made
+	 * in the same millisecond.
 	 * 
 	 * @throws UlidCreatorException
 	 *             if an overrun happens.
