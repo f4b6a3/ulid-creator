@@ -13,7 +13,7 @@ import static org.junit.Assert.*;
 
 public class GuidCreatorTest {
 
-	private static final long DEFAULT_LOOP_MAX = 1_000_000;
+	private static final long DEFAULT_LOOP_MAX = 1_048_576; // 2^20
 
 	private static final long TIMESTAMP = System.currentTimeMillis();
 
@@ -106,7 +106,7 @@ public class GuidCreatorTest {
 		assertEquals(String.format("The MSB should be iqual to %s.", expected), expected, randomMsb);
 	}
 
-	@Test(expected = UlidCreatorException.class)
+	@Test
 	public void testShouldThrowOverflowException() {
 
 		long startLow = RANDOM.nextInt() + DEFAULT_LOOP_MAX;
@@ -119,17 +119,23 @@ public class GuidCreatorTest {
 		creator.withTimestampStrategy(new FixedTimestampStretegy(TIMESTAMP));
 
 		UUID uuid = new UUID(0, 0);
-		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
+		for (int i = 0; i < DEFAULT_LOOP_MAX - 1; i++) {
 			uuid = creator.create();
 		}
 
+		long expectedLsb = startLow - 1;
 		long randomLsb = uuid.getLeastSignificantBits();
-		assertEquals(String.format("The LSB should be iqual to %s.", startLow), startLow, randomLsb);
+		assertEquals(String.format("The LSB should be iqual to %s.", expectedLsb), expectedLsb, randomLsb);
 
+		long expectedMsb = startHigh - 1;
 		long randomMsb = (short) (uuid.getMostSignificantBits());
-		assertEquals(String.format("The MSB should be iqual to %s.", startHigh), startHigh, randomMsb);
+		assertEquals(String.format("The MSB should be iqual to %s.", expectedMsb), expectedMsb, randomMsb);
 
-		creator.create();
-		fail("It should throw an overflow exception.");
+		try {
+			creator.create();
+			fail("It should throw an overflow exception.");
+		} catch (UlidCreatorException e) {
+			// Success
+		}
 	}
 }
