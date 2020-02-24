@@ -108,10 +108,10 @@ public class UlidCreator {
 	}
 
 	private static class GuidCreatorLazyHolder {
-		static final GuidCreator INSTANCE = getGuidCreator().withoutOverrunException();
+		static final GuidCreator INSTANCE = getGuidCreator();
 	}
 
 	private static class FastGuidCreatorLazyHolder {
-		static final GuidCreator INSTANCE = getGuidCreator().withFastRandomGenerator().withoutOverrunException();
+		static final GuidCreator INSTANCE = getGuidCreator().withFastRandomGenerator();
 	}
 }

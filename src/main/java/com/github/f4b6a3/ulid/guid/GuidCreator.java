@@ -51,7 +51,6 @@ public class GuidCreator {
 	protected long firstHigh;
 
 	protected long previousTimestamp;
-	protected boolean enableOverrunException = true;
 
 	protected Random random;
 
@@ -202,10 +201,7 @@ public class GuidCreator {
 	protected synchronized void increment() {
 		if ((++this.low == this.firstLow) && (++this.high == this.firstHigh)) {
 			this.reset();
-			// Too many requests
-			if (enableOverrunException) {
-				throw new UlidCreatorException(OVERRUN_MESSAGE);
-			}
+			throw new UlidCreatorException(OVERRUN_MESSAGE);
 		}
 	}
 
@@ -258,20 +254,6 @@ public class GuidCreator {
 	public synchronized <T extends GuidCreator> T withFastRandomGenerator() {
 		final int salt = (int) FingerprintUtil.getFingerprint();
 		this.random = new Xorshift128PlusRandom(salt);
-		return (T) this;
-	}
-
-	/**
-	 * Used to disable the overrun exception.
-	 * 
-	 * An exception is thrown when too many requests are made within the same
-	 * millisecond.
-	 * 
-	 * @return {@link GuidCreator}
-	 */
-	@SuppressWarnings("unchecked")
-	public synchronized <T extends GuidCreator> T withoutOverrunException() {
-		this.enableOverrunException = false;
 		return (T) this;
 	}
 

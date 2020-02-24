@@ -51,7 +51,7 @@ Add these lines to your `pom.xml`.
 <dependency>
   <groupId>com.github.f4b6a3</groupId>
   <artifactId>ulid-creator</artifactId>
-  <version>1.0.0</version>
+  <version>1.0.1</version>
 </dependency>
 ```
 See more options in [maven.org](https://search.maven.org/artifact/com.github.f4b6a3/ulid-creator) and [mvnrepository.com](https://mvnrepository.com/artifact/com.github.f4b6a3/ulid-creator).
@@ -160,4 +160,3 @@ String ulid = UlidCreator.getGuidCreator()
     .createUlid();
 ```
 
-If you use the `GuidCreator` directly, you need do handle the `UlidCreatorException`, in the case that too many ULIDs are requested within the same millisecond.
