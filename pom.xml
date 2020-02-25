@@ -3,7 +3,7 @@
 
 	<groupId>com.github.f4b6a3</groupId>
 	<artifactId>ulid-creator</artifactId>
-	<version>1.0.2-SNAPSHOT</version>
+	<version>1.0.2</version>
 	<packaging>jar</packaging>
 
 	<name>ulid-creator</name>
@@ -44,7 +44,7 @@
 		<connection>scm:git:git://github.com/dexecutor/dependent-tasks-executor.git</connection>
 		<developerConnection>scm:git:git@github.com:dexecutor/dexecutor.git</developerConnection>
 		<url>https://github.com/dexecutor/dependent-tasks-executor</url>
-		<tag>ulid-creator-1.0.0</tag>
+		<tag>ulid-creator-1.0.2</tag>
 	</scm>
 
 	<distributionManagement>
