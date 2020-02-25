@@ -7,7 +7,7 @@ public class DemoTest {
 	private static final String HORIZONTAL_LINE = "----------------------------------------";
 
 	public static void printList() {
-		int max = 1_000;
+		int max = 100;
 
 		System.out.println(HORIZONTAL_LINE);
 		System.out.println("### ULID");

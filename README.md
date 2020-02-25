@@ -12,34 +12,16 @@ Create a ULID:
 String ulid = UlidCreator.getUlid();
 ```
 
-Create a fast ULID:
-
-```java
-String ulid = UlidCreator.getFastUlid();
-```
-
 Create a ULID as GUID object:
 
 ```java
 UUID ulid = UlidCreator.getGuid();
 ```
 
-Create a fast ULID as GUID object:
-
-```java
-UUID ulid = UlidCreator.getFastGuid();
-```
-
 Create a ULID as byte sequence:
 
 ```java
 byte[] ulid = UlidCreator.getBytes();
-```
-
-Create a fast ULID as byte sequence:
-
-```java
-byte[] ulid = UlidCreator.getFastBytes();
 ```
 
 ### Maven dependency
@@ -51,7 +33,7 @@ Add these lines to your `pom.xml`.
 <dependency>
   <groupId>com.github.f4b6a3</groupId>
   <artifactId>ulid-creator</artifactId>
-  <version>1.0.1</version>
+  <version>1.0.2</version>
 </dependency>
 ```
 See more options in [maven.org](https://search.maven.org/artifact/com.github.f4b6a3/ulid-creator) and [mvnrepository.com](https://mvnrepository.com/artifact/com.github.f4b6a3/ulid-creator).
@@ -139,17 +121,19 @@ These are some examples of using the `GuidCreator` to create ULIDs:
 
 ```java
 
-// with the default random generator (java.security.SecureRandom)
-String ulid = UlidCreator.getGuidCreator().createUlid();
-    
-// with java random generator (java.util.Random)
+// with fixed timestamp strategy (for test cases)
 String ulid = UlidCreator.getGuidCreator()
-    .withRandomGenerator(new Random())
-    .createUlid();
+	.withTimestampStrategy(new FixedTimestampStretegy())
+	.createUlid();
+	
+// with your custom timestamp strategy
+String ulid = UlidCreator.getGuidCreator()
+	.withTimestampStrategy(new MyCustomTimestampStrategy())
+	.createUlid();
 
-// with fast random generator (Xorshift128Plus)
+// with your custom random number generator
 String ulid = UlidCreator.getGuidCreator()
-    .withFastRandomGenerator()
+    .withRandomGenerator(new MyCustomRandom())
     .createUlid();
 
 // with fast random generator (Xorshift128Plus with salt)
@@ -158,5 +142,11 @@ Random random = new Xorshift128PlusRandom(salt);
 String ulid = UlidCreator.getGuidCreator()
     .withRandomGenerator(random)
     .createUlid();
+    
+// with fast random generator (the same as above)
+String ulid = UlidCreator.getGuidCreator()
+    .withFastRandomGenerator()
+    .createUlid();
+
 ```
 

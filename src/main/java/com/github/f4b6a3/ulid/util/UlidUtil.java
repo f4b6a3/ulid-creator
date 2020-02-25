@@ -46,8 +46,23 @@ public class UlidUtil {
 	 * @return a ULID
 	 */
 	public static String fromUuidToUlid(UUID uuid) {
-		byte[] bytes = fromUuidToBytes(uuid);
-		return fromBytesToUlid(bytes);
+
+		final long msb = uuid.getMostSignificantBits();
+		final long lsb = uuid.getLeastSignificantBits();
+
+		// Extract timestamp component
+		final long timeNumber = (msb >>> 16);
+		String timestampComponent = leftPad(Base32Util.toBase32Crockford(timeNumber));
+
+		// Extract randomness component
+		byte[] randBytes = new byte[10];
+		randBytes[0] = (byte) (msb >>> 8);
+		randBytes[1] = (byte) (msb);
+		byte[] lsbBytes = ByteUtil.toBytes(lsb);
+		System.arraycopy(lsbBytes, 0, randBytes, 2, 8);
+		String randomnessComponent = Base32Util.toBase32Crockford(randBytes);
+
+		return timestampComponent + randomnessComponent;
 	}
 
 	/**
@@ -59,9 +74,24 @@ public class UlidUtil {
 	 *            a ULID
 	 * @return a UUID if valid
 	 */
-	public static UUID fromUlidToUuid(String ulid) {
-		byte[] bytes = fromUlidToBytes(ulid);
-		return fromBytesToUuid(bytes);
+	public static UUID fromUlidToUuid(final String ulid) {
+
+		UlidUtil.validate(ulid);
+
+		// Extract timestamp component
+		final String timestampComponent = ulid.substring(0, 10);
+		final long timeNumber = Base32Util.fromBase32CrockfordAsLong(timestampComponent);
+
+		// Extract randomness component
+		final String randomnessComponent = ulid.substring(10, 26);
+		byte[] randBytes = Base32Util.fromBase32Crockford(randomnessComponent);
+		byte[] lsbBytes = new byte[8];
+		System.arraycopy(randBytes, 2, lsbBytes, 0, 8);
+
+		final long msb = (timeNumber << 16) | ((randBytes[0] << 8) & 0x0000ff00L) | ((randBytes[1]) & 0x000000ffL);
+		final long lsb = ByteUtil.toNumber(lsbBytes);
+
+		return new UUID(msb, lsb);
 	}
 
 	/**
@@ -71,11 +101,11 @@ public class UlidUtil {
 	 *            a UUID
 	 * @return an array of bytes
 	 */
-	public static byte[] fromUuidToBytes(UUID uuid) {
-		long msb = uuid.getMostSignificantBits();
-		long lsb = uuid.getLeastSignificantBits();
-		byte[] msbBytes = ByteUtil.toBytes(msb);
-		byte[] lsbBytes = ByteUtil.toBytes(lsb);
+	public static byte[] fromUuidToBytes(final UUID uuid) {
+		final long msb = uuid.getMostSignificantBits();
+		final long lsb = uuid.getLeastSignificantBits();
+		final byte[] msbBytes = ByteUtil.toBytes(msb);
+		final byte[] lsbBytes = ByteUtil.toBytes(lsb);
 		return ByteUtil.concat(msbBytes, lsbBytes);
 	}
 
@@ -87,10 +117,12 @@ public class UlidUtil {
 	 * @return a UUID
 	 */
 	public static UUID fromBytesToUuid(byte[] bytes) {
-		byte[] msbBytes = ByteUtil.copy(bytes, 0, 8);
-		byte[] lsbBytes = ByteUtil.copy(bytes, 8, 16);
-		long msb = ByteUtil.toNumber(msbBytes);
-		long lsb = ByteUtil.toNumber(lsbBytes);
+		byte[] msbBytes = new byte[8];
+		System.arraycopy(bytes, 0, msbBytes, 0, 8);
+		byte[] lsbBytes = new byte[8];
+		System.arraycopy(bytes, 8, lsbBytes, 0, 8);
+		final long msb = ByteUtil.toNumber(msbBytes);
+		final long lsb = ByteUtil.toNumber(lsbBytes);
 		return new UUID(msb, lsb);
 	}
 
@@ -105,12 +137,12 @@ public class UlidUtil {
 
 		byte[] timeBytes = new byte[6];
 		System.arraycopy(bytes, 0, timeBytes, 0, 6);
-		long timeNumber = ByteUtil.toNumber(timeBytes);
-		String timestampComponent = leftPad(Base32Util.toBase32Crockford(timeNumber));
+		final long timeNumber = ByteUtil.toNumber(timeBytes);
+		final String timestampComponent = leftPad(Base32Util.toBase32Crockford(timeNumber));
 
 		byte[] randBytes = new byte[10];
 		System.arraycopy(bytes, 6, randBytes, 0, 10);
-		String randomnessComponent = Base32Util.toBase32Crockford(randBytes);
+		final String randomnessComponent = Base32Util.toBase32Crockford(randBytes);
 
 		return timestampComponent + randomnessComponent;
 	}
@@ -122,16 +154,16 @@ public class UlidUtil {
 	 *            a ULID string
 	 * @return an array of bytes
 	 */
-	public static byte[] fromUlidToBytes(String ulid) {
+	public static byte[] fromUlidToBytes(final String ulid) {
 		UlidUtil.validate(ulid);
 		byte[] bytes = new byte[16];
 
-		String timestampComponent = ulid.substring(0, 10);
-		long timeNumber = Base32Util.fromBase32CrockfordAsLong(timestampComponent);
+		final String timestampComponent = ulid.substring(0, 10);
+		final long timeNumber = Base32Util.fromBase32CrockfordAsLong(timestampComponent);
 		byte[] timeBytes = ByteUtil.toBytes(timeNumber);
 		System.arraycopy(timeBytes, 2, bytes, 0, 6);
 
-		String randomnessComponent = ulid.substring(10, 26);
+		final String randomnessComponent = ulid.substring(10, 26);
 		byte[] randBytes = Base32Util.fromBase32Crockford(randomnessComponent);
 		System.arraycopy(randBytes, 0, bytes, 6, 10);
 

@@ -182,8 +182,8 @@ public class UlidUtilTest {
 
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 
-			UUID uuid = UlidCreator.getFastGuid();
-			String ulid = UlidUtil.fromUuidToUlid(uuid);
+			UUID uuid1 = UlidCreator.getGuid();
+			String ulid = UlidUtil.fromUuidToUlid(uuid1);
 
 			assertTrue("ULID is null", ulid != null);
 			assertTrue("ULID is empty", !ulid.isEmpty());
@@ -191,9 +191,54 @@ public class UlidUtilTest {
 			assertTrue("ULID is not valid", UlidUtil.isValid(ulid, /* strict */
 					true));
 
-			UUID result = UlidUtil.fromUlidToUuid(ulid);
-			assertEquals("Result ULID is different from original ULID", uuid, result);
+			UUID uuid2 = UlidUtil.fromUlidToUuid(ulid);
+			assertEquals("Result ULID is different from original ULID", uuid1, uuid2);
 
+		}
+	}
+
+	@Test
+	public void testToAndFromBytes() {
+		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
+			String ulid1 = UlidCreator.getUlid();
+			byte[] bytes = UlidUtil.fromUlidToBytes(ulid1);
+			String ulid2 = UlidUtil.fromBytesToUlid(bytes);
+
+			// Check ULID 1
+			assertTrue(ulid1 != null);
+			assertTrue(!ulid1.isEmpty());
+			assertTrue(ulid1.length() == ULID_LENGTH);
+			assertTrue(UlidUtil.isValid(ulid1, /* strict */ true));
+
+			// Check ULID 2
+			assertTrue(ulid2 != null);
+			assertTrue(!ulid2.isEmpty());
+			assertTrue(ulid2.length() == ULID_LENGTH);
+			assertTrue(UlidUtil.isValid(ulid2, /* strict */ true));
+
+			assertEquals(ulid1, ulid2);
+		}
+	}
+
+	@Test
+	public void testFromUuidToBytes() {
+		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
+			UUID uuid1 = UlidCreator.getGuid();
+			byte[] bytes = UlidUtil.fromUuidToBytes(uuid1);
+			long msb = ByteUtil.toNumber(ByteUtil.copy(bytes, 0, 8));
+			long lsb = ByteUtil.toNumber(ByteUtil.copy(bytes, 8, 16));
+			UUID uuid2 = new UUID(msb, lsb);
+			assertEquals(uuid1, uuid2);
+		}
+	}
+
+	@Test
+	public void testFromBytesToUuid() {
+		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
+			UUID uuid1 = UlidCreator.getGuid();
+			byte[] bytes = UlidUtil.fromUuidToBytes(uuid1);
+			UUID uuid2 = UlidUtil.fromBytesToUuid(bytes);
+			assertEquals(uuid1, uuid2);
 		}
 	}
 
