@@ -7,6 +7,8 @@ import java.util.UUID;
 import org.junit.Test;
 
 import com.github.f4b6a3.ulid.util.UlidUtil.UlidUtilException;
+import com.github.f4b6a3.commons.util.Base32Util;
+import com.github.f4b6a3.commons.util.ByteUtil;
 import com.github.f4b6a3.ulid.UlidCreator;
 
 public class UlidUtilTest {
@@ -182,7 +184,7 @@ public class UlidUtilTest {
 
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 
-			UUID uuid1 = UlidCreator.getGuid();
+			UUID uuid1 = UlidCreator.getUlid();
 			String ulid = UlidUtil.fromUuidToUlid(uuid1);
 
 			assertTrue("ULID is null", ulid != null);
@@ -200,7 +202,7 @@ public class UlidUtilTest {
 	@Test
 	public void testToAndFromBytes() {
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
-			String ulid1 = UlidCreator.getUlid();
+			String ulid1 = UlidCreator.getUlidString();
 			byte[] bytes = UlidUtil.fromUlidToBytes(ulid1);
 			String ulid2 = UlidUtil.fromBytesToUlid(bytes);
 
@@ -223,7 +225,7 @@ public class UlidUtilTest {
 	@Test
 	public void testFromUuidToBytes() {
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
-			UUID uuid1 = UlidCreator.getGuid();
+			UUID uuid1 = UlidCreator.getUlid();
 			byte[] bytes = UlidUtil.fromUuidToBytes(uuid1);
 			long msb = ByteUtil.toNumber(ByteUtil.copy(bytes, 0, 8));
 			long lsb = ByteUtil.toNumber(ByteUtil.copy(bytes, 8, 16));
@@ -235,7 +237,7 @@ public class UlidUtilTest {
 	@Test
 	public void testFromBytesToUuid() {
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
-			UUID uuid1 = UlidCreator.getGuid();
+			UUID uuid1 = UlidCreator.getUlid();
 			byte[] bytes = UlidUtil.fromUuidToBytes(uuid1);
 			UUID uuid2 = UlidUtil.fromBytesToUuid(bytes);
 			assertEquals(uuid1, uuid2);

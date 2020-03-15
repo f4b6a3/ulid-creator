@@ -21,7 +21,7 @@ public class UlidCreatorTest {
 		long startTime = System.currentTimeMillis();
 
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
-			list[i] = UlidCreator.getUlid();
+			list[i] = UlidCreator.getUlidString();
 		}
 
 		long endTime = System.currentTimeMillis();

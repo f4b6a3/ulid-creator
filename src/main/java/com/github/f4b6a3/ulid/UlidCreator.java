@@ -26,8 +26,8 @@ package com.github.f4b6a3.ulid;
 
 import java.util.UUID;
 
+import com.github.f4b6a3.ulid.creator.UlidBasedGuidCreator;
 import com.github.f4b6a3.ulid.exception.UlidCreatorException;
-import com.github.f4b6a3.ulid.guid.GuidCreator;
 
 /**
  * A factory for Universally Unique Lexicographically Sortable Identifiers.
@@ -40,30 +40,12 @@ public class UlidCreator {
 	}
 
 	/**
-	 * Returns a ULID.
-	 * 
-	 * @return a ULID
-	 */
-	public static String getUlid() {
-		return GuidCreatorLazyHolder.INSTANCE.createUlid();
-	}
-
-	/**
-	 * Returns a fast ULID.
-	 * 
-	 * @return a ULID
-	 */
-	public static String getFastUlid() {
-		return FastGuidCreatorLazyHolder.INSTANCE.createUlid();
-	}
-
-	/**
 	 * Returns ULID as GUID object.
 	 * 
 	 * @return a GUID
 	 */
-	public static UUID getGuid() {
-		return GuidCreatorLazyHolder.INSTANCE.create();
+	public static UUID getUlid() {
+		return GuidCreatorLazyHolder.INSTANCE.createGuid();
 	}
 
 	/**
@@ -71,47 +53,48 @@ public class UlidCreator {
 	 * 
 	 * @return a GUID
 	 */
-	public static UUID getFastGuid() {
-		return FastGuidCreatorLazyHolder.INSTANCE.create();
+	public static UUID getFastUlid() {
+		return FastGuidCreatorLazyHolder.INSTANCE.createGuid();
 	}
 
 	/**
-	 * Returns ULID as byte sequence.
+	 * Returns a ULID.
 	 * 
-	 * @return a GUID
+	 * @return a ULID
 	 */
-	public static byte[] getBytes() {
-		return GuidCreatorLazyHolder.INSTANCE.createBytes();
+	public static String getUlidString() {
+		return GuidCreatorLazyHolder.INSTANCE.createString();
 	}
 
 	/**
-	 * Returns fast ULID as byte sequence.
+	 * Returns a fast ULID.
 	 * 
-	 * @return a GUID
+	 * @return a ULID
 	 */
-	public static byte[] getFastBytes() {
-		return FastGuidCreatorLazyHolder.INSTANCE.createBytes();
+	public static String getFastUlidString() {
+		return FastGuidCreatorLazyHolder.INSTANCE.createString();
 	}
 
 	/**
 	 * Return a GUID creator for direct use.
 	 * 
-	 * This library uses the {@link GuidCreator} internally to generate ULIDs.
+	 * This library uses the {@link UlidBasedGuidCreator} internally to generate
+	 * ULIDs.
 	 * 
-	 * The {@link GuidCreator} throws a {@link UlidCreatorException} when too
-	 * many values are requested in the same millisecond.
+	 * The {@link UlidBasedGuidCreator} throws a {@link UlidCreatorException} when
+	 * too many values are requested in the same millisecond.
 	 * 
-	 * @return a {@link GuidCreator}
+	 * @return a {@link UlidBasedGuidCreator}
 	 */
-	public static GuidCreator getGuidCreator() {
-		return new GuidCreator();
+	public static UlidBasedGuidCreator getGuidCreator() {
+		return new UlidBasedGuidCreator();
 	}
 
 	private static class GuidCreatorLazyHolder {
-		static final GuidCreator INSTANCE = getGuidCreator();
+		static final UlidBasedGuidCreator INSTANCE = getGuidCreator();
 	}
 
 	private static class FastGuidCreatorLazyHolder {
-		static final GuidCreator INSTANCE = getGuidCreator().withFastRandomGenerator();
+		static final UlidBasedGuidCreator INSTANCE = getGuidCreator().withFastRandomGenerator();
 	}
 }

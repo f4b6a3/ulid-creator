@@ -14,7 +14,7 @@ public class DemoTest {
 		System.out.println(HORIZONTAL_LINE);
 
 		for (int i = 0; i < max; i++) {
-			System.out.println(UlidCreator.getUlid());
+			System.out.println(UlidCreator.getUlidString());
 		}
 
 		System.out.println(HORIZONTAL_LINE);
@@ -22,7 +22,7 @@ public class DemoTest {
 		System.out.println(HORIZONTAL_LINE);
 
 		for (int i = 0; i < max; i++) {
-			System.out.println(UlidCreator.getGuid());
+			System.out.println(UlidCreator.getUlid());
 		}
 	}
 

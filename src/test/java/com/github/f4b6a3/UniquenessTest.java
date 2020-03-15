@@ -4,8 +4,8 @@ import java.util.HashSet;
 import java.util.UUID;
 
 import com.github.f4b6a3.ulid.UlidCreator;
+import com.github.f4b6a3.ulid.creator.UlidBasedGuidCreator;
 import com.github.f4b6a3.ulid.exception.UlidCreatorException;
-import com.github.f4b6a3.ulid.guid.GuidCreator;
 import com.github.f4b6a3.ulid.timestamp.FixedTimestampStretegy;
 
 /**
@@ -27,7 +27,7 @@ public class UniquenessTest {
 	private boolean verbose; // Show progress or not
 
 	// GUID creator based on ULID spec
-	private GuidCreator creator;
+	private UlidBasedGuidCreator creator;
 
 	/**
 	 * Initialize the test.
@@ -36,7 +36,7 @@ public class UniquenessTest {
 	 * @param requestCount
 	 * @param creator
 	 */
-	public UniquenessTest(int threadCount, int requestCount, GuidCreator creator, boolean progress) {
+	public UniquenessTest(int threadCount, int requestCount, UlidBasedGuidCreator creator, boolean progress) {
 		this.threadCount = threadCount;
 		this.requestCount = requestCount;
 		this.creator = creator;
@@ -87,7 +87,7 @@ public class UniquenessTest {
 		@Override
 		public void run() {
 
-			double progress = 0;
+			int progress = 0;
 			int max = requestCount;
 
 			for (int i = 0; i < max; i++) {
@@ -95,37 +95,37 @@ public class UniquenessTest {
 				// Request a UUID
 				UUID uuid = null;
 				try {
-					uuid = creator.create();
+					uuid = creator.createGuid();
 				} catch (UlidCreatorException e) {
 					// Ignore the overrun exception and try again
-					uuid = creator.create();
+					uuid = creator.createGuid();
 				}
 
 				if (verbose) {
 					// Calculate and show progress
-					progress = (i * 1.0 / max) * 100;
-					if (progress % 1 == 0) {
+					progress = (int) ((i * 1.0 / max) * 100);
+					if (progress % 10 == 0) {
 						System.out.println(String.format("[Thread %06d] %s %s %s%%", id, uuid, i, (int) progress));
 					}
 				}
 				synchronized (hashSet) {
 					// Insert the value in cache, if it does not exist in it.
 					if (!hashSet.add(uuid)) {
-						throw new UlidCreatorException(
-								String.format("[DUPLICATE][Thread %s] %s %s %s%%", id, uuid, i, (int) progress));
+						System.err.println(
+								String.format("[Thread %06d] %s %s %s%% [DUPLICATE]", id, uuid, i, (int) progress));
 					}
 				}
 			}
 
 			if (verbose) {
 				// Finished
-				System.out.println(String.format("[Thread %s] Done.", id));
+				System.out.println(String.format("[Thread %06d] Done.", id));
 			}
 		}
 	}
 
 	public static void execute(boolean verbose, int threadCount, int requestCount) {
-		GuidCreator creator = UlidCreator.getGuidCreator()
+		UlidBasedGuidCreator creator = UlidCreator.getGuidCreator()
 				.withTimestampStrategy(new FixedTimestampStretegy(System.currentTimeMillis()));
 
 		UniquenessTest test = new UniquenessTest(threadCount, requestCount, creator, verbose);

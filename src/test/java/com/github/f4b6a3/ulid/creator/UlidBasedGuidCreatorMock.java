@@ -1,13 +1,15 @@
-package com.github.f4b6a3.ulid.guid;
+package com.github.f4b6a3.ulid.creator;
 
-class GuidCreatorMock extends GuidCreator {
+import com.github.f4b6a3.ulid.creator.UlidBasedGuidCreator;
 
-	public GuidCreatorMock(long previousTimestamp) {
+class UlidBasedGuidCreatorMock extends UlidBasedGuidCreator {
+
+	public UlidBasedGuidCreatorMock(long previousTimestamp) {
 		super();
 		this.previousTimestamp = previousTimestamp;
 	}
 
-	public GuidCreatorMock(long randomMsb, long randomLsb, long randomMsbMax, long randomLsbMax, long previousTimestamp) {
+	public UlidBasedGuidCreatorMock(long randomMsb, long randomLsb, long randomMsbMax, long randomLsbMax, long previousTimestamp) {
 
 		this.randomMsb = randomMsb;
 		this.randomLsb = randomLsb;
