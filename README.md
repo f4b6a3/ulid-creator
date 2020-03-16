@@ -18,12 +18,6 @@ Create a ULID as GUID object:
 UUID ulid = UlidCreator.getGuid();
 ```
 
-Create a ULID as byte sequence:
-
-```java
-byte[] ulid = UlidCreator.getBytes();
-```
-
 ### Maven dependency
 
 Add these lines to your `pom.xml`.

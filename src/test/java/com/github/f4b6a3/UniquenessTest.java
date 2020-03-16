@@ -95,10 +95,10 @@ public class UniquenessTest {
 				// Request a UUID
 				UUID uuid = null;
 				try {
-					uuid = creator.createGuid();
+					uuid = creator.create();
 				} catch (UlidCreatorException e) {
 					// Ignore the overrun exception and try again
-					uuid = creator.createGuid();
+					uuid = creator.create();
 				}
 
 				if (verbose) {
@@ -125,7 +125,7 @@ public class UniquenessTest {
 	}
 
 	public static void execute(boolean verbose, int threadCount, int requestCount) {
-		UlidBasedGuidCreator creator = UlidCreator.getGuidCreator()
+		UlidBasedGuidCreator creator = UlidCreator.getUlidBasedCreator()
 				.withTimestampStrategy(new FixedTimestampStretegy(System.currentTimeMillis()));
 
 		UniquenessTest test = new UniquenessTest(threadCount, requestCount, creator, verbose);

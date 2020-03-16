@@ -25,10 +25,10 @@ public class UlidBasedGuidCreatorTest {
 		UlidBasedGuidCreatorMock creator = new UlidBasedGuidCreatorMock(TIMESTAMP);
 		creator.withTimestampStrategy(new FixedTimestampStretegy(TIMESTAMP));
 
-		UUID uuid = creator.createGuid();
+		UUID uuid = creator.create();
 		long firstMsb = creator.extractRandomMsb(uuid);
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
-			uuid = creator.createGuid();
+			uuid = creator.create();
 
 		}
 
@@ -37,7 +37,7 @@ public class UlidBasedGuidCreatorTest {
 		assertEquals(String.format("The last MSB should be iqual to the first %s.", expectedMsb), expectedMsb, lastMsb);
 
 		creator.withTimestampStrategy(new FixedTimestampStretegy(TIMESTAMP + 1));
-		uuid = creator.createGuid();
+		uuid = creator.create();
 		lastMsb = uuid.getMostSignificantBits();
 		assertNotEquals("The last MSB should be random after timestamp changed.", firstMsb, lastMsb);
 	}
@@ -48,10 +48,10 @@ public class UlidBasedGuidCreatorTest {
 		UlidBasedGuidCreatorMock creator = new UlidBasedGuidCreatorMock(TIMESTAMP);
 		creator.withTimestampStrategy(new FixedTimestampStretegy(TIMESTAMP));
 
-		UUID uuid = creator.createGuid();
+		UUID uuid = creator.create();
 		long firstLsb = creator.extractRandomLsb(uuid);
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
-			uuid = creator.createGuid();
+			uuid = creator.create();
 		}
 
 		long lastLsb = creator.extractRandomLsb(uuid);
@@ -60,7 +60,7 @@ public class UlidBasedGuidCreatorTest {
 
 		long notExpected = firstLsb + DEFAULT_LOOP_MAX + 1;
 		creator.withTimestampStrategy(new FixedTimestampStretegy(TIMESTAMP + 1));
-		uuid = creator.createGuid();
+		uuid = creator.create();
 		lastLsb = uuid.getLeastSignificantBits();
 		assertNotEquals("The last LSB should be random after timestamp changed.", notExpected, lastLsb);
 	}
@@ -75,7 +75,7 @@ public class UlidBasedGuidCreatorTest {
 
 		UUID uuid = new UUID(0, 0);
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
-			uuid = creator.createGuid();
+			uuid = creator.create();
 		}
 
 		long expectedLsb = lsb + DEFAULT_LOOP_MAX;
@@ -96,7 +96,7 @@ public class UlidBasedGuidCreatorTest {
 
 		UUID uuid = new UUID(0, 0);
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
-			uuid = creator.createGuid();
+			uuid = creator.create();
 		}
 
 		long expectedMsb = msb;
@@ -120,11 +120,11 @@ public class UlidBasedGuidCreatorTest {
 		creator.withTimestampStrategy(new FixedTimestampStretegy(TIMESTAMP));
 
 		for (int i = 0; i < DEFAULT_LOOP_MAX - 1; i++) {
-			creator.createGuid();
+			creator.create();
 		}
 
 		try {
-			creator.createGuid();
+			creator.create();
 			fail("It should throw an overflow exception.");
 		} catch (UlidCreatorException e) {
 			// success
@@ -147,7 +147,7 @@ public class UlidBasedGuidCreatorTest {
 
 		UUID uuid = new UUID(0, 0);
 		for (int i = 0; i < DEFAULT_LOOP_MAX - 1; i++) {
-			uuid = creator.createGuid();
+			uuid = creator.create();
 		}
 
 		long expectedLsb = (lsbMax - 1) & UlidBasedGuidCreatorMock.HALF_RANDOM_COMPONENT;
@@ -159,7 +159,7 @@ public class UlidBasedGuidCreatorTest {
 		assertEquals("Incorrect MSB after loop.", expectedMsb, randomMsb);
 
 		try {
-			creator.createGuid();
+			creator.create();
 			fail("It should throw an overflow exception.");
 		} catch (UlidCreatorException e) {
 			// success

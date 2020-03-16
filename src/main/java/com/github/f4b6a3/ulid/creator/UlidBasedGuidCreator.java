@@ -124,7 +124,7 @@ public class UlidBasedGuidCreator {
 	 * @throws UlidCreatorException an overrun exception if too many requests are
 	 *                              made within the same millisecond.
 	 */
-	public synchronized UUID createGuid() {
+	public synchronized UUID create() {
 
 		final long timestamp = this.getTimestamp();
 
@@ -143,7 +143,7 @@ public class UlidBasedGuidCreator {
 	 * @return a ULID string
 	 */
 	public synchronized String createString() {
-		UUID guid = createGuid();
+		UUID guid = create();
 		return UlidUtil.fromUuidToUlid(guid);
 	}
 

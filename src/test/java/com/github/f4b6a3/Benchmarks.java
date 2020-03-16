@@ -42,29 +42,29 @@ public class Benchmarks {
 	@Benchmark
 	@BenchmarkMode(Mode.Throughput)
 	@OutputTimeUnit(TimeUnit.MILLISECONDS)
-	public String getUlidThroughput() {
-		return UlidCreator.getUlid();
+	public String getUlidStringThroughput() {
+		return UlidCreator.getUlidString();
 	}
 
 	@Benchmark
 	@BenchmarkMode(Mode.AverageTime)
 	@OutputTimeUnit(TimeUnit.NANOSECONDS)
-	public String getUlidAverage() {
-		return UlidCreator.getUlid();
+	public String getUlidStringAverage() {
+		return UlidCreator.getUlidString();
 	}
 	
 	@Benchmark
 	@BenchmarkMode(Mode.Throughput)
 	@OutputTimeUnit(TimeUnit.MILLISECONDS)
-	public UUID getGuidThroughput() {
-		return UlidCreator.getGuid();
+	public UUID getUlidThroughput() {
+		return UlidCreator.getUlid();
 	}
 
 	@Benchmark
 	@BenchmarkMode(Mode.AverageTime)
 	@OutputTimeUnit(TimeUnit.NANOSECONDS)
-	public UUID getGuidAverage() {
-		return UlidCreator.getGuid();
+	public UUID getUlidAverage() {
+		return UlidCreator.getUlid();
 	}
 
 	@Benchmark

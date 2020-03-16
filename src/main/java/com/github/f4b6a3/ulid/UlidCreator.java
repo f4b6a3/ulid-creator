@@ -45,7 +45,7 @@ public class UlidCreator {
 	 * @return a GUID
 	 */
 	public static UUID getUlid() {
-		return GuidCreatorLazyHolder.INSTANCE.createGuid();
+		return GuidCreatorLazyHolder.INSTANCE.create();
 	}
 
 	/**
@@ -54,7 +54,7 @@ public class UlidCreator {
 	 * @return a GUID
 	 */
 	public static UUID getFastUlid() {
-		return FastGuidCreatorLazyHolder.INSTANCE.createGuid();
+		return FastGuidCreatorLazyHolder.INSTANCE.create();
 	}
 
 	/**
@@ -86,15 +86,15 @@ public class UlidCreator {
 	 * 
 	 * @return a {@link UlidBasedGuidCreator}
 	 */
-	public static UlidBasedGuidCreator getGuidCreator() {
+	public static UlidBasedGuidCreator getUlidBasedCreator() {
 		return new UlidBasedGuidCreator();
 	}
 
 	private static class GuidCreatorLazyHolder {
-		static final UlidBasedGuidCreator INSTANCE = getGuidCreator();
+		static final UlidBasedGuidCreator INSTANCE = getUlidBasedCreator();
 	}
 
 	private static class FastGuidCreatorLazyHolder {
-		static final UlidBasedGuidCreator INSTANCE = getGuidCreator().withFastRandomGenerator();
+		static final UlidBasedGuidCreator INSTANCE = getUlidBasedCreator().withFastRandomGenerator();
 	}
 }
