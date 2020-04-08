@@ -26,7 +26,6 @@ package com.github.f4b6a3.ulid.creator;
 
 import java.util.Random;
 import java.util.UUID;
-import java.util.concurrent.ThreadLocalRandom;
 
 import com.github.f4b6a3.ulid.timestamp.TimestampStrategy;
 import com.github.f4b6a3.ulid.util.UlidUtil;
@@ -56,8 +55,6 @@ public class UlidBasedGuidCreator {
 	protected long previousTimestamp;
 
 	protected Random random;
-
-	protected boolean useThreadLocal = false;
 
 	protected static final String OVERRUN_MESSAGE = "The system overran the generator by requesting too many GUIDs.";
 
@@ -172,10 +169,7 @@ public class UlidBasedGuidCreator {
 	protected synchronized void reset() {
 
 		// Get random values
-		if (useThreadLocal) {
-			this.randomMsb = truncate(ThreadLocalRandom.current().nextLong());
-			this.randomLsb = truncate(ThreadLocalRandom.current().nextLong());
-		} else if (random == null) {
+		if (random == null) {
 			this.randomMsb = truncate(RandomUtil.get().nextLong());
 			this.randomLsb = truncate(RandomUtil.get().nextLong());
 		} else {
@@ -231,12 +225,7 @@ public class UlidBasedGuidCreator {
 	 */
 	@SuppressWarnings("unchecked")
 	public synchronized <T extends UlidBasedGuidCreator> T withRandomGenerator(Random random) {
-
 		this.random = random;
-
-		// disable thread local
-		this.useThreadLocal = false;
-
 		return (T) this;
 	}
 
@@ -253,31 +242,8 @@ public class UlidBasedGuidCreator {
 	 */
 	@SuppressWarnings("unchecked")
 	public synchronized <T extends UlidBasedGuidCreator> T withFastRandomGenerator() {
-
 		final int salt = (int) FingerprintUtil.getFingerprint();
 		this.random = new Xorshift128PlusRandom(salt);
-
-		// disable thread local
-		this.useThreadLocal = false;
-
-		return (T) this;
-	}
-
-	/**
-	 * Replaces the default random generator with ThreadLocalRandom.
-	 * 
-	 * See {@link java.util.concurrent.ThreadLocalRandom}
-	 * 
-	 * @return {@link RandomUuidCreator}
-	 */
-	@SuppressWarnings("unchecked")
-	public synchronized <T extends UlidBasedGuidCreator> T withThreadLocalRandomGenerator() {
-
-		this.useThreadLocal = true;
-
-		// remove random instance
-		this.random = null;
-
 		return (T) this;
 	}
 
