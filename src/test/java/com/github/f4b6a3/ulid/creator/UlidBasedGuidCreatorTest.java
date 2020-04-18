@@ -7,7 +7,7 @@ import org.junit.Test;
 
 import com.github.f4b6a3.commons.random.Xorshift128PlusRandom;
 import com.github.f4b6a3.ulid.exception.UlidCreatorException;
-import com.github.f4b6a3.ulid.timestamp.FixedTimestampStretegy;
+import com.github.f4b6a3.ulid.strategy.timestamp.FixedTimestampStretegy;
 
 import static org.junit.Assert.*;
 

@@ -22,39 +22,8 @@
  * SOFTWARE.
  */
 
-package com.github.f4b6a3.ulid.util;
+package com.github.f4b6a3.ulid.strategy;
 
-import java.time.Instant;
-
-import com.github.f4b6a3.commons.util.Base32Util;
-
-public class UlidUtil {
-
-	private UlidUtil() {
-	}
-
-	public static long extractTimestamp(String ulid) {
-		UlidValidator.validate(ulid);
-		return extractUnixMilliseconds(ulid);
-	}
-
-	public static Instant extractInstant(String ulid) {
-		long milliseconds = extractTimestamp(ulid);
-		return Instant.ofEpochMilli(milliseconds);
-	}
-
-	public static String extractTimestampComponent(String ulid) {
-		UlidValidator.validate(ulid);
-		return ulid.substring(0, 10);
-	}
-
-	public static String extractRandomnessComponent(String ulid) {
-		UlidValidator.validate(ulid);
-		return ulid.substring(10, 26);
-	}
-
-	protected static long extractUnixMilliseconds(String ulid) {
-		String milliseconds = ulid.substring(0, 10);
-		return Base32Util.fromBase32CrockfordAsLong(milliseconds);
-	}
+public interface TimestampStrategy {
+	long getTimestamp();
 }

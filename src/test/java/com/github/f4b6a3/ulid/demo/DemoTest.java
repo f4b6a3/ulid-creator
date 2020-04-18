@@ -1,4 +1,4 @@
-package com.github.f4b6a3.demo;
+package com.github.f4b6a3.ulid.demo;
 
 import com.github.f4b6a3.ulid.UlidCreator;
 
@@ -10,7 +10,7 @@ public class DemoTest {
 		int max = 100;
 
 		System.out.println(HORIZONTAL_LINE);
-		System.out.println("### ULID");
+		System.out.println("### ULID string");
 		System.out.println(HORIZONTAL_LINE);
 
 		for (int i = 0; i < max; i++) {
@@ -18,7 +18,7 @@ public class DemoTest {
 		}
 
 		System.out.println(HORIZONTAL_LINE);
-		System.out.println("### GUID");
+		System.out.println("### ULID-based GUID");
 		System.out.println(HORIZONTAL_LINE);
 
 		for (int i = 0; i < max; i++) {

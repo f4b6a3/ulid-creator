@@ -1,4 +1,4 @@
-package com.github.f4b6a3;
+package com.github.f4b6a3.ulid;
 
 import java.util.HashSet;
 import java.util.UUID;
@@ -6,7 +6,7 @@ import java.util.UUID;
 import com.github.f4b6a3.ulid.UlidCreator;
 import com.github.f4b6a3.ulid.creator.UlidBasedGuidCreator;
 import com.github.f4b6a3.ulid.exception.UlidCreatorException;
-import com.github.f4b6a3.ulid.timestamp.FixedTimestampStretegy;
+import com.github.f4b6a3.ulid.strategy.timestamp.FixedTimestampStretegy;
 
 /**
  * 

@@ -22,8 +22,20 @@
  * SOFTWARE.
  */
 
-package com.github.f4b6a3.ulid.timestamp;
+package com.github.f4b6a3.ulid.strategy.timestamp;
 
-public interface TimestampStrategy {
-	long getTimestamp();
+import com.github.f4b6a3.ulid.strategy.TimestampStrategy;
+
+public class FixedTimestampStretegy implements TimestampStrategy {
+
+	protected long timestamp = 0;
+
+	public FixedTimestampStretegy(long timestamp) {
+		this.timestamp = timestamp;
+	}
+
+	@Override
+	public long getTimestamp() {
+		return this.timestamp;
+	}
 }

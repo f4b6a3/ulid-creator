@@ -22,18 +22,17 @@
  * SOFTWARE.
  */
 
-package com.github.f4b6a3.ulid.timestamp;
+package com.github.f4b6a3.ulid.strategy.timestamp;
 
-public class FixedTimestampStretegy implements TimestampStrategy {
+import com.github.f4b6a3.ulid.strategy.TimestampStrategy;
 
-	protected long timestamp = 0;
+public class DefaultTimestampStrategy implements TimestampStrategy {
 
-	public FixedTimestampStretegy(long timestamp) {
-		this.timestamp = timestamp;
-	}
-
+	/**
+	 * Returns the count of milliseconds since 01-01-1970.
+	 */
 	@Override
 	public long getTimestamp() {
-		return this.timestamp;
+		return System.currentTimeMillis();
 	}
 }

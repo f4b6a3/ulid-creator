@@ -1,4 +1,4 @@
-package com.github.f4b6a3.ulid;
+package com.github.f4b6a3.ulid.ulid;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -6,6 +6,7 @@ import org.junit.Test;
 import com.github.f4b6a3.ulid.UlidCreator;
 import com.github.f4b6a3.ulid.creator.UlidBasedGuidCreator;
 import com.github.f4b6a3.ulid.util.UlidUtil;
+import com.github.f4b6a3.ulid.util.UlidValidator;
 
 import static org.junit.Assert.*;
 import java.util.Arrays;
@@ -54,7 +55,7 @@ public class UlidCreatorTest {
 			assertTrue("ULID is null", ulid != null);
 			assertTrue("ULID is empty", !ulid.isEmpty());
 			assertTrue("ULID length is wrong ", ulid.length() == ULID_LENGTH);
-			assertTrue("ULID is not valid", UlidUtil.isValid(ulid, /* strict */ true));
+			assertTrue("ULID is not valid", UlidValidator.isValid(ulid));
 		}
 	}
 

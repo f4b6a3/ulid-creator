@@ -22,15 +22,13 @@
  * SOFTWARE.
  */
 
-package com.github.f4b6a3.ulid.timestamp;
+package com.github.f4b6a3.ulid.exception;
 
-public class DefaultTimestampStrategy implements TimestampStrategy {
+public class InvalidUlidException extends RuntimeException {
 
-	/**
-	 * Returns the count of milliseconds since 01-01-1970.
-	 */
-	@Override
-	public long getTimestamp() {
-		return System.currentTimeMillis();
+	private static final long serialVersionUID = 1L;
+
+	public InvalidUlidException(String message) {
+		super(message);
 	}
 }

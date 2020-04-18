@@ -26,8 +26,8 @@ package com.github.f4b6a3.ulid.exception;
 
 public class UlidCreatorException extends RuntimeException {
 
-	private static final long serialVersionUID = 6755381080404981234L;
-	
+	private static final long serialVersionUID = 1L;
+
 	public UlidCreatorException(String message) {
 		super(message);
 	}
