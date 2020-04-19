@@ -5,7 +5,7 @@ import java.util.UUID;
 
 import org.junit.Test;
 
-import com.github.f4b6a3.commons.random.Xorshift128PlusRandom;
+import com.github.f4b6a3.util.random.Xorshift128PlusRandom;
 import com.github.f4b6a3.ulid.exception.UlidCreatorException;
 import com.github.f4b6a3.ulid.strategy.timestamp.FixedTimestampStretegy;
 

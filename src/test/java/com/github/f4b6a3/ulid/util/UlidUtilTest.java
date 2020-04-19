@@ -5,8 +5,8 @@ import java.time.Instant;
 
 import org.junit.Test;
 
-import com.github.f4b6a3.commons.util.Base32Util;
-import com.github.f4b6a3.commons.util.ByteUtil;
+import com.github.f4b6a3.util.Base32Util;
+import com.github.f4b6a3.util.ByteUtil;
 import com.github.f4b6a3.ulid.exception.InvalidUlidException;
 import com.github.f4b6a3.ulid.util.UlidUtil;
 

@@ -26,8 +26,8 @@ package com.github.f4b6a3.ulid.util;
 
 import java.util.UUID;
 
-import com.github.f4b6a3.commons.util.Base32Util;
-import com.github.f4b6a3.commons.util.ByteUtil;
+import com.github.f4b6a3.util.Base32Util;
+import com.github.f4b6a3.util.ByteUtil;
 
 public class UlidConverter {
 

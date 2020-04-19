@@ -26,7 +26,7 @@ package com.github.f4b6a3.ulid;
 
 import java.util.UUID;
 
-import com.github.f4b6a3.commons.random.Xorshift128PlusRandom;
+import com.github.f4b6a3.util.random.Xorshift128PlusRandom;
 import com.github.f4b6a3.ulid.creator.UlidBasedGuidCreator;
 
 /**

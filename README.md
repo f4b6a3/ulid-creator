@@ -28,10 +28,10 @@ Add these lines to your `pom.xml`.
 <dependency>
   <groupId>com.github.f4b6a3</groupId>
   <artifactId>ulid-creator</artifactId>
-  <version>1.1.0</version>
+  <version>1.1.1</version>
 </dependency>
 ```
-See more options in [maven.org](https://search.maven.org/artifact/com.github.f4b6a3/ulid-creator) and [mvnrepository.com](https://mvnrepository.com/artifact/com.github.f4b6a3/ulid-creator).
+See more options in [maven.org](https://search.maven.org/artifact/com.github.f4b6a3/ulid-creator).
 
 Implementation
 ------------------------------------------------------

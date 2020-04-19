@@ -28,9 +28,9 @@ import java.util.Random;
 import java.util.UUID;
 
 import com.github.f4b6a3.ulid.util.UlidConverter;
-import com.github.f4b6a3.commons.random.Xorshift128PlusRandom;
-import com.github.f4b6a3.commons.util.FingerprintUtil;
-import com.github.f4b6a3.commons.util.RandomUtil;
+import com.github.f4b6a3.util.random.Xorshift128PlusRandom;
+import com.github.f4b6a3.util.FingerprintUtil;
+import com.github.f4b6a3.util.RandomUtil;
 import com.github.f4b6a3.ulid.exception.UlidCreatorException;
 import com.github.f4b6a3.ulid.strategy.TimestampStrategy;
 import com.github.f4b6a3.ulid.strategy.timestamp.DefaultTimestampStrategy;
