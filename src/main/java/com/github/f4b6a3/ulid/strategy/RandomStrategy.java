@@ -1,7 +1,7 @@
 /*
  * MIT License
  * 
- * Copyright (c) 2020 Fabio Lima
+ * Copyright (c) 2018-2020 Fabio Lima
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,13 +22,8 @@
  * SOFTWARE.
  */
 
-package com.github.f4b6a3.ulid.exception;
+package com.github.f4b6a3.ulid.strategy;
 
-public final class UlidCreatorException extends RuntimeException {
-
-	private static final long serialVersionUID = 1L;
-
-	public UlidCreatorException(String message) {
-		super(message);
-	}
+public interface RandomStrategy {
+	void nextBytes(byte[] bytes);
 }

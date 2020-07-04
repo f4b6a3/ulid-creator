@@ -26,10 +26,10 @@ package com.github.f4b6a3.ulid.strategy.timestamp;
 
 import com.github.f4b6a3.ulid.strategy.TimestampStrategy;
 
-public class DefaultTimestampStrategy implements TimestampStrategy {
+public final class DefaultTimestampStrategy implements TimestampStrategy {
 
 	/**
-	 * Returns the count of milliseconds since 01-01-1970.
+	 * Returns the count of milliseconds since 1970-01-01 (Unix epoch).
 	 */
 	@Override
 	public long getTimestamp() {

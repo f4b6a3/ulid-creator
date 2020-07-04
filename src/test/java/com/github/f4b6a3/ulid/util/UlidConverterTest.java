@@ -22,9 +22,9 @@ public class UlidConverterTest {
 			UUID uuid1 = UlidCreator.getUlid();
 			String ulid = UlidConverter.toString(uuid1);
 
-			assertTrue("ULID is null", ulid != null);
+			assertNotNull("ULID is null", ulid);
 			assertTrue("ULID is empty", !ulid.isEmpty());
-			assertTrue("ULID length is wrong ", ulid.length() == ULID_LENGTH);
+			assertEquals("ULID length is wrong ", ULID_LENGTH, ulid.length());
 			assertTrue("ULID is not valid", UlidValidator.isValid(ulid));
 
 			UUID uuid2 = UlidConverter.fromString(ulid);

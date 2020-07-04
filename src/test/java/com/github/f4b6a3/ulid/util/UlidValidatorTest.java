@@ -9,7 +9,7 @@ import com.github.f4b6a3.ulid.util.UlidValidator;
 public class UlidValidatorTest {
 
 	@Test
-	public void testIsValidStrict() {
+	public void testIsValid() {
 
 		String ulid = null; // Null
 		assertFalse("Null ULID should be invalid.", UlidValidator.isValid(ulid));
@@ -38,7 +38,7 @@ public class UlidValidatorTest {
 		ulid = "#123456789ABCDEFGHJKMNPQRS"; // Special char
 		assertFalse("ULID with special chars should be invalid.", UlidValidator.isValid(ulid));
 
-		ulid = "01234-56789-ABCDEFGHJKMNPQRS"; // Hyphens
+		ulid = "01234-56789-ABCDEFGHJKM---NPQRS"; // Hyphens
 		assertTrue("ULID with hiphens should be valid.", UlidValidator.isValid(ulid));
 
 		ulid = "8ZZZZZZZZZABCDEFGHJKMNPQRS"; // timestamp > (2^48)-1

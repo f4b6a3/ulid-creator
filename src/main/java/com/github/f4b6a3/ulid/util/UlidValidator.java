@@ -26,11 +26,11 @@ package com.github.f4b6a3.ulid.util;
 
 import com.github.f4b6a3.ulid.exception.InvalidUlidException;
 
-public class UlidValidator {
+import static com.github.f4b6a3.ulid.util.UlidUtil.*;
 
-	protected static final String ULID_PATTERN = "^[0-9a-tv-zA-TV-Z]{26}$";
+public final class UlidValidator {
 
-	// Date: 10889-08-02T05:31:50.655Z
+	// Date: 10889-08-02T05:31:50.655Z (epoch time: 281474976710655)
 	protected static final long TIMESTAMP_MAX = (long) Math.pow(2, 48) - 1;
 
 	private UlidValidator() {
@@ -42,14 +42,12 @@ public class UlidValidator {
 	 * A valid ULID string is a sequence of 26 characters from Crockford's base 32
 	 * alphabet.
 	 * 
-	 * Dashes are ignored by this validator.
-	 * 
 	 * <pre>
 	 * Examples of valid ULID strings:
-	 * - 0123456789ABCDEFGHJKMNPKRS (26 alphanumeric, case insensitive, except iI, lL, oO and uU)
-	 * - 0123456789ABCDEFGHIJKLMNOP (26 alphanumeric, case insensitive, except uU)
-	 * - 0123456789-ABCDEFGHJK-MNPKRS (26 alphanumeric, case insensitive, except iI, lL, oO and uU)
-	 * - 0123456789-ABCDEFGHIJ-KLMNOP (26 alphanumeric, case insensitive, except uU, with dashes)
+	 * - 0123456789ABCDEFGHJKMNPKRS (26 alphanumeric, case insensitive, except U)
+	 * - 0123456789ABCDEFGHIJKLMNOP (26 alphanumeric, case insensitive, including OIL, except U)
+	 * - 0123456789-ABCDEFGHJK-MNPKRS (26 alphanumeric, case insensitive, except U, with hyphens)
+	 * - 0123456789-ABCDEFGHIJ-KLMNOP (26 alphanumeric, case insensitive, including OIL, except U, with hyphens)
 	 * </pre>
 	 * 
 	 * @param ulid a ULID
@@ -57,16 +55,20 @@ public class UlidValidator {
 	 */
 	public static boolean isValid(String ulid) {
 
-		if (ulid == null || ulid.isEmpty()) {
+		if (ulid == null) {
 			return false;
 		}
 
-		String u = ulid.replaceAll("-", "");
-		if (!u.matches(ULID_PATTERN)) {
+		char[] chars = removeHyphens(ulid.toCharArray());
+		if (chars.length != ULID_CHAR_LENGTH || !isCrockfordBase32(chars)) {
 			return false;
 		}
 
-		long timestamp = UlidUtil.extractUnixMilliseconds(ulid);
+		// Extract time component
+		final char[] timestampComponent = new char[10];
+		System.arraycopy(chars, 0, timestampComponent, 0, 10);
+		final long timestamp = fromBase32Crockford(timestampComponent);
+
 		return timestamp >= 0 && timestamp <= TIMESTAMP_MAX;
 
 	}

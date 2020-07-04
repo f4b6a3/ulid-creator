@@ -4,7 +4,7 @@ import java.util.HashSet;
 import java.util.UUID;
 
 import com.github.f4b6a3.ulid.UlidCreator;
-import com.github.f4b6a3.ulid.creator.UlidBasedGuidCreator;
+import com.github.f4b6a3.ulid.creator.UlidSpecCreator;
 import com.github.f4b6a3.ulid.exception.UlidCreatorException;
 import com.github.f4b6a3.ulid.strategy.timestamp.FixedTimestampStretegy;
 
@@ -27,7 +27,7 @@ public class UniquenessTest {
 	private boolean verbose; // Show progress or not
 
 	// GUID creator based on ULID spec
-	private UlidBasedGuidCreator creator;
+	private UlidSpecCreator creator;
 
 	/**
 	 * Initialize the test.
@@ -36,7 +36,7 @@ public class UniquenessTest {
 	 * @param requestCount
 	 * @param creator
 	 */
-	public UniquenessTest(int threadCount, int requestCount, UlidBasedGuidCreator creator, boolean progress) {
+	public UniquenessTest(int threadCount, int requestCount, UlidSpecCreator creator, boolean progress) {
 		this.threadCount = threadCount;
 		this.requestCount = requestCount;
 		this.creator = creator;
@@ -125,7 +125,7 @@ public class UniquenessTest {
 	}
 
 	public static void execute(boolean verbose, int threadCount, int requestCount) {
-		UlidBasedGuidCreator creator = UlidCreator.getUlidBasedCreator()
+		UlidSpecCreator creator = UlidCreator.getUlidSpecCreator()
 				.withTimestampStrategy(new FixedTimestampStretegy(System.currentTimeMillis()));
 
 		UniquenessTest test = new UniquenessTest(threadCount, requestCount, creator, verbose);

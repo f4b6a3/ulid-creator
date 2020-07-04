@@ -1,7 +1,7 @@
 /*
  * MIT License
  * 
- * Copyright (c) 2020 Fabio Lima
+ * Copyright (c) 2018-2020 Fabio Lima
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,13 +22,22 @@
  * SOFTWARE.
  */
 
-package com.github.f4b6a3.ulid.exception;
+package com.github.f4b6a3.ulid.strategy.random;
 
-public final class UlidCreatorException extends RuntimeException {
+import java.security.SecureRandom;
+import java.util.Random;
 
-	private static final long serialVersionUID = 1L;
+import com.github.f4b6a3.ulid.strategy.RandomStrategy;
 
-	public UlidCreatorException(String message) {
-		super(message);
+/**
+ * It uses a thread local instance of {@link java.security.SecureRandom}.
+ */
+public final class DefaultRandomStrategy implements RandomStrategy {
+
+	protected static final ThreadLocal<Random> THREAD_LOCAL_RANDOM = ThreadLocal.withInitial(SecureRandom::new);
+
+	@Override
+	public void nextBytes(byte[] bytes) {
+		THREAD_LOCAL_RANDOM.get().nextBytes(bytes);
 	}
 }
