@@ -115,25 +115,25 @@ Examples of ULIDs:
 These are some examples of using the `UlidSpecCreator` to create ULIDs strings:
 
 ```java
-	
 // with your custom timestamp strategy
 TimestampStrategy customStrategy = new CustomTimestampStrategy();
 String ulid = UlidCreator.getUlidSpecCreator()
 	.withTimestampStrategy(customStrategy)
 	.createString();
-
+```java
+```
 // with your custom random strategy that wraps any random generator
 RandomStrategy customStrategy = new CustomRandomStrategy();
 String ulid = UlidCreator.getUlidSpecCreator()
 	.withRandomStrategy(customStrategy)
 	.createString();
-
+```java
+```
 // with `java.util.Random` number generator
 Random random = new Random();
 String ulid = UlidCreator.getUlidSpecCreator()
     .withRandomGenerator(random)
     .createString();
-
 ```
 
 
