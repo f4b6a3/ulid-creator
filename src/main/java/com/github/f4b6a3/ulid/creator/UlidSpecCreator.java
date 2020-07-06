@@ -47,8 +47,8 @@ public class UlidSpecCreator {
 	protected long random1 = 0;
 	protected long random2 = 0;
 
-	protected long randomMax2;
 	protected long randomMax1;
+	protected long randomMax2;
 
 	protected static final long HALF_RANDOM_COMPONENT = 0x000000ffffffffffL;
 	protected static final long INCREMENT_MAX = 0x0000010000000000L;
@@ -63,7 +63,6 @@ public class UlidSpecCreator {
 	public UlidSpecCreator() {
 		this.timestampStrategy = new DefaultTimestampStrategy();
 		this.randomStrategy = new DefaultRandomStrategy();
-		this.reset();
 	}
 
 	/**
@@ -181,6 +180,7 @@ public class UlidSpecCreator {
 		this.randomStrategy.nextBytes(bytes);
 		this.random1 = UlidUtil.toNumber(bytes, 0, 5);
 		this.random2 = UlidUtil.toNumber(bytes, 5, 10);
+
 		// Save the random values
 		this.randomMax1 = this.random1 | INCREMENT_MAX;
 		this.randomMax2 = this.random2 | INCREMENT_MAX;
@@ -194,11 +194,13 @@ public class UlidSpecCreator {
 	 * 
 	 * @throws UlidCreatorException if an overrun happens.
 	 */
-
 	protected synchronized void increment() {
-		if ((++this.random2 > this.randomMax2) && (++this.random1 > this.randomMax1)) {
-			this.reset();
-			throw new UlidCreatorException(OVERRUN_MESSAGE);
+		if (++this.random2 >= this.randomMax2) {
+			this.random2 = this.random2 & HALF_RANDOM_COMPONENT;
+			if ((++this.random1 >= this.randomMax1)) {
+				this.reset();
+				throw new UlidCreatorException(OVERRUN_MESSAGE);
+			}
 		}
 	}
 

@@ -37,7 +37,7 @@ public class UlidSpecCreatorTest {
 	@Test
 	public void testRandomMostSignificantBits() {
 
-		UlidSpecCreatorMock creator = new UlidSpecCreatorMock(TIMESTAMP);
+		UlidSpecCreator creator = new UlidSpecCreator();
 		creator.withTimestampStrategy(new FixedTimestampStretegy(TIMESTAMP));
 
 		UUID uuid = creator.create();
@@ -61,7 +61,7 @@ public class UlidSpecCreatorTest {
 	@Test
 	public void testRandomLeastSignificantBits() {
 
-		UlidSpecCreatorMock creator = new UlidSpecCreatorMock(TIMESTAMP);
+		UlidSpecCreator creator = new UlidSpecCreator();
 		creator.withTimestampStrategy(new FixedTimestampStretegy(TIMESTAMP));
 
 		UUID uuid = creator.create();
@@ -84,10 +84,11 @@ public class UlidSpecCreatorTest {
 	@Test
 	public void testIncrementOfRandomLeastSignificantBits() {
 
-		UlidSpecCreatorMock creator = new UlidSpecCreatorMock(TIMESTAMP);
+		UlidSpecCreator creator = new UlidSpecCreator();
 		creator.withTimestampStrategy(new FixedTimestampStretegy(TIMESTAMP));
 
-		long random2 = creator.getRandom2();
+		creator.create();
+		long random2 = creator.random2;
 
 		UUID uuid = new UUID(0, 0);
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
@@ -95,7 +96,7 @@ public class UlidSpecCreatorTest {
 		}
 
 		long expected2 = random2 + DEFAULT_LOOP_MAX;
-		long rand2 = creator.getRandom2();
+		long rand2 = creator.random2;
 		assertEquals("Wrong low random after loop.", expected2, rand2);
 
 		rand2 = creator.extractRandom2(uuid);
@@ -105,10 +106,11 @@ public class UlidSpecCreatorTest {
 	@Test
 	public void testIncrementOfRandomMostSignificantBits() {
 
-		UlidSpecCreatorMock creator = new UlidSpecCreatorMock(TIMESTAMP);
+		UlidSpecCreator creator = new UlidSpecCreator();
 		creator.withTimestampStrategy(new FixedTimestampStretegy(TIMESTAMP));
 
-		long random1 = creator.getRandom1();
+		creator.create();
+		long random1 = creator.random1;
 
 		UUID uuid = new UUID(0, 0);
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
@@ -116,7 +118,7 @@ public class UlidSpecCreatorTest {
 		}
 
 		long expected1 = random1;
-		long rand1 = creator.getRandom1();
+		long rand1 = creator.random1;
 		assertEquals("Wrong high random after loop.", expected1, rand1);
 
 		rand1 = creator.extractRandom1(uuid);
@@ -134,6 +136,8 @@ public class UlidSpecCreatorTest {
 
 		random1 = max1;
 		random2 = max2 - DEFAULT_LOOP_MAX;
+
+		random2--; // Adjust
 
 		UlidSpecCreatorMock creator = new UlidSpecCreatorMock(random1, random2, max1, max2, TIMESTAMP);
 		creator.withTimestampStrategy(new FixedTimestampStretegy(TIMESTAMP));
@@ -173,6 +177,8 @@ public class UlidSpecCreatorTest {
 		random1 = max1;
 		random2 = max2 - DEFAULT_LOOP_MAX;
 
+		random2--; // Adjust
+
 		UlidSpecCreatorMock creator = new UlidSpecCreatorMock(random1, random2, max1, max2, TIMESTAMP);
 		creator.withTimestampStrategy(new FixedTimestampStretegy(TIMESTAMP));
 
@@ -186,7 +192,7 @@ public class UlidSpecCreatorTest {
 		assertEquals("Incorrect high random after loop.", expected1, rand1);
 
 		long rand2 = creator.extractRandom2(uuid);
-		long expected2 = (max2 & UlidSpecCreatorMock.HALF_RANDOM_COMPONENT);
+		long expected2 = (max2 & UlidSpecCreatorMock.HALF_RANDOM_COMPONENT) - 1;
 		assertEquals("Incorrect low random after loop.", expected2, rand2);
 
 		long hi1 = random1 & UlidSpecCreatorMock.HALF_RANDOM_COMPONENT;
