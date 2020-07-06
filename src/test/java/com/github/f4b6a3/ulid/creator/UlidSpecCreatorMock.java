@@ -15,20 +15,4 @@ class UlidSpecCreatorMock extends UlidSpecCreator {
 
 		this.previousTimestamp = previousTimestamp;
 	}
-
-	public long getRandom1() {
-		return this.random1;
-	}
-
-	public long getRandom2() {
-		return this.random2;
-	}
-
-	public long getRandomMax1() {
-		return this.random1;
-	}
-
-	public long getRandomMax2() {
-		return this.random2;
-	}
 }

@@ -22,7 +22,7 @@ public class UlidSpecCreatorTest {
 
 	private static final Random RANDOM = new Random();
 
-	protected static final String DUPLICATE_UUID_MSG = "A duplicate ULID was created";
+	protected static final String DUPLICATE_UUID_MSG = "A duplicate ULID was created.";
 
 	protected static final int THREAD_TOTAL = availableProcessors();
 
