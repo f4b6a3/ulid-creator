@@ -30,14 +30,14 @@ import java.util.Random;
 import com.github.f4b6a3.ulid.strategy.RandomStrategy;
 
 /**
- * It uses a thread local instance of {@link java.security.SecureRandom}.
+ * It uses an instance of {@link java.security.SecureRandom}.
  */
 public final class DefaultRandomStrategy implements RandomStrategy {
 
-	protected static final ThreadLocal<Random> THREAD_LOCAL_RANDOM = ThreadLocal.withInitial(SecureRandom::new);
+	private static final Random SECURE_RANDOM = new SecureRandom();
 
 	@Override
 	public void nextBytes(byte[] bytes) {
-		THREAD_LOCAL_RANDOM.get().nextBytes(bytes);
+		SECURE_RANDOM.nextBytes(bytes);
 	}
 }

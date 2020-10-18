@@ -5,7 +5,6 @@ import java.util.UUID;
 
 import com.github.f4b6a3.ulid.UlidCreator;
 import com.github.f4b6a3.ulid.creator.UlidSpecCreator;
-import com.github.f4b6a3.ulid.exception.UlidCreatorException;
 import com.github.f4b6a3.ulid.strategy.timestamp.FixedTimestampStretegy;
 
 /**
@@ -93,13 +92,7 @@ public class UniquenessTest {
 			for (int i = 0; i < max; i++) {
 
 				// Request a UUID
-				UUID uuid = null;
-				try {
-					uuid = creator.create();
-				} catch (UlidCreatorException e) {
-					// Ignore the overrun exception and try again
-					uuid = creator.create();
-				}
+				UUID uuid = creator.create();
 
 				if (verbose) {
 					// Calculate and show progress

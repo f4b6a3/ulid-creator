@@ -30,7 +30,6 @@ import java.util.UUID;
 import com.github.f4b6a3.ulid.strategy.RandomStrategy;
 import com.github.f4b6a3.ulid.strategy.random.DefaultRandomStrategy;
 import com.github.f4b6a3.ulid.strategy.random.OtherRandomStrategy;
-import com.github.f4b6a3.ulid.exception.UlidCreatorException;
 import com.github.f4b6a3.ulid.strategy.TimestampStrategy;
 import com.github.f4b6a3.ulid.strategy.timestamp.DefaultTimestampStrategy;
 import com.github.f4b6a3.ulid.util.UlidConverter;
@@ -120,9 +119,6 @@ public class UlidSpecCreator {
 	 * overflow with less, the generation will fail.
 	 * 
 	 * @return {@link UUID} a GUID value
-	 * 
-	 * @throws UlidCreatorException an overrun exception if too many requests are
-	 *                              made within the same millisecond.
 	 */
 	public synchronized UUID create() {
 
@@ -188,18 +184,12 @@ public class UlidSpecCreator {
 
 	/**
 	 * Increment the random part of the GUID.
-	 * 
-	 * An exception is thrown when more than 2^80 increment operations are made,
-	 * although it's extremely unlikely to occur.
-	 * 
-	 * @throws UlidCreatorException if an overrun happens.
 	 */
 	protected synchronized void increment() {
 		if (++this.random2 >= this.randomMax2) {
 			this.random2 = this.random2 & HALF_RANDOM_COMPONENT;
 			if ((++this.random1 >= this.randomMax1)) {
 				this.reset();
-				throw new UlidCreatorException(OVERRUN_MESSAGE);
 			}
 		}
 	}

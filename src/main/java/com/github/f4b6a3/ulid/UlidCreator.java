@@ -27,6 +27,7 @@ package com.github.f4b6a3.ulid;
 import java.util.UUID;
 
 import com.github.f4b6a3.ulid.creator.UlidSpecCreator;
+import com.github.f4b6a3.ulid.exception.InvalidUlidException;
 import com.github.f4b6a3.ulid.util.UlidConverter;
 
 /**
@@ -42,11 +43,29 @@ public final class UlidCreator {
 	/**
 	 * Returns a ULID as GUID from a string.
 	 * 
+	 * The input string must be encoded to Crockford's base32, following the ULID
+	 * specification.
+	 * 
+	 * An exception is thrown if the ULID string is invalid.
+	 * 
 	 * @param ulid a ULID string
 	 * @return a UUID
+	 * @throws InvalidUlidException if invalid
 	 */
 	public static UUID fromString(String ulid) {
 		return UlidConverter.fromString(ulid);
+	}
+
+	/**
+	 * Convert a UUID to ULID string
+	 * 
+	 * The returning string is encoded to Crockford's base32.
+	 * 
+	 * @param uuid a UUID
+	 * @return a ULID string
+	 */
+	public static String toString(UUID ulid) {
+		return UlidConverter.toString(ulid);
 	}
 
 	/**

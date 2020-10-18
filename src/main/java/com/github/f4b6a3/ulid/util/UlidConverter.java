@@ -40,13 +40,13 @@ public final class UlidConverter {
 	 * 
 	 * The returning string is encoded to Crockford's base32.
 	 * 
-	 * @param uuid a UUID
+	 * @param ulid a UUID
 	 * @return a ULID
 	 */
-	public static String toString(UUID uuid) {
+	public static String toString(UUID ulid) {
 
-		final long msb = uuid.getMostSignificantBits();
-		final long lsb = uuid.getLeastSignificantBits();
+		final long msb = ulid.getMostSignificantBits();
+		final long lsb = ulid.getLeastSignificantBits();
 
 		final long time = ((msb & 0xffffffffffff0000L) >>> 16);
 		final long random1 = ((msb & 0x000000000000ffffL) << 24) | ((lsb & 0xffffff0000000000L) >>> 40);

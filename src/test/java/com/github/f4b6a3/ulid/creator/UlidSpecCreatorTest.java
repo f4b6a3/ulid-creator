@@ -9,7 +9,6 @@ import java.util.UUID;
 import org.junit.Test;
 
 import com.github.f4b6a3.ulid.UlidCreator;
-import com.github.f4b6a3.ulid.exception.UlidCreatorException;
 import com.github.f4b6a3.ulid.strategy.timestamp.FixedTimestampStretegy;
 
 import static org.junit.Assert.*;
@@ -126,7 +125,7 @@ public class UlidSpecCreatorTest {
 	}
 
 	@Test
-	public void testShouldThrowOverflowException1() {
+	public void testIncrementRandomComponentMaximum1() {
 
 		long random1 = 0x000000ffffffffffL;
 		long random2 = 0x000000ffffffffffL;
@@ -157,16 +156,12 @@ public class UlidSpecCreatorTest {
 		BigInteger bigint2 = new BigInteger(concat2, 16);
 		assertEquals(bigint1.add(BigInteger.valueOf(DEFAULT_LOOP_MAX)), bigint2);
 
-		try {
-			uuid = creator.create();
-			fail("It should throw an overflow exception.");
-		} catch (UlidCreatorException e) {
-			// success
-		}
+		// This line resets the random component
+		uuid = creator.create();
 	}
 
 	@Test
-	public void testShouldThrowOverflowException2() {
+	public void testIncrementRandomComponentMaximum2() {
 
 		long random1 = (RANDOM.nextLong() & UlidSpecCreatorMock.HALF_RANDOM_COMPONENT);
 		long random2 = (RANDOM.nextLong() & UlidSpecCreatorMock.HALF_RANDOM_COMPONENT);
@@ -204,13 +199,9 @@ public class UlidSpecCreatorTest {
 		String concat2 = (Long.toHexString(hi2) + Long.toHexString(lo2));
 		BigInteger bigint2 = new BigInteger(concat2, 16);
 		assertEquals(bigint1.add(BigInteger.valueOf(DEFAULT_LOOP_MAX)), bigint2);
-
-		try {
-			creator.create();
-			fail("It should throw an overflow exception.");
-		} catch (UlidCreatorException e) {
-			// success
-		}
+		
+		// This line resets the random component
+		creator.create();
 	}
 
 	@Test
