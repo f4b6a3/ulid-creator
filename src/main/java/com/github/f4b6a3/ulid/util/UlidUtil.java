@@ -25,6 +25,7 @@
 package com.github.f4b6a3.ulid.util;
 
 import java.time.Instant;
+import java.util.UUID;
 
 public final class UlidUtil {
 
@@ -37,18 +38,35 @@ public final class UlidUtil {
 
 	protected static final char[] ALPHABET_JAVA = "0123456789abcdefghijklmnopqrstuv011".toCharArray();
 
-
 	private UlidUtil() {
 	}
 
-	public static long extractTimestamp(String ulid) {
+	public static long extractUnixMilliseconds(UUID ulid) {
+		return extractTimestamp(ulid);
+	}
+
+	public static long extractUnixMilliseconds(String ulid) {
 		UlidValidator.validate(ulid);
-		return extractUnixMilliseconds(ulid);
+		return extractTimestamp(ulid);
+	}
+
+	public static Instant extractInstant(UUID ulid) {
+		long milliseconds = extractTimestamp(ulid);
+		return Instant.ofEpochMilli(milliseconds);
 	}
 
 	public static Instant extractInstant(String ulid) {
+		UlidValidator.validate(ulid);
 		long milliseconds = extractTimestamp(ulid);
 		return Instant.ofEpochMilli(milliseconds);
+	}
+	
+	private static long extractTimestamp(UUID ulid) {
+		return (ulid.getMostSignificantBits() >>> 16);
+	}
+
+	private static long extractTimestamp(String ulid) {
+		return fromBase32Crockford(extractTimestampComponent(ulid).toCharArray());
 	}
 
 	public static String extractTimestampComponent(String ulid) {
@@ -59,10 +77,6 @@ public final class UlidUtil {
 	public static String extractRandomnessComponent(String ulid) {
 		UlidValidator.validate(ulid);
 		return ulid.substring(10, ULID_LENGTH);
-	}
-
-	protected static long extractUnixMilliseconds(String ulid) {
-		return fromBase32Crockford(extractTimestampComponent(ulid).toCharArray());
 	}
 
 	/**
@@ -111,7 +125,7 @@ public final class UlidUtil {
 
 		return output;
 	}
-	
+
 	public static char[] toBase32Crockford(long number) {
 		return encode(number, UlidUtil.ALPHABET_CROCKFORD);
 	}
@@ -138,11 +152,11 @@ public final class UlidUtil {
 		}
 		return false;
 	}
-	
+
 	protected static char[] zerofill(char[] chars, int length) {
 		return lpad(chars, length, '0');
 	}
-	
+
 	protected static char[] lpad(char[] chars, int length, char fill) {
 
 		int delta = 0;
@@ -170,7 +184,7 @@ public final class UlidUtil {
 	protected static String transliterate(String string, char[] alphabet1, char[] alphabet2) {
 		return new String(transliterate(string.toCharArray(), alphabet1, alphabet2));
 	}
-	
+
 	protected static char[] transliterate(char[] chars, char[] alphabet1, char[] alphabet2) {
 		char[] output = chars.clone();
 		for (int i = 0; i < output.length; i++) {
@@ -230,7 +244,7 @@ public final class UlidUtil {
 	/**
 	 * Decode a base 32 char array to a long number.
 	 * 
-	 * @param chars   a base 32 encoded char array
+	 * @param chars    a base 32 encoded char array
 	 * @param alphabet an alphabet
 	 * @return a long number
 	 */

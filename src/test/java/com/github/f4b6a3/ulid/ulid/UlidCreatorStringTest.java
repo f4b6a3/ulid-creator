@@ -12,7 +12,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.UUID;
 
-public class UlidCreatorTest {
+public class UlidCreatorStringTest {
 
 	private static final int ULID_LENGTH = 26;
 	private static final int DEFAULT_LOOP_MAX = 100_000;
@@ -79,7 +79,7 @@ public class UlidCreatorTest {
 		assertTrue("Start time was after end time", startTime <= endTime);
 
 		for (String ulid : list) {
-			long creationTime = UlidUtil.extractTimestamp(ulid);
+			long creationTime = UlidUtil.extractUnixMilliseconds(ulid);
 			assertTrue("Creation time was before start time " + creationTime + " " + startTime,
 					creationTime >= startTime);
 			assertTrue("Creation time was after end time", creationTime <= endTime);
@@ -98,7 +98,8 @@ public class UlidCreatorTest {
 	private void checkVersion4(String[] list) {
 		for (String ulid : list) {
 			UUID uuid = UlidConverter.fromString(ulid);
-			assertEquals(String.format("ULID is is not version 4 %s", uuid), 4, uuid.version());
+			assertEquals(String.format("ULID is is not RFC-4122 version 4 %s", uuid), 4, uuid.version());
+			assertEquals(String.format("ULID is is not RFC-4122 variant 2 %s", uuid), 2, uuid.variant());
 		}
 	}
 }

@@ -2,6 +2,7 @@ package com.github.f4b6a3.ulid.util;
 
 import static org.junit.Assert.*;
 import java.time.Instant;
+import java.util.UUID;
 
 import org.junit.Test;
 
@@ -14,7 +15,8 @@ public class UlidUtilTest {
 	private static final String EXAMPLE_RANDOMNESS = "ABCDEFGHJKMNPQRS";
 	private static final String EXAMPLE_ULID = "0123456789ABCDEFGHJKMNPQRS";
 
-	private static final long TIMESTAMP_MAX = 281474976710655l; // 2^48 - 1
+	// Date: 10889-08-02T05:31:50.655Z: 281474976710655 (2^48-1)
+	private static final long TIMESTAMP_MAX = 0xffffffffffffL;
 
 	private static final String[] EXAMPLE_DATES = { "1970-01-01T00:00:00.000Z", "1985-10-26T01:16:00.123Z",
 			"2001-09-09T01:46:40.456Z", "2020-01-15T14:30:33.789Z", "2038-01-19T03:14:07.321Z" };
@@ -43,19 +45,46 @@ public class UlidUtilTest {
 			"4EHEM5", "XJDP47", "757B07", "X3J341", "4TFS7M", "FBP7NE", "86DWP0", "B6KZXG", "TSG99C", "W1TJBW",
 			"X17F5F", "VVFP2X", "WJCER0" };
 
-	@Test(expected = InvalidUlidException.class)
-	public void testExtractTimestamp() {
+	@Test
+	public void testExtractTimestamp1() {
 
 		String ulid = "0000000000" + EXAMPLE_RANDOMNESS;
-		long milliseconds = extractTimestamp(ulid);
+		long milliseconds = extractUnixMilliseconds(ulid);
 		assertEquals(0, milliseconds);
 
 		ulid = "7ZZZZZZZZZ" + EXAMPLE_RANDOMNESS;
-		milliseconds = extractTimestamp(ulid);
+		milliseconds = extractUnixMilliseconds(ulid);
 		assertEquals(TIMESTAMP_MAX, milliseconds);
 
-		ulid = "8ZZZZZZZZZ" + EXAMPLE_RANDOMNESS;
-		extractTimestamp(ulid);
+		try {
+			ulid = "8ZZZZZZZZZ" + EXAMPLE_RANDOMNESS;
+			extractUnixMilliseconds(ulid);
+			fail("Should throw an InvalidUlidException");
+		} catch (InvalidUlidException e) {
+			// success
+		}
+	}
+	
+	@Test
+	public void testExtractTimestamp2() {
+
+		String string = "0000000000" + EXAMPLE_RANDOMNESS;
+		UUID ulid = UlidConverter.fromString(string);
+		long milliseconds = extractUnixMilliseconds(ulid);
+		assertEquals(0, milliseconds);
+
+		string = "7ZZZZZZZZZ" + EXAMPLE_RANDOMNESS;
+		ulid = UlidConverter.fromString(string);
+		milliseconds = extractUnixMilliseconds(ulid);
+		assertEquals(TIMESTAMP_MAX, milliseconds);
+
+		try {
+			string = "8ZZZZZZZZZ" + EXAMPLE_RANDOMNESS;
+			ulid = UlidConverter.fromString(string);
+			fail("Should throw an InvalidUlidException");
+		} catch (InvalidUlidException e) {
+			// success
+		}
 	}
 
 	@Test
@@ -68,7 +97,7 @@ public class UlidUtilTest {
 
 			String timestampComponent = new String(UlidUtil.zerofill(toBase32Crockford(milliseconds), 10));
 			String ulid = timestampComponent + randomnessComponent;
-			long result = extractTimestamp(ulid);
+			long result = extractUnixMilliseconds(ulid);
 
 			assertEquals(milliseconds, result);
 		}

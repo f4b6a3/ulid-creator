@@ -21,7 +21,7 @@ public class UlidStructTest {
 			final long time = random.nextLong();
 			final long random1 = random.nextLong();
 			final long random2 = random.nextLong();
-			UlidStruct struct0 = new UlidStruct(time, random1, random2); // <-- under test
+			UlidStruct struct0 = UlidStruct.of(time, random1, random2); // <-- under test
 
 			assertEquals(time & 0xffffffffffffL, struct0.time);
 			assertEquals(random1 & 0xffffffffffL, struct0.random1);
@@ -36,10 +36,10 @@ public class UlidStructTest {
 			final long time = random.nextLong();
 			final long random1 = random.nextLong();
 			final long random2 = random.nextLong();
-			UlidStruct struct0 = new UlidStruct(time, random1, random2);
+			UlidStruct struct0 = UlidStruct.of(time, random1, random2);
 
 			String string1 = toString(struct0);
-			UlidStruct struct1 = new UlidStruct(string1); // <-- under test
+			UlidStruct struct1 = UlidStruct.of(string1); // <-- under test
 			assertEquals(struct0, struct1);
 		}
 	}
@@ -51,7 +51,7 @@ public class UlidStructTest {
 			final long msb = random.nextLong();
 			final long lsb = random.nextLong();
 			final UUID uuid0 = new UUID(msb, lsb);
-			UlidStruct struct0 = new UlidStruct(uuid0); // <-- under test
+			UlidStruct struct0 = UlidStruct.of(uuid0); // <-- under test
 
 			UUID uuid1 = toUuid(struct0);
 			assertEquals(uuid0, uuid1);
@@ -66,7 +66,7 @@ public class UlidStructTest {
 			final long time = random.nextLong();
 			final long random1 = random.nextLong();
 			final long random2 = random.nextLong();
-			UlidStruct struct0 = new UlidStruct(time, random1, random2);
+			UlidStruct struct0 = UlidStruct.of(time, random1, random2);
 
 			String string1 = toString(struct0);
 			String string2 = struct0.toString(); // <-- under test
@@ -82,7 +82,7 @@ public class UlidStructTest {
 			final long time = random.nextLong();
 			final long random1 = random.nextLong();
 			final long random2 = random.nextLong();
-			UlidStruct struct0 = new UlidStruct(time, random1, random2);
+			UlidStruct struct0 = UlidStruct.of(time, random1, random2);
 
 			UUID uuid1 = toUuid(struct0);
 			UUID uuid2 = struct0.toUuid(); // <-- under test
@@ -108,7 +108,7 @@ public class UlidStructTest {
 		random1 = Long.parseUnsignedLong(r1, 32);
 		random2 = Long.parseUnsignedLong(r2, 32);
 
-		return new UlidStruct(time, random1, random2);
+		return UlidStruct.of(time, random1, random2);
 	}
 
 	public UUID toUuid(UlidStruct struct) {

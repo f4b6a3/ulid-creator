@@ -30,8 +30,8 @@ import static com.github.f4b6a3.ulid.util.internal.UlidStruct.BASE32_VALUES;
 
 public final class UlidValidator {
 
-	// Date: 10889-08-02T05:31:50.655Z (epoch time: 281474976710655)
-	protected static final long TIMESTAMP_MAX = (long) Math.pow(2, 48) - 1;
+	// Date: 10889-08-02T05:31:50.655Z: 281474976710655 (2^48-1)
+	private static final long TIMESTAMP_MAX = 0xffffffffffffL;
 
 	protected static final int ULID_LENGTH = 26;
 
@@ -74,9 +74,13 @@ public final class UlidValidator {
 	 * @throws InvalidUlidException if invalid
 	 */
 	public static void validate(String ulid) {
-		if (!isValid(ulid)) {
-			throw new InvalidUlidException(String.format("Invalid ULID: %s.", ulid));
+		if(ulid != null) {
+			final char[] chars = ulid.toCharArray();
+			if(isValidString(chars) && isValidTimestamp(chars)) {
+				return; // valid
+			}
 		}
+		throw new InvalidUlidException(String.format("Invalid ULID: %s.", ulid));
 	}
 
 	/**

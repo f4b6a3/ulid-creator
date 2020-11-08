@@ -45,10 +45,10 @@ public class UlidConverterTest {
 			final long time = random.nextLong();
 			final long random1 = random.nextLong();
 			final long random2 = random.nextLong();
-			UlidStruct struct0 = new UlidStruct(time, random1, random2);
+			UlidStruct struct0 = UlidStruct.of(time, random1, random2);
 
 			String string1 = struct0.toString();
-			UlidStruct struct1 = new UlidStruct(string1);
+			UlidStruct struct1 = UlidStruct.of(string1);
 
 			assertEquals(struct0.time, struct1.time);
 			assertEquals(struct0.random1, struct1.random1);
@@ -62,10 +62,10 @@ public class UlidConverterTest {
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 
 			UUID ulid0 = UlidCreator.getUlid();
-			UlidStruct struct0 = new UlidStruct(ulid0);
+			UlidStruct struct0 = UlidStruct.of(ulid0);
 
 			String string1 = UlidConverter.toString(ulid0);
-			UlidStruct struct1 = new UlidStruct(string1);
+			UlidStruct struct1 = UlidStruct.of(string1);
 
 			assertEquals(struct0.time, struct1.time);
 			assertEquals(struct0.random1, struct1.random1);
@@ -79,10 +79,10 @@ public class UlidConverterTest {
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 
 			UUID ulid0 = UlidCreator.getUlid();
-			UlidStruct struct0 = new UlidStruct(ulid0);
+			UlidStruct struct0 = UlidStruct.of(ulid0);
 
 			String string1 = struct0.toString();
-			UlidStruct struct1 = new UlidStruct(string1);
+			UlidStruct struct1 = UlidStruct.of(string1);
 
 			assertEquals(struct0.time, struct1.time);
 			assertEquals(struct0.random1, struct1.random1);
@@ -96,13 +96,13 @@ public class UlidConverterTest {
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 
 			UUID ulid0 = UlidCreator.getUlid();
-			UlidStruct struct0 = new UlidStruct(ulid0);
+			UlidStruct struct0 = UlidStruct.of(ulid0);
 
 			String string1 = UlidConverter.toString(ulid0);
-			UlidStruct struct1 = new UlidStruct(string1);
+			UlidStruct struct1 = UlidStruct.of(string1);
 
 			String string2 = struct0.toString();
-			UlidStruct struct2 = new UlidStruct(string2);
+			UlidStruct struct2 = UlidStruct.of(string2);
 
 			assertEquals(string1, string2);
 			

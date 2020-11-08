@@ -121,8 +121,7 @@ public class UlidSpecCreator {
 	 * @return {@link UUID} a GUID value
 	 */
 	public synchronized UUID create() {
-		final UlidStruct struct = new UlidStruct(this.getTimestamp(), random1, random2);
-		return struct.toUuid();
+		return UlidStruct.of(this.getTimestamp(), random1, random2).toUuid();
 	}
 
 	/**
@@ -134,7 +133,7 @@ public class UlidSpecCreator {
 	 * @return {@link UUID} a GUID value
 	 */
 	public synchronized UUID create4() {
-		return applyVersion4(create());
+		return UlidStruct.of(this.getTimestamp(), random1, random2).toUuid4();
 	}
 
 	/**
@@ -148,8 +147,7 @@ public class UlidSpecCreator {
 	 * @return a ULID string
 	 */
 	public synchronized String createString() {
-		final UlidStruct struct = new UlidStruct(this.getTimestamp(), random1, random2);
-		return struct.toString();
+		return UlidStruct.of(this.getTimestamp(), random1, random2).toString();
 	}
 
 	/**
@@ -165,9 +163,7 @@ public class UlidSpecCreator {
 	 * @return a ULID string
 	 */
 	public synchronized String createString4() {
-		UUID uuid = applyVersion4(create());
-		final UlidStruct struct = new UlidStruct(uuid);
-		return struct.toString();
+		return UlidStruct.of(this.getTimestamp(), random1, random2).toString4();
 	}
 
 	/**
@@ -274,19 +270,5 @@ public class UlidSpecCreator {
 	 */
 	protected long extractRandom2(UUID uuid) {
 		return uuid.getLeastSignificantBits() & HALF_RANDOM_COMPONENT;
-	}
-
-	/**
-	 * Apply the RFC-4122 version 4 to a given UUID.
-	 * 
-	 * It makes the returning UUID compatible with RFC-4122 UUID v4.
-	 * 
-	 * @param ulid a UUID
-	 * @return a UUID
-	 */
-	private static UUID applyVersion4(UUID ulid) {
-		final long msb = (ulid.getMostSignificantBits() & 0xffffffffffff0fffL) | 0x0000000000004000L; // set version
-		final long lsb = (ulid.getLeastSignificantBits() & 0x3fffffffffffffffL) | 0x8000000000000000L; // set variant
-		return new UUID(msb, lsb);
 	}
 }

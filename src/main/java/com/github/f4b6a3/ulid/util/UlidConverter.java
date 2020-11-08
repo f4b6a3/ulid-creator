@@ -43,8 +43,7 @@ public final class UlidConverter {
 	 * @return a ULID
 	 */
 	public static String toString(final UUID ulid) {
-		UlidStruct struct = new UlidStruct(ulid);
-		return struct.toString();
+		return UlidStruct.of(ulid).toString();
 	}
 
 	/**
@@ -60,8 +59,6 @@ public final class UlidConverter {
 	 * @throws InvalidUlidException if invalid
 	 */
 	public static UUID fromString(final String ulid) {
-		UlidStruct struct = new UlidStruct(ulid);
-		return struct.toUuid();
+		return UlidStruct.of(ulid).toUuid();
 	}
-
 }
