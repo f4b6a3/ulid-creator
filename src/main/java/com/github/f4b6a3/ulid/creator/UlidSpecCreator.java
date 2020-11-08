@@ -32,8 +32,8 @@ import com.github.f4b6a3.ulid.strategy.random.DefaultRandomStrategy;
 import com.github.f4b6a3.ulid.strategy.random.OtherRandomStrategy;
 import com.github.f4b6a3.ulid.strategy.TimestampStrategy;
 import com.github.f4b6a3.ulid.strategy.timestamp.DefaultTimestampStrategy;
-import com.github.f4b6a3.ulid.util.UlidConverter;
 import com.github.f4b6a3.ulid.util.UlidUtil;
+import com.github.f4b6a3.ulid.util.internal.UlidStruct;
 
 /**
  * Factory that creates lexicographically sortable GUIDs, based on the ULID
@@ -121,16 +121,8 @@ public class UlidSpecCreator {
 	 * @return {@link UUID} a GUID value
 	 */
 	public synchronized UUID create() {
-
-		final long timestamp = this.getTimestamp();
-
-		final long rnd1 = random1 & HALF_RANDOM_COMPONENT;
-		final long rnd2 = random2 & HALF_RANDOM_COMPONENT;
-
-		final long msb = (timestamp << 16) | (rnd1 >>> 24);
-		final long lsb = (rnd1 << 40) | rnd2;
-
-		return new UUID(msb, lsb);
+		final UlidStruct struct = new UlidStruct(this.getTimestamp(), random1, random2);
+		return struct.toUuid();
 	}
 
 	/**
@@ -144,7 +136,8 @@ public class UlidSpecCreator {
 	 * @return a ULID string
 	 */
 	public synchronized String createString() {
-		return UlidConverter.toString(create());
+		final UlidStruct struct = new UlidStruct(this.getTimestamp(), random1, random2);
+		return struct.toString();
 	}
 
 	/**

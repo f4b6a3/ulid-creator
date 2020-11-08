@@ -27,8 +27,7 @@ package com.github.f4b6a3.ulid.util;
 import java.util.UUID;
 
 import com.github.f4b6a3.ulid.exception.InvalidUlidException;
-
-import static com.github.f4b6a3.ulid.util.UlidUtil.*;
+import com.github.f4b6a3.ulid.util.internal.UlidStruct;
 
 public final class UlidConverter {
 
@@ -43,25 +42,9 @@ public final class UlidConverter {
 	 * @param ulid a UUID
 	 * @return a ULID
 	 */
-	public static String toString(UUID ulid) {
-
-		final long msb = ulid.getMostSignificantBits();
-		final long lsb = ulid.getLeastSignificantBits();
-
-		final long time = ((msb & 0xffffffffffff0000L) >>> 16);
-		final long random1 = ((msb & 0x000000000000ffffL) << 24) | ((lsb & 0xffffff0000000000L) >>> 40);
-		final long random2 = (lsb & 0x000000ffffffffffL);
-
-		final char[] timeComponent = zerofill(toBase32Crockford(time), 10);
-		final char[] randomComponent1 = zerofill(toBase32Crockford(random1), 8);
-		final char[] randomComponent2 = zerofill(toBase32Crockford(random2), 8);
-
-		char[] output = new char[ULID_CHAR_LENGTH];
-		System.arraycopy(timeComponent, 0, output, 0, 10);
-		System.arraycopy(randomComponent1, 0, output, 10, 8);
-		System.arraycopy(randomComponent2, 0, output, 18, 8);
-
-		return new String(output);
+	public static String toString(final UUID ulid) {
+		UlidStruct struct = new UlidStruct(ulid);
+		return struct.toString();
 	}
 
 	/**
@@ -77,26 +60,8 @@ public final class UlidConverter {
 	 * @throws InvalidUlidException if invalid
 	 */
 	public static UUID fromString(final String ulid) {
-
-		UlidValidator.validate(ulid);
-		
-		final char[] input = ulid.toCharArray(); 
-		final char[] timeComponent = new char[10];
-		final char[] randomComponent1 = new char[8];
-		final char[] randomComponent2 = new char[8];
-		
-		System.arraycopy(input, 0, timeComponent, 0, 10);
-		System.arraycopy(input, 10, randomComponent1, 0, 8);
-		System.arraycopy(input, 18, randomComponent2, 0, 8);
-
-		final long time = fromBase32Crockford(timeComponent);
-		final long random1 = fromBase32Crockford(randomComponent1);
-		final long random2 = fromBase32Crockford(randomComponent2);
-
-		final long msb = ((time & 0x0000ffffffffffffL) << 16) | ((random1 & 0x000000ffff000000L) >>> 24);
-		final long lsb = ((random1 & 0x0000000000ffffffL) << 40) | (random2 & 0x000000ffffffffffL);
-
-		return new UUID(msb, lsb);
+		UlidStruct struct = new UlidStruct(ulid);
+		return struct.toUuid();
 	}
 
 }

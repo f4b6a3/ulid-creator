@@ -30,10 +30,13 @@ public final class UlidUtil {
 
 	protected static final int BASE_32 = 32;
 
-	protected static final int ULID_CHAR_LENGTH = 26;
+	protected static final int ULID_LENGTH = 26;
 
 	// Include 'O'->ZERO, 'I'->ONE and 'L'->ONE
 	protected static final char[] ALPHABET_CROCKFORD = "0123456789ABCDEFGHJKMNPQRSTVWXYZOIL".toCharArray();
+
+	protected static final char[] ALPHABET_JAVA = "0123456789abcdefghijklmnopqrstuv011".toCharArray();
+
 
 	private UlidUtil() {
 	}
@@ -55,7 +58,7 @@ public final class UlidUtil {
 
 	public static String extractRandomnessComponent(String ulid) {
 		UlidValidator.validate(ulid);
-		return ulid.substring(10, ULID_CHAR_LENGTH);
+		return ulid.substring(10, ULID_LENGTH);
 	}
 
 	protected static long extractUnixMilliseconds(String ulid) {
@@ -164,6 +167,10 @@ public final class UlidUtil {
 		return output;
 	}
 
+	protected static String transliterate(String string, char[] alphabet1, char[] alphabet2) {
+		return new String(transliterate(string.toCharArray(), alphabet1, alphabet2));
+	}
+	
 	protected static char[] transliterate(char[] chars, char[] alphabet1, char[] alphabet2) {
 		char[] output = chars.clone();
 		for (int i = 0; i < output.length; i++) {

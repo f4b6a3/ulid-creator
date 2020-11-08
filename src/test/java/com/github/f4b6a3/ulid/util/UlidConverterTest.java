@@ -1,6 +1,8 @@
 package com.github.f4b6a3.ulid.util;
 
 import static org.junit.Assert.*;
+
+import java.util.Random;
 import java.util.UUID;
 
 import org.junit.Test;
@@ -8,6 +10,7 @@ import org.junit.Test;
 import com.github.f4b6a3.ulid.UlidCreator;
 import com.github.f4b6a3.ulid.util.UlidConverter;
 import com.github.f4b6a3.ulid.util.UlidValidator;
+import com.github.f4b6a3.ulid.util.internal.UlidStruct;
 
 public class UlidConverterTest {
 
@@ -30,6 +33,86 @@ public class UlidConverterTest {
 			UUID uuid2 = UlidConverter.fromString(ulid);
 			assertEquals("Result ULID is different from original ULID", uuid1, uuid2);
 
+		}
+	}
+
+	@Test
+	public void testToString1() {
+
+		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
+
+			Random random = new Random();
+			final long time = random.nextLong();
+			final long random1 = random.nextLong();
+			final long random2 = random.nextLong();
+			UlidStruct struct0 = new UlidStruct(time, random1, random2);
+
+			String string1 = struct0.toString();
+			UlidStruct struct1 = new UlidStruct(string1);
+
+			assertEquals(struct0.time, struct1.time);
+			assertEquals(struct0.random1, struct1.random1);
+			assertEquals(struct0.random2, struct1.random2);
+		}
+	}
+
+	@Test
+	public void testToString2() {
+
+		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
+
+			UUID ulid0 = UlidCreator.getUlid();
+			UlidStruct struct0 = new UlidStruct(ulid0);
+
+			String string1 = UlidConverter.toString(ulid0);
+			UlidStruct struct1 = new UlidStruct(string1);
+
+			assertEquals(struct0.time, struct1.time);
+			assertEquals(struct0.random1, struct1.random1);
+			assertEquals(struct0.random2, struct1.random2);
+		}
+	}
+
+	@Test
+	public void testToString3() {
+
+		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
+
+			UUID ulid0 = UlidCreator.getUlid();
+			UlidStruct struct0 = new UlidStruct(ulid0);
+
+			String string1 = struct0.toString();
+			UlidStruct struct1 = new UlidStruct(string1);
+
+			assertEquals(struct0.time, struct1.time);
+			assertEquals(struct0.random1, struct1.random1);
+			assertEquals(struct0.random2, struct1.random2);
+		}
+	}
+
+	@Test
+	public void testToString4() {
+
+		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
+
+			UUID ulid0 = UlidCreator.getUlid();
+			UlidStruct struct0 = new UlidStruct(ulid0);
+
+			String string1 = UlidConverter.toString(ulid0);
+			UlidStruct struct1 = new UlidStruct(string1);
+
+			String string2 = struct0.toString();
+			UlidStruct struct2 = new UlidStruct(string2);
+
+			assertEquals(string1, string2);
+			
+			assertEquals(struct0.time, struct1.time);
+			assertEquals(struct0.random1, struct1.random1);
+			assertEquals(struct0.random2, struct1.random2);
+
+			assertEquals(struct0.time, struct2.time);
+			assertEquals(struct0.random1, struct2.random1);
+			assertEquals(struct0.random2, struct2.random2);
 		}
 	}
 }

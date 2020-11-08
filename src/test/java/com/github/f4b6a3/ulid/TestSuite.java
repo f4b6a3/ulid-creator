@@ -8,6 +8,7 @@ import com.github.f4b6a3.ulid.ulid.UlidCreatorTest;
 import com.github.f4b6a3.ulid.util.UlidConverterTest;
 import com.github.f4b6a3.ulid.util.UlidUtilTest;
 import com.github.f4b6a3.ulid.util.UlidValidatorTest;
+import com.github.f4b6a3.ulid.util.internal.UlidStructTest;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
@@ -16,6 +17,7 @@ import com.github.f4b6a3.ulid.util.UlidValidatorTest;
    UlidConverterTest.class,
    UlidUtilTest.class,
    UlidValidatorTest.class,
+   UlidStructTest.class,
 })
 
 /**
