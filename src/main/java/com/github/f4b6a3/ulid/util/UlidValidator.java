@@ -30,9 +30,6 @@ import static com.github.f4b6a3.ulid.util.internal.UlidStruct.BASE32_VALUES;
 
 public final class UlidValidator {
 
-	// Date: 10889-08-02T05:31:50.655Z: 281474976710655 (2^48-1)
-	private static final long TIMESTAMP_MAX = 0xffffffffffffL;
-
 	protected static final int ULID_LENGTH = 26;
 
 	private UlidValidator() {
@@ -58,11 +55,7 @@ public final class UlidValidator {
 	 * @return boolean true if valid
 	 */
 	public static boolean isValid(String ulid) {
-		if (ulid == null) {
-			return false;
-		}
-		char[] chars = ulid.toCharArray();
-		return isValidString(chars) && isValidTimestamp(chars);
+		return (ulid != null && ulid.length() != 0 && isValidString(ulid.toCharArray()));
 	}
 
 	/**
@@ -74,13 +67,9 @@ public final class UlidValidator {
 	 * @throws InvalidUlidException if invalid
 	 */
 	public static void validate(String ulid) {
-		if(ulid != null) {
-			final char[] chars = ulid.toCharArray();
-			if(isValidString(chars) && isValidTimestamp(chars)) {
-				return; // valid
-			}
+		if (ulid == null || ulid.length() == 0 || !isValidString(ulid.toCharArray())) {
+			throw new InvalidUlidException(String.format("Invalid ULID: %s.", ulid));
 		}
-		throw new InvalidUlidException(String.format("Invalid ULID: %s.", ulid));
 	}
 
 	/**
@@ -101,6 +90,12 @@ public final class UlidValidator {
 	 * @return boolean true if valid
 	 */
 	protected static boolean isValidString(final char[] c) {
+
+		// the two extra bits added by base-32 encoding must be zero
+		if ((BASE32_VALUES[c[0]] & 0b11000) != 0) {
+			return false; // overflow
+		}
+
 		int hyphen = 0;
 		for (int i = 0; i < c.length; i++) {
 			if (c[i] == '-') {
@@ -116,29 +111,5 @@ public final class UlidValidator {
 			}
 		}
 		return (c.length - hyphen) == ULID_LENGTH;
-	}
-
-	/**
-	 * Checks if the timestamp is between 0 and 2^48-1
-	 * 
-	 * @param chars a char array
-	 * @return false if invalid.
-	 */
-	protected static boolean isValidTimestamp(char[] chars) {
-
-		long time = 0;
-
-		time |= BASE32_VALUES[chars[0x00]] << 45;
-		time |= BASE32_VALUES[chars[0x01]] << 40;
-		time |= BASE32_VALUES[chars[0x02]] << 35;
-		time |= BASE32_VALUES[chars[0x03]] << 30;
-		time |= BASE32_VALUES[chars[0x04]] << 25;
-		time |= BASE32_VALUES[chars[0x05]] << 20;
-		time |= BASE32_VALUES[chars[0x06]] << 15;
-		time |= BASE32_VALUES[chars[0x07]] << 10;
-		time |= BASE32_VALUES[chars[0x08]] << 5;
-		time |= BASE32_VALUES[chars[0x09]];
-
-		return time >= 0 && time <= TIMESTAMP_MAX;
 	}
 }

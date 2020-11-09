@@ -55,9 +55,19 @@ public class UlidUtilTest {
 		ulid = "7ZZZZZZZZZ" + EXAMPLE_RANDOMNESS;
 		milliseconds = extractUnixMilliseconds(ulid);
 		assertEquals(TIMESTAMP_MAX, milliseconds);
-
+		
 		try {
-			ulid = "8ZZZZZZZZZ" + EXAMPLE_RANDOMNESS;
+			// Test the first extra bit added by the base32 encoding
+			ulid = "G0000000000000000000000000";
+			extractUnixMilliseconds(ulid);
+			fail("Should throw an InvalidUlidException");
+		} catch (InvalidUlidException e) {
+			// success
+		}
+		
+		try {
+			// Test the second extra bit added by the base32 encoding
+			ulid = "80000000000000000000000000";
 			extractUnixMilliseconds(ulid);
 			fail("Should throw an InvalidUlidException");
 		} catch (InvalidUlidException e) {
@@ -77,14 +87,6 @@ public class UlidUtilTest {
 		ulid = UlidConverter.fromString(string);
 		milliseconds = extractUnixMilliseconds(ulid);
 		assertEquals(TIMESTAMP_MAX, milliseconds);
-
-		try {
-			string = "8ZZZZZZZZZ" + EXAMPLE_RANDOMNESS;
-			ulid = UlidConverter.fromString(string);
-			fail("Should throw an InvalidUlidException");
-		} catch (InvalidUlidException e) {
-			// success
-		}
 	}
 
 	@Test
