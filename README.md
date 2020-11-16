@@ -33,7 +33,7 @@ Add these lines to your `pom.xml`.
 <dependency>
   <groupId>com.github.f4b6a3</groupId>
   <artifactId>ulid-creator</artifactId>
-  <version>2.3.2</version>
+  <version>2.3.3</version>
 </dependency>
 ```
 See more options in [maven.org](https://search.maven.org/artifact/com.github.f4b6a3/ulid-creator).
@@ -158,37 +158,20 @@ Benchmark
 
 This section shows benchmarks comparing `UlidCreator` to `java.util.UUID`.
 
-* **ulid-creator v2.1.0:**
-
 ```
----------------------------------------------------------------------------
-THROUGHPUT                         Mode  Cnt      Score     Error   Units
----------------------------------------------------------------------------
-Throughput.JDK_RandomBased         thrpt    5   2196,215 ±  13,668  ops/ms
-Throughput.UlidCreator_Ulid        thrpt    5  19224,340 ± 106,231  ops/ms
-Throughput.UlidCreator_UlidString  thrpt    5   5006,424 ±  26,946  ops/ms
----------------------------------------------------------------------------
-Total time: 00:04:01
----------------------------------------------------------------------------
-```
-
-* **ulid-creator v2.2.0:**
-
-```
----------------------------------------------------------------------------
-THROUGHPUT                         Mode  Cnt      Score     Error   Units
----------------------------------------------------------------------------
-Throughput.JDK_RandomBased         thrpt    5   2191,690 ±   8,947  ops/ms
-Throughput.UlidCreator_Ulid        thrpt    5  19236,123 ± 156,123  ops/ms
-Throughput.UlidCreator_UlidString  thrpt    5  12893,016 ± 179,618  ops/ms <- 2.5x faster
----------------------------------------------------------------------------
-Total time: 00:04:01
----------------------------------------------------------------------------
+================================================================================
+THROUGHPUT (operations/millis)           Mode  Cnt      Score     Error   Units
+================================================================================
+Throughput.JDK_RandomBased              thrpt    5   2050,995 ±  21,636  ops/ms
+--------------------------------------------------------------------------------
+Throughput.UlidCreator_Ulid             thrpt    5  18524,721 ± 563,781  ops/ms
+Throughput.UlidCreator_UlidString       thrpt    5  12223,501 ±  89,836  ops/ms
+================================================================================
+Total time: 00:04:00
+================================================================================
 ```
 
-The ULID string generation is 2.5x faster in version 2.2.0 than before.
-
-System: CPU i5-3330, 8G RAM, Ubuntu 20.04.
+System: JVM 8, Ubuntu 20.04, CPU i5-3330, 8G RAM.
 
 See: [uuid-creator-benchmark](https://github.com/fabiolimace/uuid-creator-benchmark)
 

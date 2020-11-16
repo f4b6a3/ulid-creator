@@ -15,6 +15,51 @@ public class UlidStructTest {
 	protected static final char[] ALPHABET_JAVA = "0123456789abcdefghijklmnopqrstuv".toCharArray(); // Long.parseUnsignedLong()
 
 	@Test
+	public void testOfAndToString() {
+		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
+			UUID uuid0 = UUID.randomUUID();
+			String string0 = toString(uuid0);
+			String string1 = UlidStruct.of(string0).toString();
+			assertEquals(string0, string1);
+		}
+		
+		// Test RFC-4122 UUID version 4
+		final long versionMask = 0xffffffffffff0fffL;
+		final long variantMask = 0x3fffffffffffffffL;
+		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
+			UUID uuid0 = UUID.randomUUID();
+			String string0 = toString(uuid0);
+			String string1 = UlidStruct.of(string0).toString4(); // UUID v4 in base32
+			UUID uuid1 = toUuid(fromString(string1));
+			assertEquals(uuid0.getMostSignificantBits() & versionMask, uuid1.getMostSignificantBits() & versionMask);
+			assertEquals(uuid0.getLeastSignificantBits() & variantMask, uuid1.getLeastSignificantBits() & variantMask);
+			assertEquals(4, uuid1.version());
+			assertEquals(2, uuid1.variant());
+		}
+	}
+
+	@Test
+	public void testOfAndToUuid() {
+		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
+			UUID uuid0 = UUID.randomUUID();
+			UUID uuid1 = UlidStruct.of(uuid0).toUuid();
+			assertEquals(uuid0, uuid1);
+		}
+
+		// Test RFC-4122 UUID version 4
+		final long versionMask = 0xffffffffffff0fffL;
+		final long variantMask = 0x3fffffffffffffffL;
+		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
+			UUID uuid0 = UUID.randomUUID();
+			UUID uuid1 = UlidStruct.of(uuid0).toUuid4(); // UUID v4
+			assertEquals(uuid0.getMostSignificantBits() & versionMask, uuid1.getMostSignificantBits() & versionMask);
+			assertEquals(uuid0.getLeastSignificantBits() & variantMask, uuid1.getLeastSignificantBits() & variantMask);
+			assertEquals(4, uuid1.version());
+			assertEquals(2, uuid1.variant());
+		}
+	}
+
+	@Test
 	public void testConstructorLongs() {
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 			Random random = new Random();
@@ -90,7 +135,7 @@ public class UlidStructTest {
 		}
 	}
 
-	public UlidStruct fromString(String string) {
+	public static UlidStruct fromString(String string) {
 
 		long time = 0;
 		long random1 = 0;
@@ -111,7 +156,7 @@ public class UlidStructTest {
 		return UlidStruct.of(time, random1, random2);
 	}
 
-	public UUID toUuid(UlidStruct struct) {
+	public static UUID toUuid(UlidStruct struct) {
 
 		long time = struct.time & 0xffffffffffffL;
 		long random1 = struct.random1 & 0xffffffffffL;
@@ -123,24 +168,60 @@ public class UlidStructTest {
 		return new UUID(msb, lsb);
 	}
 
-	public String toString(UlidStruct struct) {
+	public static UUID toUuid(final long time, final long random1, final long random2) {
 
+		long tm = time & 0xffffffffffffL;
+		long r1 = random1 & 0xffffffffffL;
+		long r2 = random2 & 0xffffffffffL;
+
+		final long msb = (tm << 16) | (r1 >>> 24);
+		final long lsb = (r1 << 40) | r2;
+
+		return new UUID(msb, lsb);
+	}
+
+	public static String toString(UlidStruct struct) {
+		return toString(struct.time, struct.random1, struct.random2);
+	}
+
+	public static String toString(UUID uuid) {
+		final long msb = uuid.getMostSignificantBits();
+		final long lsb = uuid.getLeastSignificantBits();
+
+		final long time = (msb >>> 16);
+		final long random1 = ((msb & 0xffffL) << 24) | (lsb >>> 40);
+		final long random2 = (lsb & 0xffffffffffL);
+
+		return toString(time, random1, random2);
+	}
+
+	public static String toString(final long time, final long random1, final long random2) {
+		String timeComponent = toTimeComponent(time);
+		String randomComponent = toRandomComponent(random1, random2);
+		return timeComponent + randomComponent;
+	}
+	
+	public static String toTimeComponent(final long time) {
 		final String tzero = "0000000000";
-		final String rzero = "00000000";
+		String tm = Long.toUnsignedString(time, 32);
+		tm = tzero.substring(0, tzero.length() - tm.length()) + tm;
+		return transliterate(tm, ALPHABET_JAVA, ALPHABET_CROCKFORD);
+	}
+	
+	public static String toRandomComponent(final long random1, final long random2) {
 
-		String time = Long.toUnsignedString(struct.time, 32);
-		String random1 = Long.toUnsignedString(struct.random1, 32);
-		String random2 = Long.toUnsignedString(struct.random2, 32);
+		final String zeros = "00000000";
 
-		time = tzero.substring(0, tzero.length() - time.length()) + time;
-		random1 = rzero.substring(0, rzero.length() - random1.length()) + random1;
-		random2 = rzero.substring(0, rzero.length() - random2.length()) + random2;
+		String r1 = Long.toUnsignedString(random1, 32);
+		String r2 = Long.toUnsignedString(random2, 32);
 
-		time = transliterate(time, ALPHABET_JAVA, ALPHABET_CROCKFORD);
-		random1 = transliterate(random1, ALPHABET_JAVA, ALPHABET_CROCKFORD);
-		random2 = transliterate(random2, ALPHABET_JAVA, ALPHABET_CROCKFORD);
+		r1 = zeros.substring(0, zeros.length() - r1.length()) + r1;
+		r2 = zeros.substring(0, zeros.length() - r2.length()) + r2;
 
-		return time + random1 + random2;
+		r1 = transliterate(r1, ALPHABET_JAVA, ALPHABET_CROCKFORD);
+		r2 = transliterate(r2, ALPHABET_JAVA, ALPHABET_CROCKFORD);
+
+		return r1 + r2;
 	}
 
 	private static String transliterate(String string, char[] alphabet1, char[] alphabet2) {
@@ -155,5 +236,4 @@ public class UlidStructTest {
 		}
 		return new String(output);
 	}
-
 }

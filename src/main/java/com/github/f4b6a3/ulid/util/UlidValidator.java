@@ -59,7 +59,30 @@ public final class UlidValidator {
 	}
 
 	/**
-	 * Checks if the ULID string is a valid.
+	 * Checks if the char array is a valid ULID.
+	 * 
+	 * A valid ULID string is a sequence of 26 characters from Crockford's base 32
+	 * alphabet.
+	 * 
+	 * It also checks if the timestamp is between 0 and 2^48-1.
+	 * 
+	 * <pre>
+	 * Examples of valid ULID strings:
+	 * - 0123456789ABCDEFGHJKMNPKRS (26 alphanumeric, case insensitive, except U)
+	 * - 0123456789ABCDEFGHIJKLMNOP (26 alphanumeric, case insensitive, including OIL, except U)
+	 * - 0123456789-ABCDEFGHJK-MNPKRS (26 alphanumeric, case insensitive, except U, with hyphens)
+	 * - 0123456789-ABCDEFGHIJ-KLMNOP (26 alphanumeric, case insensitive, including OIL, except U, with hyphens)
+	 * </pre>
+	 * 
+	 * @param ulid a ULID char array
+	 * @return boolean true if valid
+	 */
+	public static boolean isValid(char[] ulid) {
+		return (ulid != null && ulid.length != 0 && isValidString(ulid));
+	}
+
+	/**
+	 * Checks if the ULID string is valid.
 	 * 
 	 * See {@link UlidValidator#isValid(String)}.
 	 * 
@@ -68,7 +91,21 @@ public final class UlidValidator {
 	 */
 	public static void validate(String ulid) {
 		if (ulid == null || ulid.length() == 0 || !isValidString(ulid.toCharArray())) {
-			throw new InvalidUlidException(String.format("Invalid ULID: %s.", ulid));
+			throw new InvalidUlidException("Invalid ULID: \"" + ulid + "\"");
+		}
+	}
+
+	/**
+	 * Checks if the ULID char array is valid.
+	 * 
+	 * See {@link UlidValidator#isValid(String)}.
+	 * 
+	 * @param ulid a ULID char array
+	 * @throws InvalidUlidException if invalid
+	 */
+	public static void validate(char[] ulid) {
+		if (ulid == null || ulid.length == 0 || !isValidString(ulid)) {
+			throw new InvalidUlidException("Invalid ULID: \"" + (ulid == null ? null : new String(ulid)) + "\"");
 		}
 	}
 

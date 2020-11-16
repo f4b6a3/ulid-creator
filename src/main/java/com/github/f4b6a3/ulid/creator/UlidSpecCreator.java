@@ -32,7 +32,6 @@ import com.github.f4b6a3.ulid.strategy.random.DefaultRandomStrategy;
 import com.github.f4b6a3.ulid.strategy.random.OtherRandomStrategy;
 import com.github.f4b6a3.ulid.strategy.TimestampStrategy;
 import com.github.f4b6a3.ulid.strategy.timestamp.DefaultTimestampStrategy;
-import com.github.f4b6a3.ulid.util.UlidUtil;
 import com.github.f4b6a3.ulid.util.internal.UlidStruct;
 
 /**
@@ -193,9 +192,19 @@ public class UlidSpecCreator {
 		// Get random values
 		final byte[] bytes = new byte[10];
 		this.randomStrategy.nextBytes(bytes);
-		this.random1 = UlidUtil.toNumber(bytes, 0, 5);
-		this.random2 = UlidUtil.toNumber(bytes, 5, 10);
+		
+		this.random1 = (long) (bytes[0x0] & 0xff) << 32;
+		this.random1 |= (long) (bytes[0x1] & 0xff) << 24;
+		this.random1 |= (long) (bytes[0x2] & 0xff) << 16;
+		this.random1 |= (long) (bytes[0x3] & 0xff) << 8;
+		this.random1 |= (long) (bytes[0x4] & 0xff);
 
+		this.random2 = (long) (bytes[0x5] & 0xff) << 32;
+		this.random2 |= (long) (bytes[0x6] & 0xff) << 24;
+		this.random2 |= (long) (bytes[0x7] & 0xff) << 16;
+		this.random2 |= (long) (bytes[0x8] & 0xff) << 8;
+		this.random2 |= (long) (bytes[0x9] & 0xff);
+		
 		// Save the random values
 		this.randomMax1 = this.random1 | INCREMENT_MAX;
 		this.randomMax2 = this.random2 | INCREMENT_MAX;

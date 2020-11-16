@@ -130,23 +130,23 @@ public final class UlidStruct {
 		this.random2 = random2 & HALF_RANDOM_COMPONENT;
 	}
 
-	private UlidStruct(UUID uuid) {
-		final long msb = uuid.getMostSignificantBits();
-		final long lsb = uuid.getLeastSignificantBits();
+	private UlidStruct(UUID ulid) {
+		final long msb = ulid.getMostSignificantBits();
+		final long lsb = ulid.getLeastSignificantBits();
 
 		this.time = (msb >>> 16);
 		this.random1 = ((msb & 0x000000000000ffffL) << 24) | (lsb >>> 40);
 		this.random2 = (lsb & 0x000000ffffffffffL);
 	}
 
-	private UlidStruct(String string) {
+	private UlidStruct(String ulid) {
 
-		UlidValidator.validate(string);
+		final char[] chars = ulid == null ? new char[0] : ulid.toCharArray();
+		UlidValidator.validate(chars);
 
 		long tm = 0;
 		long r1 = 0;
 		long r2 = 0;
-		final char[] chars = string.toCharArray();
 
 		tm |= BASE32_VALUES[chars[0x00]] << 45;
 		tm |= BASE32_VALUES[chars[0x01]] << 40;
@@ -232,8 +232,8 @@ public final class UlidStruct {
 
 	public String toString4() {
 		// apply RFC-4122 version 4 and variant 2
-		final long newrandom1 = ((this.random1 & 0x0fff3fffffL) | 0x4000000000L) | 0x0000800000L;
-		return UlidStruct.of(this.time, newrandom1, this.random2).toString();
+		final long random1v4 = ((this.random1 & 0x0fff3fffffL) | 0x4000000000L) | 0x0000800000L;
+		return UlidStruct.of(this.time, random1v4, this.random2).toString();
 	}
 
 	public UUID toUuid() {
@@ -246,8 +246,8 @@ public final class UlidStruct {
 
 	public UUID toUuid4() {
 		// apply RFC-4122 version 4 and variant 2
-		final long newrandom1 = ((this.random1 & 0x0fff3fffffL) | 0x4000000000L) | 0x0000800000L;
-		return UlidStruct.of(this.time, newrandom1, this.random2).toUuid();
+		final long random1v4 = ((this.random1 & 0x0fff3fffffL) | 0x4000000000L) | 0x0000800000L;
+		return UlidStruct.of(this.time, random1v4, this.random2).toUuid();
 	}
 
 	@Override
