@@ -26,11 +26,82 @@ package com.github.f4b6a3.ulid.util;
 
 import com.github.f4b6a3.ulid.exception.InvalidUlidException;
 
-import static com.github.f4b6a3.ulid.util.internal.UlidStruct.BASE32_VALUES;
-
 public final class UlidValidator {
 
-	protected static final int ULID_LENGTH = 26;
+	protected static final int STRING_LENGTH = 26;
+
+	protected static final long[] BASE32_VALUES = new long[128];
+	static {
+		for (int i = 0; i < BASE32_VALUES.length; i++) {
+			BASE32_VALUES[i] = -1;
+		}
+		// Numbers
+		BASE32_VALUES['0'] = 0x00;
+		BASE32_VALUES['1'] = 0x01;
+		BASE32_VALUES['2'] = 0x02;
+		BASE32_VALUES['3'] = 0x03;
+		BASE32_VALUES['4'] = 0x04;
+		BASE32_VALUES['5'] = 0x05;
+		BASE32_VALUES['6'] = 0x06;
+		BASE32_VALUES['7'] = 0x07;
+		BASE32_VALUES['8'] = 0x08;
+		BASE32_VALUES['9'] = 0x09;
+		// Lower case
+		BASE32_VALUES['a'] = 0x0a;
+		BASE32_VALUES['b'] = 0x0b;
+		BASE32_VALUES['c'] = 0x0c;
+		BASE32_VALUES['d'] = 0x0d;
+		BASE32_VALUES['e'] = 0x0e;
+		BASE32_VALUES['f'] = 0x0f;
+		BASE32_VALUES['g'] = 0x10;
+		BASE32_VALUES['h'] = 0x11;
+		BASE32_VALUES['j'] = 0x12;
+		BASE32_VALUES['k'] = 0x13;
+		BASE32_VALUES['m'] = 0x14;
+		BASE32_VALUES['n'] = 0x15;
+		BASE32_VALUES['p'] = 0x16;
+		BASE32_VALUES['q'] = 0x17;
+		BASE32_VALUES['r'] = 0x18;
+		BASE32_VALUES['s'] = 0x19;
+		BASE32_VALUES['t'] = 0x1a;
+		BASE32_VALUES['v'] = 0x1b;
+		BASE32_VALUES['w'] = 0x1c;
+		BASE32_VALUES['x'] = 0x1d;
+		BASE32_VALUES['y'] = 0x1e;
+		BASE32_VALUES['z'] = 0x1f;
+		// Lower case OIL
+		BASE32_VALUES['o'] = 0x00;
+		BASE32_VALUES['i'] = 0x01;
+		BASE32_VALUES['l'] = 0x01;
+		// Upper case
+		BASE32_VALUES['A'] = 0x0a;
+		BASE32_VALUES['B'] = 0x0b;
+		BASE32_VALUES['C'] = 0x0c;
+		BASE32_VALUES['D'] = 0x0d;
+		BASE32_VALUES['E'] = 0x0e;
+		BASE32_VALUES['F'] = 0x0f;
+		BASE32_VALUES['G'] = 0x10;
+		BASE32_VALUES['H'] = 0x11;
+		BASE32_VALUES['J'] = 0x12;
+		BASE32_VALUES['K'] = 0x13;
+		BASE32_VALUES['M'] = 0x14;
+		BASE32_VALUES['N'] = 0x15;
+		BASE32_VALUES['P'] = 0x16;
+		BASE32_VALUES['Q'] = 0x17;
+		BASE32_VALUES['R'] = 0x18;
+		BASE32_VALUES['S'] = 0x19;
+		BASE32_VALUES['T'] = 0x1a;
+		BASE32_VALUES['V'] = 0x1b;
+		BASE32_VALUES['W'] = 0x1c;
+		BASE32_VALUES['X'] = 0x1d;
+		BASE32_VALUES['Y'] = 0x1e;
+		BASE32_VALUES['Z'] = 0x1f;
+		// Upper case OIL
+		BASE32_VALUES['O'] = 0x00;
+		BASE32_VALUES['I'] = 0x01;
+		BASE32_VALUES['L'] = 0x01;
+
+	}
 
 	private UlidValidator() {
 	}
@@ -147,6 +218,6 @@ public final class UlidValidator {
 				return false;
 			}
 		}
-		return (c.length - hyphen) == ULID_LENGTH;
+		return (c.length - hyphen) == STRING_LENGTH;
 	}
 }

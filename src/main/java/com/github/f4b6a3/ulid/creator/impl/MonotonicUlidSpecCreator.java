@@ -22,46 +22,48 @@
  * SOFTWARE.
  */
 
-package com.github.f4b6a3.ulid;
+package com.github.f4b6a3.ulid.creator.impl;
 
+import com.github.f4b6a3.ulid.Ulid;
 import com.github.f4b6a3.ulid.creator.UlidSpecCreator;
-import com.github.f4b6a3.ulid.creator.impl.DefaultUlidSpecCreator;
-import com.github.f4b6a3.ulid.creator.impl.MonotonicUlidSpecCreator;
 
-public final class UlidCreator {
+public final class MonotonicUlidSpecCreator extends UlidSpecCreator {
 
-	private UlidCreator() {
+	protected long msb = 0;
+	protected long lsb = 0;
+
+	protected long previousTimestamp;
+
+	public synchronized Ulid create(final Long timestamp) {
+
+		final long time = timestamp != null ? timestamp : this.timestampStrategy.getTimestamp();
+
+		if (time == this.previousTimestamp) {
+			this.lsb++;
+		} else {
+			// Get random values
+			final byte[] bytes = new byte[10];
+			this.randomStrategy.nextBytes(bytes);
+
+			msb = 0;
+			lsb = 0;
+
+			msb |= time << 16;
+			msb |= (long) (bytes[0x0] & 0xff) << 8;
+			msb |= (long) (bytes[0x1] & 0xff);
+
+			lsb |= (long) (bytes[0x2] & 0xff) << 56;
+			lsb |= (long) (bytes[0x3] & 0xff) << 48;
+			lsb |= (long) (bytes[0x4] & 0xff) << 40;
+			lsb |= (long) (bytes[0x5] & 0xff) << 32;
+			lsb |= (long) (bytes[0x6] & 0xff) << 24;
+			lsb |= (long) (bytes[0x7] & 0xff) << 16;
+			lsb |= (long) (bytes[0x8] & 0xff) << 8;
+			lsb |= (long) (bytes[0x9] & 0xff);
+		}
+
+		this.previousTimestamp = time;
+		return Ulid.of(msb, lsb);
 	}
 
-	public static Ulid getUlid() {
-		return DefaultCreatorHolder.INSTANCE.create();
-	}
-
-	public static Ulid getUlid(Long timestamp) {
-		return DefaultCreatorHolder.INSTANCE.create(timestamp);
-	}
-
-	public static Ulid getMonotonicUlid() {
-		return MonotonicCreatorHolder.INSTANCE.create();
-	}
-
-	public static Ulid getMonotonicUlid(Long timestamp) {
-		return MonotonicCreatorHolder.INSTANCE.create(timestamp);
-	}
-
-	public static DefaultUlidSpecCreator getDefaultCreator() {
-		return new DefaultUlidSpecCreator();
-	}
-
-	public static MonotonicUlidSpecCreator getMonotonicCreator() {
-		return new MonotonicUlidSpecCreator();
-	}
-
-	private static class DefaultCreatorHolder {
-		static final UlidSpecCreator INSTANCE = getDefaultCreator();
-	}
-
-	private static class MonotonicCreatorHolder {
-		static final UlidSpecCreator INSTANCE = getMonotonicCreator();
-	}
 }

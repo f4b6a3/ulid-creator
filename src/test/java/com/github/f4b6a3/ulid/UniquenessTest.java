@@ -1,8 +1,6 @@
 package com.github.f4b6a3.ulid;
 
 import java.util.HashSet;
-import java.util.UUID;
-
 import com.github.f4b6a3.ulid.UlidCreator;
 import com.github.f4b6a3.ulid.creator.UlidSpecCreator;
 import com.github.f4b6a3.ulid.strategy.timestamp.FixedTimestampStretegy;
@@ -21,11 +19,11 @@ public class UniquenessTest {
 	private int requestCount; // Number of requests for thread
 
 	// private long[][] cacheLong; // Store values generated per thread
-	private HashSet<UUID> hashSet;
+	private HashSet<Ulid> hashSet;
 
 	private boolean verbose; // Show progress or not
 
-	// GUID creator based on ULID spec
+	// ULID Spec creator
 	private UlidSpecCreator creator;
 
 	/**
@@ -92,20 +90,20 @@ public class UniquenessTest {
 			for (int i = 0; i < max; i++) {
 
 				// Request a UUID
-				UUID uuid = creator.create();
+				Ulid ulid = creator.create();
 
 				if (verbose) {
 					// Calculate and show progress
 					progress = (int) ((i * 1.0 / max) * 100);
 					if (progress % 10 == 0) {
-						System.out.println(String.format("[Thread %06d] %s %s %s%%", id, uuid, i, (int) progress));
+						System.out.println(String.format("[Thread %06d] %s %s %s%%", id, ulid, i, (int) progress));
 					}
 				}
 				synchronized (hashSet) {
 					// Insert the value in cache, if it does not exist in it.
-					if (!hashSet.add(uuid)) {
+					if (!hashSet.add(ulid)) {
 						System.err.println(
-								String.format("[Thread %06d] %s %s %s%% [DUPLICATE]", id, uuid, i, (int) progress));
+								String.format("[Thread %06d] %s %s %s%% [DUPLICATE]", id, ulid, i, (int) progress));
 					}
 				}
 			}
@@ -118,7 +116,7 @@ public class UniquenessTest {
 	}
 
 	public static void execute(boolean verbose, int threadCount, int requestCount) {
-		UlidSpecCreator creator = UlidCreator.getUlidSpecCreator()
+		UlidSpecCreator creator = UlidCreator.getMonotonicCreator()
 				.withTimestampStrategy(new FixedTimestampStretegy(System.currentTimeMillis()));
 
 		UniquenessTest test = new UniquenessTest(threadCount, requestCount, creator, verbose);

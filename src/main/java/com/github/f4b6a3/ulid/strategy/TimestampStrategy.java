@@ -24,6 +24,7 @@
 
 package com.github.f4b6a3.ulid.strategy;
 
+@FunctionalInterface
 public interface TimestampStrategy {
 	long getTimestamp();
 }

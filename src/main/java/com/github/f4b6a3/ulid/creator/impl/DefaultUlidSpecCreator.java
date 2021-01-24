@@ -22,43 +22,38 @@
  * SOFTWARE.
  */
 
-package com.github.f4b6a3.ulid.util;
+package com.github.f4b6a3.ulid.creator.impl;
 
-import java.util.UUID;
+import com.github.f4b6a3.ulid.Ulid;
+import com.github.f4b6a3.ulid.creator.UlidSpecCreator;
 
-import com.github.f4b6a3.ulid.exception.InvalidUlidException;
-import com.github.f4b6a3.ulid.util.internal.UlidStruct;
+public final class DefaultUlidSpecCreator extends UlidSpecCreator {
 
-public final class UlidConverter {
+	@Override
+	public synchronized Ulid create(final Long timestamp) {
 
-	private UlidConverter() {
-	}
+		final long time = timestamp != null ? timestamp : this.timestampStrategy.getTimestamp();
 
-	/**
-	 * Convert a UUID to ULID string
-	 * 
-	 * The returning string is encoded to Crockford's base32.
-	 * 
-	 * @param ulid a UUID
-	 * @return a ULID
-	 */
-	public static String toString(final UUID ulid) {
-		return UlidStruct.of(ulid).toString();
-	}
+		// Get random values
+		final byte[] bytes = new byte[10];
+		this.randomStrategy.nextBytes(bytes);
 
-	/**
-	 * Converts a ULID string to a UUID.
-	 * 
-	 * The input string must be encoded to Crockford's base32, following the ULID
-	 * specification.
-	 * 
-	 * An exception is thrown if the ULID string is invalid.
-	 * 
-	 * @param ulid a ULID
-	 * @return a UUID if valid
-	 * @throws InvalidUlidException if invalid
-	 */
-	public static UUID fromString(final String ulid) {
-		return UlidStruct.of(ulid).toUuid();
+		long msb = 0;
+		long lsb = 0;
+
+		msb |= time << 16;
+		msb |= (long) (bytes[0x0] & 0xff) << 8;
+		msb |= (long) (bytes[0x1] & 0xff);
+
+		lsb |= (long) (bytes[0x2] & 0xff) << 56;
+		lsb |= (long) (bytes[0x3] & 0xff) << 48;
+		lsb |= (long) (bytes[0x4] & 0xff) << 40;
+		lsb |= (long) (bytes[0x5] & 0xff) << 32;
+		lsb |= (long) (bytes[0x6] & 0xff) << 24;
+		lsb |= (long) (bytes[0x7] & 0xff) << 16;
+		lsb |= (long) (bytes[0x8] & 0xff) << 8;
+		lsb |= (long) (bytes[0x9] & 0xff);
+
+		return Ulid.of(msb, lsb);
 	}
 }

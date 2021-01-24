@@ -22,34 +22,33 @@
  * SOFTWARE.
  */
 
-package com.github.f4b6a3.ulid.util.internal;
+package com.github.f4b6a3.ulid;
 
+import java.io.Serializable;
 import java.util.UUID;
 
 import com.github.f4b6a3.ulid.util.UlidValidator;
 
 /**
- * This class represents the structure of a ULID.
- * 
- * It is for internal use and test cases in this library.
+ * This class represents a ULID.
  */
-public final class UlidStruct {
+public final class Ulid implements Serializable, Comparable<Ulid> {
 
-	public final long time;
-	public final long random1;
-	public final long random2;
+	private final long msb;
+	private final long lsb;
 
-	protected static final long TIMESTAMP_COMPONENT = 0x0000ffffffffffffL;
-	protected static final long HALF_RANDOM_COMPONENT = 0x000000ffffffffffL;
+	protected static final int STRING_LENGTH = 26;
 
-	public static final char[] BASE32_CHARS = //
+	protected static final char[] BASE32_CHARS = //
 			{ '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', //
 					'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'J', 'K', //
 					'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'V', 'W', 'X', 'Y', 'Z' };
 
-	public static final long[] BASE32_VALUES = new long[128];
+	protected static final long[] BASE32_VALUES = new long[128];
 	static {
-
+		for (int i = 0; i < BASE32_VALUES.length; i++) {
+			BASE32_VALUES[i] = -1;
+		}
 		// Numbers
 		BASE32_VALUES['0'] = 0x00;
 		BASE32_VALUES['1'] = 0x01;
@@ -118,28 +117,19 @@ public final class UlidStruct {
 
 	}
 
-	private UlidStruct() {
-		this.time = 0;
-		this.random1 = 0;
-		this.random2 = 0;
+	private static final long serialVersionUID = 2625269413446854731L;
+
+	private Ulid() {
+		this.msb = 0;
+		this.lsb = 0;
 	}
 
-	private UlidStruct(long time, long random1, long random2) {
-		this.time = time & TIMESTAMP_COMPONENT;
-		this.random1 = random1 & HALF_RANDOM_COMPONENT;
-		this.random2 = random2 & HALF_RANDOM_COMPONENT;
+	private Ulid(UUID ulid) {
+		this.msb = ulid.getMostSignificantBits();
+		this.lsb = ulid.getLeastSignificantBits();
 	}
 
-	private UlidStruct(UUID ulid) {
-		final long msb = ulid.getMostSignificantBits();
-		final long lsb = ulid.getLeastSignificantBits();
-
-		this.time = (msb >>> 16);
-		this.random1 = ((msb & 0x000000000000ffffL) << 24) | (lsb >>> 40);
-		this.random2 = (lsb & 0x000000ffffffffffL);
-	}
-
-	private UlidStruct(String ulid) {
+	private Ulid(String ulid) {
 
 		final char[] chars = ulid == null ? new char[0] : ulid.toCharArray();
 		UlidValidator.validate(chars);
@@ -177,26 +167,41 @@ public final class UlidStruct {
 		r2 |= BASE32_VALUES[chars[0x18]] << 5;
 		r2 |= BASE32_VALUES[chars[0x19]];
 
-		this.time = tm;
-		this.random1 = r1;
-		this.random2 = r2;
+		this.msb = (tm << 16) | (r1 >>> 24);
+		this.lsb = (r1 << 40) | (r2 & 0xffffffffffL);
 	}
 
-	public static UlidStruct of(long time, long random1, long random2) {
-		return new UlidStruct(time, random1, random2);
+	private Ulid(long msb, long lsb) {
+		this.msb = msb;
+		this.lsb = lsb;
 	}
 
-	public static UlidStruct of(UUID ulid) {
-		return new UlidStruct(ulid);
+	public static Ulid of(UUID ulid) {
+		return new Ulid(ulid);
 	}
 
-	public static UlidStruct of(String ulid) {
-		return new UlidStruct(ulid);
+	public static Ulid of(String ulid) {
+		return new Ulid(ulid);
 	}
 
+	public static Ulid of(long msb, long lsb) {
+		return new Ulid(msb, lsb);
+	}
+
+	public UUID toUuid() {
+		return new UUID(this.msb, this.lsb);
+	}
+
+	@Override
 	public String toString() {
 
-		final char[] chars = new char[26];
+		final char[] chars = new char[STRING_LENGTH];
+		long long0 = this.msb;
+		long long1 = this.lsb;
+
+		long time = long0 >>> 16;
+		long random1 = ((long0 & 0xffffL) << 24) | (long1 >>> 40);
+		long random2 = (long1 & 0xffffffffffL);
 
 		chars[0x00] = BASE32_CHARS[(int) (time >>> 45 & 0b11111)];
 		chars[0x01] = BASE32_CHARS[(int) (time >>> 40 & 0b11111)];
@@ -230,33 +235,16 @@ public final class UlidStruct {
 		return new String(chars);
 	}
 
-	public String toString4() {
-		// apply RFC-4122 version 4 and variant 2
-		final long random1v4 = ((this.random1 & 0x0fff3fffffL) | 0x4000000000L) | 0x0000800000L;
-		return UlidStruct.of(this.time, random1v4, this.random2).toString();
-	}
-
-	public UUID toUuid() {
-
-		final long msb = (time << 16) | (random1 >>> 24);
-		final long lsb = (random1 << 40) | random2;
-
-		return new UUID(msb, lsb);
-	}
-
-	public UUID toUuid4() {
-		// apply RFC-4122 version 4 and variant 2
-		final long random1v4 = ((this.random1 & 0x0fff3fffffL) | 0x4000000000L) | 0x0000800000L;
-		return UlidStruct.of(this.time, random1v4, this.random2).toUuid();
+	public long getTimestamp() {
+		return this.msb >>> 16;
 	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + (int) (random1 ^ (random1 >>> 32));
-		result = prime * result + (int) (random2 ^ (random2 >>> 32));
-		result = prime * result + (int) (time ^ (time >>> 32));
+		result = prime * result + (int) (lsb ^ (lsb >>> 32));
+		result = prime * result + (int) (msb ^ (msb >>> 32));
 		return result;
 	}
 
@@ -268,13 +256,29 @@ public final class UlidStruct {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		UlidStruct other = (UlidStruct) obj;
-		if (random1 != other.random1)
+		Ulid other = (Ulid) obj;
+		if (lsb != other.lsb)
 			return false;
-		if (random2 != other.random2)
-			return false;
-		if (time != other.time)
+		if (msb != other.msb)
 			return false;
 		return true;
+	}
+
+	@Override
+	public int compareTo(Ulid other) {
+
+		if (this.msb < other.msb)
+			return -1;
+
+		if (this.msb > other.msb)
+			return 1;
+
+		if (this.lsb < other.lsb)
+			return -1;
+
+		if (this.lsb > other.lsb)
+			return 1;
+
+		return 0;
 	}
 }

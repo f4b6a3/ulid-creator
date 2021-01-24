@@ -10,19 +10,19 @@ public class DemoTest {
 		int max = 100;
 
 		System.out.println(HORIZONTAL_LINE);
-		System.out.println("### ULID string");
-		System.out.println(HORIZONTAL_LINE);
-
-		for (int i = 0; i < max; i++) {
-			System.out.println(UlidCreator.getUlidString());
-		}
-
-		System.out.println(HORIZONTAL_LINE);
-		System.out.println("### ULID-based GUID");
+		System.out.println("### ULID");
 		System.out.println(HORIZONTAL_LINE);
 
 		for (int i = 0; i < max; i++) {
 			System.out.println(UlidCreator.getUlid());
+		}
+		
+		System.out.println(HORIZONTAL_LINE);
+		System.out.println("### Monotonic ULID");
+		System.out.println(HORIZONTAL_LINE);
+
+		for (int i = 0; i < max; i++) {
+			System.out.println(UlidCreator.getMonotonicUlid());
 		}
 	}
 

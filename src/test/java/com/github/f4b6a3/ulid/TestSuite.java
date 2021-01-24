@@ -4,22 +4,22 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
 import com.github.f4b6a3.ulid.creator.UlidSpecCreatorTest;
-import com.github.f4b6a3.ulid.ulid.UlidCreatorUuidTest;
-import com.github.f4b6a3.ulid.ulid.UlidCreatorStringTest;
-import com.github.f4b6a3.ulid.util.UlidConverterTest;
-import com.github.f4b6a3.ulid.util.UlidUtilTest;
+import com.github.f4b6a3.ulid.ulid.UlidCreatorDefaultTest;
+import com.github.f4b6a3.ulid.ulid.UlidCreatorDefaultStringTest;
+import com.github.f4b6a3.ulid.ulid.UlidCreatorMonotonicTest;
+import com.github.f4b6a3.ulid.ulid.UlidCreatorMonotonicStringTest;
 import com.github.f4b6a3.ulid.util.UlidValidatorTest;
-import com.github.f4b6a3.ulid.util.internal.UlidStructTest;
+import com.github.f4b6a3.ulid.util.internal.UlidTest;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-   UlidCreatorUuidTest.class,
-   UlidCreatorStringTest.class,
-   UlidSpecCreatorTest.class,
-   UlidConverterTest.class,
-   UlidUtilTest.class,
-   UlidValidatorTest.class,
-   UlidStructTest.class,
+	UlidCreatorDefaultTest.class,
+	UlidCreatorDefaultStringTest.class,
+	UlidCreatorMonotonicTest.class,
+	UlidCreatorMonotonicStringTest.class,
+	UlidSpecCreatorTest.class,
+	UlidValidatorTest.class,
+	UlidTest.class,
 })
 
 /**
