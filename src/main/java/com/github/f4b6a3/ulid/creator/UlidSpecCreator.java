@@ -30,36 +30,20 @@ import com.github.f4b6a3.ulid.Ulid;
 import com.github.f4b6a3.ulid.strategy.RandomStrategy;
 import com.github.f4b6a3.ulid.strategy.random.DefaultRandomStrategy;
 import com.github.f4b6a3.ulid.strategy.random.OtherRandomStrategy;
-import com.github.f4b6a3.ulid.strategy.TimestampStrategy;
-import com.github.f4b6a3.ulid.strategy.timestamp.DefaultTimestampStrategy;
 
 public abstract class UlidSpecCreator {
 
-	protected TimestampStrategy timestampStrategy;
 	protected RandomStrategy randomStrategy;
 
 	public UlidSpecCreator() {
-		this.timestampStrategy = new DefaultTimestampStrategy();
 		this.randomStrategy = new DefaultRandomStrategy();
 	}
 
 	public synchronized Ulid create() {
-		return create(null);
+		return create(System.currentTimeMillis());
 	}
 
-	public abstract Ulid create(Long timestamp);
-
-	/**
-	 * Used for changing the timestamp strategy.
-	 * 
-	 * @param timestampStrategy a timestamp strategy
-	 * @return {@link UlidSpecCreator}
-	 */
-	@SuppressWarnings("unchecked")
-	public synchronized <T extends UlidSpecCreator> T withTimestampStrategy(TimestampStrategy timestampStrategy) {
-		this.timestampStrategy = timestampStrategy;
-		return (T) this;
-	}
+	public abstract Ulid create(final long time);
 
 	/**
 	 * Replaces the default random strategy with another.

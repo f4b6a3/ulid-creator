@@ -3,7 +3,6 @@ package com.github.f4b6a3.ulid;
 import java.util.HashSet;
 import com.github.f4b6a3.ulid.UlidCreator;
 import com.github.f4b6a3.ulid.creator.UlidSpecCreator;
-import com.github.f4b6a3.ulid.strategy.timestamp.FixedTimestampStretegy;
 
 /**
  * 
@@ -25,6 +24,8 @@ public class UniquenessTest {
 
 	// ULID Spec creator
 	private UlidSpecCreator creator;
+
+	private long time = System.currentTimeMillis(); // fixed timestamp
 
 	/**
 	 * Initialize the test.
@@ -90,7 +91,7 @@ public class UniquenessTest {
 			for (int i = 0; i < max; i++) {
 
 				// Request a UUID
-				Ulid ulid = creator.create();
+				Ulid ulid = creator.create(time);
 
 				if (verbose) {
 					// Calculate and show progress
@@ -116,8 +117,7 @@ public class UniquenessTest {
 	}
 
 	public static void execute(boolean verbose, int threadCount, int requestCount) {
-		UlidSpecCreator creator = UlidCreator.getMonotonicCreator()
-				.withTimestampStrategy(new FixedTimestampStretegy(System.currentTimeMillis()));
+		UlidSpecCreator creator = UlidCreator.getMonotonicCreator();
 
 		UniquenessTest test = new UniquenessTest(threadCount, requestCount, creator, verbose);
 		test.start();

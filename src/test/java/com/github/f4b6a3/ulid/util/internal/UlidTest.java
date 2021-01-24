@@ -41,7 +41,7 @@ public class UlidTest {
 			Random random = new Random();
 			final long msb = random.nextLong();
 			final long lsb = random.nextLong();
-			Ulid ulid0 = Ulid.of(msb, lsb); // <-- under test
+			Ulid ulid0 = new Ulid(msb, lsb); // <-- under test
 
 			assertEquals(msb, ulid0.toUuid().getMostSignificantBits());
 			assertEquals(lsb, ulid0.toUuid().getLeastSignificantBits());
@@ -54,7 +54,7 @@ public class UlidTest {
 			Random random = new Random();
 			final long random1 = random.nextLong();
 			final long random2 = random.nextLong();
-			Ulid ulid0 = Ulid.of(random1, random2);
+			Ulid ulid0 = new Ulid(random1, random2);
 
 			String string1 = toString(ulid0);
 			Ulid struct1 = Ulid.of(string1); // <-- under test
@@ -83,7 +83,7 @@ public class UlidTest {
 			Random random = new Random();
 			final long random1 = random.nextLong();
 			final long random2 = random.nextLong();
-			Ulid ulid0 = Ulid.of(random1, random2);
+			Ulid ulid0 = new Ulid(random1, random2);
 
 			String string1 = toString(ulid0);
 			String string2 = ulid0.toString(); // <-- under test
@@ -98,7 +98,7 @@ public class UlidTest {
 			Random random = new Random();
 			final long random1 = random.nextLong();
 			final long random2 = random.nextLong();
-			Ulid ulid0 = Ulid.of(random1, random2);
+			Ulid ulid0 = new Ulid(random1, random2);
 
 			UUID uuid1 = toUuid(ulid0);
 			UUID uuid2 = ulid0.toUuid(); // <-- under test
@@ -127,7 +127,7 @@ public class UlidTest {
 		long msb = (time << 16) | (random1 >>> 24);
 		long lsb = (random1 << 40) | (random2 & 0xffffffffffL);
 
-		return Ulid.of(msb, lsb);
+		return new Ulid(msb, lsb);
 	}
 
 	public static UUID toUuid(Ulid struct) {

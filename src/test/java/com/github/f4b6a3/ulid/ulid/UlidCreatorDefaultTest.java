@@ -51,7 +51,7 @@ public class UlidCreatorDefaultTest {
 		assertTrue("Start time was after end time", startTime <= endTime);
 
 		for (Ulid ulid : list) {
-			long creationTime = ulid.getTimestamp();
+			long creationTime = ulid.getTime();
 			assertTrue("Creation time was before start time " + creationTime + " " + startTime,
 					creationTime >= startTime);
 			assertTrue("Creation time was after end time", creationTime <= endTime);

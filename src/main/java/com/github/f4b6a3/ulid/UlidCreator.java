@@ -37,16 +37,16 @@ public final class UlidCreator {
 		return DefaultCreatorHolder.INSTANCE.create();
 	}
 
-	public static Ulid getUlid(Long timestamp) {
-		return DefaultCreatorHolder.INSTANCE.create(timestamp);
+	public static Ulid getUlid(final long time) {
+		return DefaultCreatorHolder.INSTANCE.create(time);
 	}
 
 	public static Ulid getMonotonicUlid() {
 		return MonotonicCreatorHolder.INSTANCE.create();
 	}
 
-	public static Ulid getMonotonicUlid(Long timestamp) {
-		return MonotonicCreatorHolder.INSTANCE.create(timestamp);
+	public static Ulid getMonotonicUlid(final long time) {
+		return MonotonicCreatorHolder.INSTANCE.create(time);
 	}
 
 	public static DefaultUlidSpecCreator getDefaultCreator() {

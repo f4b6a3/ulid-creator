@@ -29,41 +29,46 @@ import com.github.f4b6a3.ulid.creator.UlidSpecCreator;
 
 public final class MonotonicUlidSpecCreator extends UlidSpecCreator {
 
-	protected long msb = 0;
-	protected long lsb = 0;
+	private long msb = 0;
+	private long lsb = 0;
 
-	protected long previousTimestamp;
+	private long lastTime;
 
-	public synchronized Ulid create(final Long timestamp) {
+	// 0xffffffffffffffffL + 1 = 0x0000000000000000L
+	private static final long UNSIGNED_OVERFLOW = 0x0000000000000000L;
 
-		final long time = timestamp != null ? timestamp : this.timestampStrategy.getTimestamp();
+	@Override
+	public synchronized Ulid create(final long time) {
 
-		if (time == this.previousTimestamp) {
-			this.lsb++;
+		// TODO: test
+		if (time == this.lastTime) {
+			if (++this.lsb == UNSIGNED_OVERFLOW) {
+				// Increment the random bits of the MSB
+				this.msb = (this.msb & 0xffffffffffff0000L) | ((this.msb + 1) & 0x000000000000ffffL);
+			}
 		} else {
-			// Get random values
+
+			this.msb = 0;
+			this.lsb = 0;
+
 			final byte[] bytes = new byte[10];
 			this.randomStrategy.nextBytes(bytes);
 
-			msb = 0;
-			lsb = 0;
+			this.msb |= time << 16;
+			this.msb |= (long) (bytes[0x0] & 0xff) << 8;
+			this.msb |= (long) (bytes[0x1] & 0xff);
 
-			msb |= time << 16;
-			msb |= (long) (bytes[0x0] & 0xff) << 8;
-			msb |= (long) (bytes[0x1] & 0xff);
-
-			lsb |= (long) (bytes[0x2] & 0xff) << 56;
-			lsb |= (long) (bytes[0x3] & 0xff) << 48;
-			lsb |= (long) (bytes[0x4] & 0xff) << 40;
-			lsb |= (long) (bytes[0x5] & 0xff) << 32;
-			lsb |= (long) (bytes[0x6] & 0xff) << 24;
-			lsb |= (long) (bytes[0x7] & 0xff) << 16;
-			lsb |= (long) (bytes[0x8] & 0xff) << 8;
-			lsb |= (long) (bytes[0x9] & 0xff);
+			this.lsb |= (long) (bytes[0x2] & 0xff) << 56;
+			this.lsb |= (long) (bytes[0x3] & 0xff) << 48;
+			this.lsb |= (long) (bytes[0x4] & 0xff) << 40;
+			this.lsb |= (long) (bytes[0x5] & 0xff) << 32;
+			this.lsb |= (long) (bytes[0x6] & 0xff) << 24;
+			this.lsb |= (long) (bytes[0x7] & 0xff) << 16;
+			this.lsb |= (long) (bytes[0x8] & 0xff) << 8;
+			this.lsb |= (long) (bytes[0x9] & 0xff);
 		}
 
-		this.previousTimestamp = time;
-		return Ulid.of(msb, lsb);
+		this.lastTime = time;
+		return new Ulid(msb, lsb);
 	}
-
 }

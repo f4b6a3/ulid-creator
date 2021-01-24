@@ -30,16 +30,13 @@ import com.github.f4b6a3.ulid.creator.UlidSpecCreator;
 public final class DefaultUlidSpecCreator extends UlidSpecCreator {
 
 	@Override
-	public synchronized Ulid create(final Long timestamp) {
-
-		final long time = timestamp != null ? timestamp : this.timestampStrategy.getTimestamp();
-
-		// Get random values
-		final byte[] bytes = new byte[10];
-		this.randomStrategy.nextBytes(bytes);
+	public synchronized Ulid create(final long time) {
 
 		long msb = 0;
 		long lsb = 0;
+
+		final byte[] bytes = new byte[10];
+		this.randomStrategy.nextBytes(bytes);
 
 		msb |= time << 16;
 		msb |= (long) (bytes[0x0] & 0xff) << 8;
@@ -54,6 +51,6 @@ public final class DefaultUlidSpecCreator extends UlidSpecCreator {
 		lsb |= (long) (bytes[0x8] & 0xff) << 8;
 		lsb |= (long) (bytes[0x9] & 0xff);
 
-		return Ulid.of(msb, lsb);
+		return new Ulid(msb, lsb);
 	}
 }

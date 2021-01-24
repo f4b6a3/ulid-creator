@@ -14,13 +14,15 @@ import static org.junit.Assert.*;
 
 public class UlidSpecCreatorTest {
 
-	private static final int DEFAULT_LOOP_MAX = 1_000_000;
+	private static final int DEFAULT_LOOP_MAX = 100_000;
 
 	protected static final String DUPLICATE_UUID_MSG = "A duplicate ULID was created.";
 
 	protected static final int THREAD_TOTAL = availableProcessors();
 
 	private static final Random RANDOM = new Random();
+
+	private static final long TIME_MASK = 0x0000ffffffffffffL;
 
 	private static int availableProcessors() {
 		int processors = Runtime.getRuntime().availableProcessors();
@@ -31,20 +33,20 @@ public class UlidSpecCreatorTest {
 	}
 
 	@Test
-	public void testGetUlidTimestamp() {
+	public void testGetUlidTime() {
 		for (int i = 0; i < 100; i++) {
-			long timestamp = RANDOM.nextLong() & 0x0000ffffffffffffL;
-			Ulid ulid = UlidCreator.getUlid(timestamp);
-			assertEquals(timestamp, ulid.getTimestamp());
+			long time = RANDOM.nextLong() & TIME_MASK;
+			Ulid ulid = UlidCreator.getUlid(time);
+			assertEquals(time, ulid.getTime());
 		}
 	}
 
 	@Test
-	public void testGetMonotonicUlidTimestamp() {
+	public void testGetMonotonicUlidTime() {
 		for (int i = 0; i < 100; i++) {
-			long timestamp = RANDOM.nextLong() & 0x0000ffffffffffffL;
-			Ulid ulid = UlidCreator.getMonotonicUlid(timestamp);
-			assertEquals(timestamp, ulid.getTimestamp());
+			long time = RANDOM.nextLong() & TIME_MASK;
+			Ulid ulid = UlidCreator.getMonotonicUlid(time);
+			assertEquals(time, ulid.getTime());
 		}
 	}
 
