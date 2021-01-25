@@ -117,7 +117,7 @@ public class UniquenessTest {
 	}
 
 	public static void execute(boolean verbose, int threadCount, int requestCount) {
-		UlidSpecCreator creator = UlidCreator.getMonotonicCreator();
+		UlidSpecCreator creator = UlidCreator.getMonotonicUlidSpecCreator();
 
 		UniquenessTest test = new UniquenessTest(threadCount, requestCount, creator, verbose);
 		test.start();

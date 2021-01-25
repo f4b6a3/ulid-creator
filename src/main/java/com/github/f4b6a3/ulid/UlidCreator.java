@@ -24,9 +24,8 @@
 
 package com.github.f4b6a3.ulid;
 
+import com.github.f4b6a3.ulid.creator.MonotonicUlidSpecCreator;
 import com.github.f4b6a3.ulid.creator.UlidSpecCreator;
-import com.github.f4b6a3.ulid.creator.impl.DefaultUlidSpecCreator;
-import com.github.f4b6a3.ulid.creator.impl.MonotonicUlidSpecCreator;
 
 public final class UlidCreator {
 
@@ -49,19 +48,19 @@ public final class UlidCreator {
 		return MonotonicCreatorHolder.INSTANCE.create(time);
 	}
 
-	public static DefaultUlidSpecCreator getDefaultCreator() {
-		return new DefaultUlidSpecCreator();
+	public static UlidSpecCreator getUlidSpecCreator() {
+		return new UlidSpecCreator();
 	}
 
-	public static MonotonicUlidSpecCreator getMonotonicCreator() {
+	public static UlidSpecCreator getMonotonicUlidSpecCreator() {
 		return new MonotonicUlidSpecCreator();
 	}
 
 	private static class DefaultCreatorHolder {
-		static final UlidSpecCreator INSTANCE = getDefaultCreator();
+		static final UlidSpecCreator INSTANCE = getUlidSpecCreator();
 	}
 
 	private static class MonotonicCreatorHolder {
-		static final UlidSpecCreator INSTANCE = getMonotonicCreator();
+		static final UlidSpecCreator INSTANCE = getMonotonicUlidSpecCreator();
 	}
 }

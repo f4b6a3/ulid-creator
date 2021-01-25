@@ -28,8 +28,6 @@ import java.io.Serializable;
 import java.time.Instant;
 import java.util.UUID;
 
-import com.github.f4b6a3.ulid.util.UlidValidator;
-
 /**
  * This class represents a ULID.
  */
@@ -48,81 +46,89 @@ public final class Ulid implements Serializable, Comparable<Ulid> {
 	public static final int TIME_BYTES_LENGTH = 6;
 	public static final int RANDOM_BYTES_LENGTH = 10;
 
-	protected static final char[] ENCODING_CHARS = //
+	// 0xffffffffffffffffL + 1 = 0x0000000000000000L
+	private static final long INCREMENT_OVERFLOW = 0x0000000000000000L;
+
+	protected static final char[] ALPHABET_UPPERCASE = //
 			{ '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', //
 					'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'J', 'K', //
 					'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'V', 'W', 'X', 'Y', 'Z' };
 
-	protected static final long[] ENCODING_VALUES = new long[128];
+	protected static final char[] ALPHABET_LOWERCASE = //
+			{ '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', //
+					'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'j', 'k', //
+					'm', 'n', 'p', 'q', 'r', 's', 't', 'v', 'w', 'x', 'y', 'z' };
+
+	protected static final long[] ALPHABET_VALUES = new long[128];
 	static {
-		for (int i = 0; i < ENCODING_VALUES.length; i++) {
-			ENCODING_VALUES[i] = -1;
+		for (int i = 0; i < ALPHABET_VALUES.length; i++) {
+			ALPHABET_VALUES[i] = -1;
 		}
 		// Numbers
-		ENCODING_VALUES['0'] = 0x00;
-		ENCODING_VALUES['1'] = 0x01;
-		ENCODING_VALUES['2'] = 0x02;
-		ENCODING_VALUES['3'] = 0x03;
-		ENCODING_VALUES['4'] = 0x04;
-		ENCODING_VALUES['5'] = 0x05;
-		ENCODING_VALUES['6'] = 0x06;
-		ENCODING_VALUES['7'] = 0x07;
-		ENCODING_VALUES['8'] = 0x08;
-		ENCODING_VALUES['9'] = 0x09;
+		ALPHABET_VALUES['0'] = 0x00;
+		ALPHABET_VALUES['1'] = 0x01;
+		ALPHABET_VALUES['2'] = 0x02;
+		ALPHABET_VALUES['3'] = 0x03;
+		ALPHABET_VALUES['4'] = 0x04;
+		ALPHABET_VALUES['5'] = 0x05;
+		ALPHABET_VALUES['6'] = 0x06;
+		ALPHABET_VALUES['7'] = 0x07;
+		ALPHABET_VALUES['8'] = 0x08;
+		ALPHABET_VALUES['9'] = 0x09;
 		// Lower case
-		ENCODING_VALUES['a'] = 0x0a;
-		ENCODING_VALUES['b'] = 0x0b;
-		ENCODING_VALUES['c'] = 0x0c;
-		ENCODING_VALUES['d'] = 0x0d;
-		ENCODING_VALUES['e'] = 0x0e;
-		ENCODING_VALUES['f'] = 0x0f;
-		ENCODING_VALUES['g'] = 0x10;
-		ENCODING_VALUES['h'] = 0x11;
-		ENCODING_VALUES['j'] = 0x12;
-		ENCODING_VALUES['k'] = 0x13;
-		ENCODING_VALUES['m'] = 0x14;
-		ENCODING_VALUES['n'] = 0x15;
-		ENCODING_VALUES['p'] = 0x16;
-		ENCODING_VALUES['q'] = 0x17;
-		ENCODING_VALUES['r'] = 0x18;
-		ENCODING_VALUES['s'] = 0x19;
-		ENCODING_VALUES['t'] = 0x1a;
-		ENCODING_VALUES['v'] = 0x1b;
-		ENCODING_VALUES['w'] = 0x1c;
-		ENCODING_VALUES['x'] = 0x1d;
-		ENCODING_VALUES['y'] = 0x1e;
-		ENCODING_VALUES['z'] = 0x1f;
+		ALPHABET_VALUES['a'] = 0x0a;
+		ALPHABET_VALUES['b'] = 0x0b;
+		ALPHABET_VALUES['c'] = 0x0c;
+		ALPHABET_VALUES['d'] = 0x0d;
+		ALPHABET_VALUES['e'] = 0x0e;
+		ALPHABET_VALUES['f'] = 0x0f;
+		ALPHABET_VALUES['g'] = 0x10;
+		ALPHABET_VALUES['h'] = 0x11;
+		ALPHABET_VALUES['j'] = 0x12;
+		ALPHABET_VALUES['k'] = 0x13;
+		ALPHABET_VALUES['m'] = 0x14;
+		ALPHABET_VALUES['n'] = 0x15;
+		ALPHABET_VALUES['p'] = 0x16;
+		ALPHABET_VALUES['q'] = 0x17;
+		ALPHABET_VALUES['r'] = 0x18;
+		ALPHABET_VALUES['s'] = 0x19;
+		ALPHABET_VALUES['t'] = 0x1a;
+		ALPHABET_VALUES['v'] = 0x1b;
+		ALPHABET_VALUES['w'] = 0x1c;
+		ALPHABET_VALUES['x'] = 0x1d;
+		ALPHABET_VALUES['y'] = 0x1e;
+		ALPHABET_VALUES['z'] = 0x1f;
 		// Lower case OIL
-		ENCODING_VALUES['o'] = 0x00;
-		ENCODING_VALUES['i'] = 0x01;
-		ENCODING_VALUES['l'] = 0x01;
+		ALPHABET_VALUES['o'] = 0x00;
+		ALPHABET_VALUES['i'] = 0x01;
+		ALPHABET_VALUES['l'] = 0x01;
 		// Upper case
-		ENCODING_VALUES['A'] = 0x0a;
-		ENCODING_VALUES['B'] = 0x0b;
-		ENCODING_VALUES['C'] = 0x0c;
-		ENCODING_VALUES['D'] = 0x0d;
-		ENCODING_VALUES['E'] = 0x0e;
-		ENCODING_VALUES['F'] = 0x0f;
-		ENCODING_VALUES['G'] = 0x10;
-		ENCODING_VALUES['H'] = 0x11;
-		ENCODING_VALUES['J'] = 0x12;
-		ENCODING_VALUES['K'] = 0x13;
-		ENCODING_VALUES['M'] = 0x14;
-		ENCODING_VALUES['N'] = 0x15;
-		ENCODING_VALUES['P'] = 0x16;
-		ENCODING_VALUES['Q'] = 0x17;
-		ENCODING_VALUES['R'] = 0x18;
-		ENCODING_VALUES['S'] = 0x19;
-		ENCODING_VALUES['T'] = 0x1a;
-		ENCODING_VALUES['V'] = 0x1b;
-		ENCODING_VALUES['W'] = 0x1c;
-		ENCODING_VALUES['X'] = 0x1d;
-		ENCODING_VALUES['Y'] = 0x1e;
-		ENCODING_VALUES['Z'] = 0x1f;
+		ALPHABET_VALUES['A'] = 0x0a;
+		ALPHABET_VALUES['B'] = 0x0b;
+		ALPHABET_VALUES['C'] = 0x0c;
+		ALPHABET_VALUES['D'] = 0x0d;
+		ALPHABET_VALUES['E'] = 0x0e;
+		ALPHABET_VALUES['F'] = 0x0f;
+		ALPHABET_VALUES['G'] = 0x10;
+		ALPHABET_VALUES['H'] = 0x11;
+		ALPHABET_VALUES['J'] = 0x12;
+		ALPHABET_VALUES['K'] = 0x13;
+		ALPHABET_VALUES['M'] = 0x14;
+		ALPHABET_VALUES['N'] = 0x15;
+		ALPHABET_VALUES['P'] = 0x16;
+		ALPHABET_VALUES['Q'] = 0x17;
+		ALPHABET_VALUES['R'] = 0x18;
+		ALPHABET_VALUES['S'] = 0x19;
+		ALPHABET_VALUES['T'] = 0x1a;
+		ALPHABET_VALUES['V'] = 0x1b;
+		ALPHABET_VALUES['W'] = 0x1c;
+		ALPHABET_VALUES['X'] = 0x1d;
+		ALPHABET_VALUES['Y'] = 0x1e;
+		ALPHABET_VALUES['Z'] = 0x1f;
 		// Upper case OIL
-		ENCODING_VALUES['O'] = 0x00;
-		ENCODING_VALUES['I'] = 0x01;
-		ENCODING_VALUES['L'] = 0x01;
+		ALPHABET_VALUES['O'] = 0x00;
+		ALPHABET_VALUES['I'] = 0x01;
+		ALPHABET_VALUES['L'] = 0x01;
 
 	}
 
@@ -131,6 +137,14 @@ public final class Ulid implements Serializable, Comparable<Ulid> {
 	public Ulid(long mostSignificantBits, long leastSignificantBits) {
 		this.msb = mostSignificantBits;
 		this.lsb = leastSignificantBits;
+	}
+
+	public static Ulid of(Ulid ulid) {
+		return new Ulid(ulid.getMostSignificantBits(), ulid.getLeastSignificantBits());
+	}
+
+	public static Ulid of(UUID uuid) {
+		return new Ulid(uuid.getMostSignificantBits(), uuid.getLeastSignificantBits());
 	}
 
 	// TODO: test
@@ -165,52 +179,47 @@ public final class Ulid implements Serializable, Comparable<Ulid> {
 	}
 
 	// TODO: optimize
-	public static Ulid of(String ulid) {
+	public static Ulid of(String string) {
 
-		final char[] chars = ulid == null ? new char[0] : ulid.toCharArray();
-		UlidValidator.validate(chars);
+		final char[] chars = toCharArray(string);
 
 		long tm = 0;
 		long r1 = 0;
 		long r2 = 0;
 
-		tm |= ENCODING_VALUES[chars[0x00]] << 45;
-		tm |= ENCODING_VALUES[chars[0x01]] << 40;
-		tm |= ENCODING_VALUES[chars[0x02]] << 35;
-		tm |= ENCODING_VALUES[chars[0x03]] << 30;
-		tm |= ENCODING_VALUES[chars[0x04]] << 25;
-		tm |= ENCODING_VALUES[chars[0x05]] << 20;
-		tm |= ENCODING_VALUES[chars[0x06]] << 15;
-		tm |= ENCODING_VALUES[chars[0x07]] << 10;
-		tm |= ENCODING_VALUES[chars[0x08]] << 5;
-		tm |= ENCODING_VALUES[chars[0x09]];
+		tm |= ALPHABET_VALUES[chars[0x00]] << 45;
+		tm |= ALPHABET_VALUES[chars[0x01]] << 40;
+		tm |= ALPHABET_VALUES[chars[0x02]] << 35;
+		tm |= ALPHABET_VALUES[chars[0x03]] << 30;
+		tm |= ALPHABET_VALUES[chars[0x04]] << 25;
+		tm |= ALPHABET_VALUES[chars[0x05]] << 20;
+		tm |= ALPHABET_VALUES[chars[0x06]] << 15;
+		tm |= ALPHABET_VALUES[chars[0x07]] << 10;
+		tm |= ALPHABET_VALUES[chars[0x08]] << 5;
+		tm |= ALPHABET_VALUES[chars[0x09]];
 
-		r1 |= ENCODING_VALUES[chars[0x0a]] << 35;
-		r1 |= ENCODING_VALUES[chars[0x0b]] << 30;
-		r1 |= ENCODING_VALUES[chars[0x0c]] << 25;
-		r1 |= ENCODING_VALUES[chars[0x0d]] << 20;
-		r1 |= ENCODING_VALUES[chars[0x0e]] << 15;
-		r1 |= ENCODING_VALUES[chars[0x0f]] << 10;
-		r1 |= ENCODING_VALUES[chars[0x10]] << 5;
-		r1 |= ENCODING_VALUES[chars[0x11]];
+		r1 |= ALPHABET_VALUES[chars[0x0a]] << 35;
+		r1 |= ALPHABET_VALUES[chars[0x0b]] << 30;
+		r1 |= ALPHABET_VALUES[chars[0x0c]] << 25;
+		r1 |= ALPHABET_VALUES[chars[0x0d]] << 20;
+		r1 |= ALPHABET_VALUES[chars[0x0e]] << 15;
+		r1 |= ALPHABET_VALUES[chars[0x0f]] << 10;
+		r1 |= ALPHABET_VALUES[chars[0x10]] << 5;
+		r1 |= ALPHABET_VALUES[chars[0x11]];
 
-		r2 |= ENCODING_VALUES[chars[0x12]] << 35;
-		r2 |= ENCODING_VALUES[chars[0x13]] << 30;
-		r2 |= ENCODING_VALUES[chars[0x14]] << 25;
-		r2 |= ENCODING_VALUES[chars[0x15]] << 20;
-		r2 |= ENCODING_VALUES[chars[0x16]] << 15;
-		r2 |= ENCODING_VALUES[chars[0x17]] << 10;
-		r2 |= ENCODING_VALUES[chars[0x18]] << 5;
-		r2 |= ENCODING_VALUES[chars[0x19]];
+		r2 |= ALPHABET_VALUES[chars[0x12]] << 35;
+		r2 |= ALPHABET_VALUES[chars[0x13]] << 30;
+		r2 |= ALPHABET_VALUES[chars[0x14]] << 25;
+		r2 |= ALPHABET_VALUES[chars[0x15]] << 20;
+		r2 |= ALPHABET_VALUES[chars[0x16]] << 15;
+		r2 |= ALPHABET_VALUES[chars[0x17]] << 10;
+		r2 |= ALPHABET_VALUES[chars[0x18]] << 5;
+		r2 |= ALPHABET_VALUES[chars[0x19]];
 
 		final long msb = (tm << 16) | (r1 >>> 24);
 		final long lsb = (r1 << 40) | (r2 & 0xffffffffffL);
 
 		return new Ulid(msb, lsb);
-	}
-
-	public static Ulid of(UUID uuid) {
-		return new Ulid(uuid.getMostSignificantBits(), uuid.getLeastSignificantBits());
 	}
 
 	public static Ulid of(long time, byte[] random) {
@@ -239,6 +248,17 @@ public final class Ulid implements Serializable, Comparable<Ulid> {
 		lsb |= (long) (random[0x9] & 0xff);
 
 		return new Ulid(msb, lsb);
+	}
+
+	public UUID toUuid() {
+		return new UUID(this.msb, this.lsb);
+	}
+
+	// TODO: test
+	public UUID toUuid4() {
+		final long msb4 = (this.msb & 0xffffffffffff0fffL) | 0x0000000000004000L; // apply version 4
+		final long lsb4 = (this.lsb & 0x3fffffffffffffffL) | 0x8000000000000000L; // apply variant RFC-4122
+		return new UUID(msb4, lsb4);
 	}
 
 	// TODO: test
@@ -272,64 +292,29 @@ public final class Ulid implements Serializable, Comparable<Ulid> {
 		return Ulid.of(this.toUuid4()).toBytes();
 	}
 
-	// TODO: optimize
 	@Override
 	public String toString() {
-
-		final char[] chars = new char[ULID_LENGTH];
-		long long0 = this.msb;
-		long long1 = this.lsb;
-
-		long time = long0 >>> 16;
-		long random1 = ((long0 & 0xffffL) << 24) | (long1 >>> 40);
-		long random2 = (long1 & 0xffffffffffL);
-
-		chars[0x00] = ENCODING_CHARS[(int) (time >>> 45 & 0b11111)];
-		chars[0x01] = ENCODING_CHARS[(int) (time >>> 40 & 0b11111)];
-		chars[0x02] = ENCODING_CHARS[(int) (time >>> 35 & 0b11111)];
-		chars[0x03] = ENCODING_CHARS[(int) (time >>> 30 & 0b11111)];
-		chars[0x04] = ENCODING_CHARS[(int) (time >>> 25 & 0b11111)];
-		chars[0x05] = ENCODING_CHARS[(int) (time >>> 20 & 0b11111)];
-		chars[0x06] = ENCODING_CHARS[(int) (time >>> 15 & 0b11111)];
-		chars[0x07] = ENCODING_CHARS[(int) (time >>> 10 & 0b11111)];
-		chars[0x08] = ENCODING_CHARS[(int) (time >>> 5 & 0b11111)];
-		chars[0x09] = ENCODING_CHARS[(int) (time & 0b11111)];
-
-		chars[0x0a] = ENCODING_CHARS[(int) (random1 >>> 35 & 0b11111)];
-		chars[0x0b] = ENCODING_CHARS[(int) (random1 >>> 30 & 0b11111)];
-		chars[0x0c] = ENCODING_CHARS[(int) (random1 >>> 25 & 0b11111)];
-		chars[0x0d] = ENCODING_CHARS[(int) (random1 >>> 20 & 0b11111)];
-		chars[0x0e] = ENCODING_CHARS[(int) (random1 >>> 15 & 0b11111)];
-		chars[0x0f] = ENCODING_CHARS[(int) (random1 >>> 10 & 0b11111)];
-		chars[0x10] = ENCODING_CHARS[(int) (random1 >>> 5 & 0b11111)];
-		chars[0x11] = ENCODING_CHARS[(int) (random1 & 0b11111)];
-
-		chars[0x12] = ENCODING_CHARS[(int) (random2 >>> 35 & 0b11111)];
-		chars[0x13] = ENCODING_CHARS[(int) (random2 >>> 30 & 0b11111)];
-		chars[0x14] = ENCODING_CHARS[(int) (random2 >>> 25 & 0b11111)];
-		chars[0x15] = ENCODING_CHARS[(int) (random2 >>> 20 & 0b11111)];
-		chars[0x16] = ENCODING_CHARS[(int) (random2 >>> 15 & 0b11111)];
-		chars[0x17] = ENCODING_CHARS[(int) (random2 >>> 10 & 0b11111)];
-		chars[0x18] = ENCODING_CHARS[(int) (random2 >>> 5 & 0b11111)];
-		chars[0x19] = ENCODING_CHARS[(int) (random2 & 0b11111)];
-
-		return new String(chars);
+		return this.toUpperCase();
 	}
 
 	// TODO: test
-	public String toString4() {
-		return Ulid.of(this.toUuid4()).toString();
-	}
-
-	public UUID toUuid() {
-		return new UUID(this.msb, this.lsb);
+	public String toUpperCase() {
+		return toString(ALPHABET_UPPERCASE);
 	}
 
 	// TODO: test
-	public UUID toUuid4() {
-		final long msb4 = (this.msb & 0xffffffffffff0fffL) | 0x0000000000004000L; // apply version 4
-		final long lsb4 = (this.lsb & 0x3fffffffffffffffL) | 0x8000000000000000L; // apply variant RFC-4122
-		return new UUID(msb4, lsb4);
+	public String toUpperCase4() {
+		return Ulid.of(this.toUuid4()).toUpperCase();
+	}
+
+	// TODO: test
+	public String toLowerCase() {
+		return toString(ALPHABET_LOWERCASE);
+	}
+
+	// TODO: test
+	public String toLowerCase4() {
+		return Ulid.of(this.toUuid4()).toLowerCase();
 	}
 
 	public long getTime() {
@@ -346,6 +331,20 @@ public final class Ulid implements Serializable, Comparable<Ulid> {
 
 	public long getLeastSignificantBits() {
 		return this.lsb;
+	}
+
+	// TODO: test
+	public Ulid increment() {
+
+		long msb1 = this.msb;
+		long lsb1 = this.lsb + 1; // Increment the LSB
+
+		if (lsb1 == INCREMENT_OVERFLOW) {
+			// Increment the random bits of the MSB
+			msb1 = (msb1 & 0xffffffffffff0000L) | ((msb1 + 1) & 0x000000000000ffffL);
+		}
+
+		return new Ulid(msb1, lsb1);
 	}
 
 	@Override
@@ -384,5 +383,87 @@ public final class Ulid implements Serializable, Comparable<Ulid> {
 		if (this.lsb > other.lsb)
 			return 1;
 		return 0;
+	}
+
+	// TODO: optimize
+	protected String toString(char[] alphabet) {
+
+		final char[] chars = new char[ULID_LENGTH];
+
+		long time = this.msb >>> 16;
+		long random1 = ((this.msb & 0xffffL) << 24) | (this.lsb >>> 40);
+		long random2 = (this.lsb & 0xffffffffffL);
+
+		chars[0x00] = alphabet[(int) (time >>> 45 & 0b11111)];
+		chars[0x01] = alphabet[(int) (time >>> 40 & 0b11111)];
+		chars[0x02] = alphabet[(int) (time >>> 35 & 0b11111)];
+		chars[0x03] = alphabet[(int) (time >>> 30 & 0b11111)];
+		chars[0x04] = alphabet[(int) (time >>> 25 & 0b11111)];
+		chars[0x05] = alphabet[(int) (time >>> 20 & 0b11111)];
+		chars[0x06] = alphabet[(int) (time >>> 15 & 0b11111)];
+		chars[0x07] = alphabet[(int) (time >>> 10 & 0b11111)];
+		chars[0x08] = alphabet[(int) (time >>> 5 & 0b11111)];
+		chars[0x09] = alphabet[(int) (time & 0b11111)];
+
+		chars[0x0a] = alphabet[(int) (random1 >>> 35 & 0b11111)];
+		chars[0x0b] = alphabet[(int) (random1 >>> 30 & 0b11111)];
+		chars[0x0c] = alphabet[(int) (random1 >>> 25 & 0b11111)];
+		chars[0x0d] = alphabet[(int) (random1 >>> 20 & 0b11111)];
+		chars[0x0e] = alphabet[(int) (random1 >>> 15 & 0b11111)];
+		chars[0x0f] = alphabet[(int) (random1 >>> 10 & 0b11111)];
+		chars[0x10] = alphabet[(int) (random1 >>> 5 & 0b11111)];
+		chars[0x11] = alphabet[(int) (random1 & 0b11111)];
+
+		chars[0x12] = alphabet[(int) (random2 >>> 35 & 0b11111)];
+		chars[0x13] = alphabet[(int) (random2 >>> 30 & 0b11111)];
+		chars[0x14] = alphabet[(int) (random2 >>> 25 & 0b11111)];
+		chars[0x15] = alphabet[(int) (random2 >>> 20 & 0b11111)];
+		chars[0x16] = alphabet[(int) (random2 >>> 15 & 0b11111)];
+		chars[0x17] = alphabet[(int) (random2 >>> 10 & 0b11111)];
+		chars[0x18] = alphabet[(int) (random2 >>> 5 & 0b11111)];
+		chars[0x19] = alphabet[(int) (random2 & 0b11111)];
+
+		return new String(chars);
+	}
+
+	public static boolean isValidString(String string) {
+		return isValidArray(string == null ? null : string.toCharArray());
+	}
+
+	/**
+	 * Checks if the string is a valid ULID.
+	 * 
+	 * A valid ULID string is a sequence of 26 characters from Crockford's base 32
+	 * alphabet.
+	 * 
+	 * @param chars a char array
+	 * @return boolean true if valid
+	 */
+	protected static boolean isValidArray(final char[] chars) {
+
+		if (chars == null || chars.length != ULID_LENGTH) {
+			return false; // null or wrong size!
+		}
+
+		// the two extra bits added by base-32 encoding must be zero
+		if ((ALPHABET_VALUES[chars[0]] & 0b11000) != 0) {
+			return false; // overflow!
+		}
+
+		for (int i = 0; i < chars.length; i++) {
+			if (ALPHABET_VALUES[chars[i]] == -1) {
+				return false; // invalid character!
+			}
+		}
+
+		return true; // It seems to be OK.
+	}
+
+	protected static char[] toCharArray(String string) {
+		char[] chars = string == null ? new char[0] : string.toCharArray();
+		if (!isValidArray(chars)) {
+			throw new IllegalArgumentException(String.format("Invalid ULID: \"%s\"", string));
+		}
+		return chars;
 	}
 }

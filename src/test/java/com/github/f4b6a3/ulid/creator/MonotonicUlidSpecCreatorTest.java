@@ -1,4 +1,4 @@
-package com.github.f4b6a3.ulid.ulid;
+package com.github.f4b6a3.ulid.creator;
 
 import org.junit.Test;
 
@@ -6,12 +6,11 @@ import com.github.f4b6a3.ulid.Ulid;
 import com.github.f4b6a3.ulid.UlidCreator;
 
 import static org.junit.Assert.*;
+
 import java.util.Arrays;
 import java.util.HashSet;
 
-public class UlidCreatorMonotonicTest {
-
-	private static final int DEFAULT_LOOP_MAX = 100_000;
+public class MonotonicUlidSpecCreatorTest extends AbstractUlidSpecCreatorTest {
 
 	@Test
 	public void testGetUlid() {
@@ -66,6 +65,36 @@ public class UlidCreatorMonotonicTest {
 
 		for (int i = 0; i < list.length; i++) {
 			assertEquals("The ULID list is not ordered", list[i], other[i]);
+		}
+	}
+
+	@Test
+	public void testGetMonotonicUlidInParallel() throws InterruptedException {
+
+		Thread[] threads = new Thread[THREAD_TOTAL];
+		TestThread.clearHashSet();
+
+		// Instantiate and start many threads
+		for (int i = 0; i < THREAD_TOTAL; i++) {
+			threads[i] = new TestThread(UlidCreator.getMonotonicUlidSpecCreator(), DEFAULT_LOOP_MAX);
+			threads[i].start();
+		}
+
+		// Wait all the threads to finish
+		for (Thread thread : threads) {
+			thread.join();
+		}
+
+		// Check if the quantity of unique UUIDs is correct
+		assertEquals(DUPLICATE_UUID_MSG, TestThread.hashSet.size(), (DEFAULT_LOOP_MAX * THREAD_TOTAL));
+	}
+
+	@Test
+	public void testGetMonotonicUlidTime() {
+		for (int i = 0; i < 100; i++) {
+			long time = RANDOM.nextLong() & TIME_MASK;
+			Ulid ulid = UlidCreator.getMonotonicUlid(time);
+			assertEquals(time, ulid.getTime());
 		}
 	}
 }

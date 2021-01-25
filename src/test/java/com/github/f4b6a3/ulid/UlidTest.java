@@ -1,6 +1,8 @@
-package com.github.f4b6a3.ulid.util.internal;
+package com.github.f4b6a3.ulid;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Random;
 import java.util.UUID;
@@ -11,7 +13,7 @@ import com.github.f4b6a3.ulid.Ulid;
 
 public class UlidTest {
 
-	private static final int DEFAULT_LOOP_MAX = 100_000;
+	private static final int DEFAULT_LOOP_MAX = 10_000;
 
 	protected static final char[] ALPHABET_CROCKFORD = "0123456789ABCDEFGHJKMNPQRSTVWXYZ".toCharArray();
 	protected static final char[] ALPHABET_JAVA = "0123456789abcdefghijklmnopqrstuv".toCharArray(); // Long.parseUnsignedLong()
@@ -190,6 +192,40 @@ public class UlidTest {
 		r2 = transliterate(r2, ALPHABET_JAVA, ALPHABET_CROCKFORD);
 
 		return r1 + r2;
+	}
+	
+	@Test
+	public void isValidString() {
+
+		String ulid = null; // Null
+		assertFalse("Null ULID should be invalid.", Ulid.isValidString(ulid));
+
+		ulid = ""; // length: 0
+		assertFalse("ULID with empty string should be invalid .", Ulid.isValidString(ulid));
+
+		ulid = "0123456789ABCDEFGHJKMNPQRS"; // All upper case
+		assertTrue("ULID in upper case should valid.", Ulid.isValidString(ulid));
+
+		ulid = "0123456789abcdefghjklmnpqr"; // All lower case
+		assertTrue("ULID in lower case should be valid.", Ulid.isValidString(ulid));
+
+		ulid = "0123456789AbCdEfGhJkMnPqRs"; // Mixed case
+		assertTrue("Ulid in upper and lower case should valid.", Ulid.isValidString(ulid));
+
+		ulid = "0123456789ABCDEFGHJKLMNPQ"; // length: 25
+		assertFalse("ULID length lower than 26 should be invalid.", Ulid.isValidString(ulid));
+
+		ulid = "0123456789ABCDEFGHJKMNPQZZZ"; // length: 27
+		assertFalse("ULID length greater than 26 should be invalid.", Ulid.isValidString(ulid));
+
+		ulid = "u123456789ABCDEFGHJKMNPQRS"; // Letter u
+		assertFalse("ULID with 'u' or 'U' should be invalid.", Ulid.isValidString(ulid));
+
+		ulid = "#123456789ABCDEFGHJKMNPQRS"; // Special char
+		assertFalse("ULID with special chars should be invalid.", Ulid.isValidString(ulid));
+
+		ulid = "8ZZZZZZZZZABCDEFGHJKMNPQRS"; // timestamp > (2^48)-1
+		assertFalse("ULID with timestamp greater than (2^48)-1 should be invalid.", Ulid.isValidString(ulid));
 	}
 
 	private static String transliterate(String string, char[] alphabet1, char[] alphabet2) {

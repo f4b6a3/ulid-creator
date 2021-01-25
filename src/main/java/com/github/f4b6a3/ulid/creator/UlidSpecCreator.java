@@ -27,11 +27,10 @@ package com.github.f4b6a3.ulid.creator;
 import java.util.Random;
 
 import com.github.f4b6a3.ulid.Ulid;
+import com.github.f4b6a3.ulid.strategy.DefaultRandomStrategy;
 import com.github.f4b6a3.ulid.strategy.RandomStrategy;
-import com.github.f4b6a3.ulid.strategy.random.DefaultRandomStrategy;
-import com.github.f4b6a3.ulid.strategy.random.OtherRandomStrategy;
 
-public abstract class UlidSpecCreator {
+public class UlidSpecCreator {
 
 	protected RandomStrategy randomStrategy;
 
@@ -39,11 +38,15 @@ public abstract class UlidSpecCreator {
 		this.randomStrategy = new DefaultRandomStrategy();
 	}
 
-	public synchronized Ulid create() {
+	public Ulid create() {
 		return create(System.currentTimeMillis());
 	}
 
-	public abstract Ulid create(final long time);
+	public Ulid create(final long time) {
+		final byte[] random = new byte[10];
+		this.randomStrategy.nextBytes(random);
+		return Ulid.of(time, random);
+	}
 
 	/**
 	 * Replaces the default random strategy with another.
@@ -59,22 +62,6 @@ public abstract class UlidSpecCreator {
 	@SuppressWarnings("unchecked")
 	public synchronized <T extends UlidSpecCreator> T withRandomStrategy(RandomStrategy randomStrategy) {
 		this.randomStrategy = randomStrategy;
-		return (T) this;
-	}
-
-	/**
-	 * Replaces the default random strategy with another that uses the input
-	 * {@link Random} instance.
-	 * 
-	 * It replaces the internal {@link DefaultRandomStrategy} with
-	 * {@link OtherRandomStrategy}.
-	 * 
-	 * @param random a random generator
-	 * @return {@link UlidSpecCreator}
-	 */
-	@SuppressWarnings("unchecked")
-	public synchronized <T extends UlidSpecCreator> T withRandomGenerator(Random random) {
-		this.randomStrategy = new OtherRandomStrategy(random);
 		return (T) this;
 	}
 }

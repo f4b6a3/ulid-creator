@@ -22,35 +22,27 @@
  * SOFTWARE.
  */
 
-package com.github.f4b6a3.ulid.creator.impl;
+package com.github.f4b6a3.ulid.creator;
 
 import com.github.f4b6a3.ulid.Ulid;
-import com.github.f4b6a3.ulid.creator.UlidSpecCreator;
 
-public final class DefaultUlidSpecCreator extends UlidSpecCreator {
+public final class MonotonicUlidSpecCreator extends UlidSpecCreator {
+
+	private long lastTime;
+	private Ulid lastUlid;
 
 	@Override
 	public synchronized Ulid create(final long time) {
+		
+		if (time == this.lastTime) {
+			this.lastUlid = lastUlid.increment();
+		} else {
+			final byte[] random = new byte[10];
+			this.randomStrategy.nextBytes(random);
+			this.lastUlid = Ulid.of(time, random);
+		}
 
-		long msb = 0;
-		long lsb = 0;
-
-		final byte[] bytes = new byte[10];
-		this.randomStrategy.nextBytes(bytes);
-
-		msb |= time << 16;
-		msb |= (long) (bytes[0x0] & 0xff) << 8;
-		msb |= (long) (bytes[0x1] & 0xff);
-
-		lsb |= (long) (bytes[0x2] & 0xff) << 56;
-		lsb |= (long) (bytes[0x3] & 0xff) << 48;
-		lsb |= (long) (bytes[0x4] & 0xff) << 40;
-		lsb |= (long) (bytes[0x5] & 0xff) << 32;
-		lsb |= (long) (bytes[0x6] & 0xff) << 24;
-		lsb |= (long) (bytes[0x7] & 0xff) << 16;
-		lsb |= (long) (bytes[0x8] & 0xff) << 8;
-		lsb |= (long) (bytes[0x9] & 0xff);
-
-		return new Ulid(msb, lsb);
+		this.lastTime = time;
+		return this.lastUlid;
 	}
 }
