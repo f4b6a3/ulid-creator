@@ -2,7 +2,7 @@ package com.github.f4b6a3.ulid;
 
 import java.util.HashSet;
 import com.github.f4b6a3.ulid.UlidCreator;
-import com.github.f4b6a3.ulid.creator.UlidSpecCreator;
+import com.github.f4b6a3.ulid.creator.UlidFactory;
 
 /**
  * 
@@ -22,8 +22,8 @@ public class UniquenessTest {
 
 	private boolean verbose; // Show progress or not
 
-	// ULID Spec creator
-	private UlidSpecCreator creator;
+	// ULID Spec factory
+	private UlidFactory factory;
 
 	private long time = System.currentTimeMillis(); // fixed timestamp
 
@@ -32,12 +32,12 @@ public class UniquenessTest {
 	 * 
 	 * @param threadCount
 	 * @param requestCount
-	 * @param creator
+	 * @param factory
 	 */
-	public UniquenessTest(int threadCount, int requestCount, UlidSpecCreator creator, boolean progress) {
+	public UniquenessTest(int threadCount, int requestCount, UlidFactory factory, boolean progress) {
 		this.threadCount = threadCount;
 		this.requestCount = requestCount;
-		this.creator = creator;
+		this.factory = factory;
 		this.verbose = progress;
 		this.initCache();
 	}
@@ -90,13 +90,13 @@ public class UniquenessTest {
 
 			for (int i = 0; i < max; i++) {
 
-				// Request a UUID
-				Ulid ulid = creator.create(time);
+				// Request a ULID
+				Ulid ulid = factory.create(time);
 
 				if (verbose) {
-					// Calculate and show progress
-					progress = (int) ((i * 1.0 / max) * 100);
-					if (progress % 10 == 0) {
+					if (i % (max / 100) == 0) {
+						// Calculate and show progress
+						progress = (int) ((i * 1.0 / max) * 100);
 						System.out.println(String.format("[Thread %06d] %s %s %s%%", id, ulid, i, (int) progress));
 					}
 				}
@@ -117,9 +117,9 @@ public class UniquenessTest {
 	}
 
 	public static void execute(boolean verbose, int threadCount, int requestCount) {
-		UlidSpecCreator creator = UlidCreator.getMonotonicUlidSpecCreator();
+		UlidFactory factory = UlidCreator.getMonotonicFactory();
 
-		UniquenessTest test = new UniquenessTest(threadCount, requestCount, creator, verbose);
+		UniquenessTest test = new UniquenessTest(threadCount, requestCount, factory, verbose);
 		test.start();
 	}
 

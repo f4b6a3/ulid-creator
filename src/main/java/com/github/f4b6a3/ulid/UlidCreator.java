@@ -24,43 +24,97 @@
 
 package com.github.f4b6a3.ulid;
 
-import com.github.f4b6a3.ulid.creator.MonotonicUlidSpecCreator;
-import com.github.f4b6a3.ulid.creator.UlidSpecCreator;
+import com.github.f4b6a3.ulid.creator.MonotonicUlidFactory;
+import com.github.f4b6a3.ulid.creator.UlidFactory;
+import com.github.f4b6a3.ulid.creator.DefaultUlidFactory;
 
+/**
+ * Facade to the ULID factories.
+ * 
+ * The ULID has two components:
+ * 
+ * - Time component: a part of 48 bits that represent the amount of milliseconds
+ * since Unix Epoch, 1970-01-01.
+ * 
+ * - Random component: a byte array of 80 bits that has a random value generated
+ * a secure random generator.
+ * 
+ * The maximum ULIDs that can be generated per millisecond is 2^80.
+ */
 public final class UlidCreator {
 
 	private UlidCreator() {
 	}
 
+	/**
+	 * Returns a ULID.
+	 * 
+	 * The random component is always reset to a new random value.
+	 * 
+	 * @return a ULID
+	 */
 	public static Ulid getUlid() {
-		return DefaultCreatorHolder.INSTANCE.create();
+		return DefaultFactoryHolder.INSTANCE.create();
 	}
 
+	/**
+	 * Returns a ULID with a specific time.
+	 * 
+	 * @param time a specific time
+	 * @return a ULID
+	 */
 	public static Ulid getUlid(final long time) {
-		return DefaultCreatorHolder.INSTANCE.create(time);
+		return DefaultFactoryHolder.INSTANCE.create(time);
 	}
 
+	/**
+	 * Returns a Monotonic ULID.
+	 * 
+	 * The random component is reset to a new value every time the millisecond
+	 * changes.
+	 * 
+	 * If more than one ULID is generated within the same millisecond, the random
+	 * component is incremented by one.
+	 * 
+	 * @return a ULID
+	 */
 	public static Ulid getMonotonicUlid() {
-		return MonotonicCreatorHolder.INSTANCE.create();
+		return MonotonicFactoryHolder.INSTANCE.create();
 	}
 
+	/**
+	 * Returns a Monotonic ULID with a specific time.
+	 * 
+	 * @param time a specific time
+	 * @return a ULID
+	 */
 	public static Ulid getMonotonicUlid(final long time) {
-		return MonotonicCreatorHolder.INSTANCE.create(time);
+		return MonotonicFactoryHolder.INSTANCE.create(time);
 	}
 
-	public static UlidSpecCreator getUlidSpecCreator() {
-		return new UlidSpecCreator();
+	/**
+	 * Returns an instance of the Default ULID factory.
+	 * 
+	 * @return a ULID factory
+	 */
+	public static UlidFactory getDefaultFactory() {
+		return new DefaultUlidFactory();
 	}
 
-	public static UlidSpecCreator getMonotonicUlidSpecCreator() {
-		return new MonotonicUlidSpecCreator();
+	/**
+	 * Returns an instance of the Monotonic ULID factory.
+	 * 
+	 * @return a ULID factory
+	 */
+	public static UlidFactory getMonotonicFactory() {
+		return new MonotonicUlidFactory();
 	}
 
-	private static class DefaultCreatorHolder {
-		static final UlidSpecCreator INSTANCE = getUlidSpecCreator();
+	private static class DefaultFactoryHolder {
+		static final UlidFactory INSTANCE = getDefaultFactory();
 	}
 
-	private static class MonotonicCreatorHolder {
-		static final UlidSpecCreator INSTANCE = getMonotonicUlidSpecCreator();
+	private static class MonotonicFactoryHolder {
+		static final UlidFactory INSTANCE = getMonotonicFactory();
 	}
 }

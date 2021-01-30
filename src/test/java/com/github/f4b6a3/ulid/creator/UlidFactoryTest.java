@@ -5,7 +5,7 @@ import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 
-public abstract class AbstractUlidSpecCreatorTest {
+public abstract class UlidFactoryTest {
 
 	protected static final int DEFAULT_LOOP_MAX = 10_000;
 
@@ -28,10 +28,10 @@ public abstract class AbstractUlidSpecCreatorTest {
 	protected static class TestThread extends Thread {
 
 		public static Set<UUID> hashSet = new HashSet<>();
-		private UlidSpecCreator creator;
+		private UlidFactory creator;
 		private int loopLimit;
 
-		public TestThread(UlidSpecCreator creator, int loopLimit) {
+		public TestThread(UlidFactory creator, int loopLimit) {
 			this.creator = creator;
 			this.loopLimit = loopLimit;
 		}

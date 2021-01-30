@@ -7,10 +7,10 @@ import com.github.f4b6a3.ulid.UlidCreator;
 
 import static org.junit.Assert.*;
 
-import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Random;
 
-public class MonotonicUlidSpecCreatorTest extends AbstractUlidSpecCreatorTest {
+public class DefaultUlidFactoryTest extends UlidFactoryTest {
 
 	@Test
 	public void testGetUlid() {
@@ -19,14 +19,13 @@ public class MonotonicUlidSpecCreatorTest extends AbstractUlidSpecCreatorTest {
 		long startTime = System.currentTimeMillis();
 
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
-			list[i] = UlidCreator.getMonotonicUlid();
+			list[i] = UlidCreator.getUlid();
 		}
 
 		long endTime = System.currentTimeMillis();
 
 		checkNullOrInvalid(list);
 		checkUniqueness(list);
-		checkOrdering(list);
 		checkCreationTime(list, startTime, endTime);
 	}
 
@@ -59,24 +58,17 @@ public class MonotonicUlidSpecCreatorTest extends AbstractUlidSpecCreatorTest {
 		}
 	}
 
-	private void checkOrdering(Ulid[] list) {
-		Ulid[] other = Arrays.copyOf(list, list.length);
-		Arrays.sort(other);
-
-		for (int i = 0; i < list.length; i++) {
-			assertEquals("The ULID list is not ordered", list[i], other[i]);
-		}
-	}
-
 	@Test
-	public void testGetMonotonicUlidInParallel() throws InterruptedException {
+	public void testGetUlidInParallel() throws InterruptedException {
 
 		Thread[] threads = new Thread[THREAD_TOTAL];
 		TestThread.clearHashSet();
 
 		// Instantiate and start many threads
 		for (int i = 0; i < THREAD_TOTAL; i++) {
-			threads[i] = new TestThread(UlidCreator.getMonotonicUlidSpecCreator(), DEFAULT_LOOP_MAX);
+			Random random = new Random();
+			UlidFactory factory = UlidCreator.getDefaultFactory().withRandomGenerator(random::nextBytes);
+			threads[i] = new TestThread(factory, DEFAULT_LOOP_MAX);
 			threads[i].start();
 		}
 
@@ -90,10 +82,10 @@ public class MonotonicUlidSpecCreatorTest extends AbstractUlidSpecCreatorTest {
 	}
 
 	@Test
-	public void testGetMonotonicUlidTime() {
+	public void testGetUlidTime() {
 		for (int i = 0; i < 100; i++) {
 			long time = RANDOM.nextLong() & TIME_MASK;
-			Ulid ulid = UlidCreator.getMonotonicUlid(time);
+			Ulid ulid = UlidCreator.getUlid(time);
 			assertEquals(time, ulid.getTime());
 		}
 	}

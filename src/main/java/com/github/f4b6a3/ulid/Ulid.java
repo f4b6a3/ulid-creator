@@ -30,13 +30,23 @@ import java.util.UUID;
 
 /**
  * This class represents a ULID.
+ * 
+ * The ULID has two components:
+ * 
+ * - Time component: a part of 48 bits that represent the amount of milliseconds
+ * since Unix Epoch, 1970-01-01.
+ * 
+ * - Random component: a byte array of 80 bits that has a random value generated
+ * a secure random generator.
+ * 
+ * Instances of this class are immutable.
  */
 public final class Ulid implements Serializable, Comparable<Ulid> {
 
-	private final long msb;
-	private final long lsb;
+	private static final long serialVersionUID = 2625269413446854731L;
 
-	protected static final long TIME_MAX = 281474976710655L; // 2^48 - 1
+	private final long msb; // most significant bits
+	private final long lsb; // least significant bits
 
 	public static final int ULID_LENGTH = 26;
 	public static final int TIME_LENGTH = 10;
@@ -46,20 +56,17 @@ public final class Ulid implements Serializable, Comparable<Ulid> {
 	public static final int TIME_BYTES_LENGTH = 6;
 	public static final int RANDOM_BYTES_LENGTH = 10;
 
-	// 0xffffffffffffffffL + 1 = 0x0000000000000000L
-	private static final long INCREMENT_OVERFLOW = 0x0000000000000000L;
-
-	protected static final char[] ALPHABET_UPPERCASE = //
+	private static final char[] ALPHABET_UPPERCASE = //
 			{ '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', //
 					'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'J', 'K', //
 					'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'V', 'W', 'X', 'Y', 'Z' };
 
-	protected static final char[] ALPHABET_LOWERCASE = //
+	private static final char[] ALPHABET_LOWERCASE = //
 			{ '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', //
 					'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'j', 'k', //
 					'm', 'n', 'p', 'q', 'r', 's', 't', 'v', 'w', 'x', 'y', 'z' };
 
-	protected static final long[] ALPHABET_VALUES = new long[128];
+	private static final long[] ALPHABET_VALUES = new long[128];
 	static {
 		for (int i = 0; i < ALPHABET_VALUES.length; i++) {
 			ALPHABET_VALUES[i] = -1;
@@ -129,139 +136,190 @@ public final class Ulid implements Serializable, Comparable<Ulid> {
 		ALPHABET_VALUES['O'] = 0x00;
 		ALPHABET_VALUES['I'] = 0x01;
 		ALPHABET_VALUES['L'] = 0x01;
-
 	}
 
-	private static final long serialVersionUID = 2625269413446854731L;
+	// 0xffffffffffffffffL + 1 = 0x0000000000000000L
+	private static final long INCREMENT_OVERFLOW = 0x0000000000000000L;
 
+	/**
+	 * Create a new ULID.
+	 * 
+	 * Useful to make copies of ULIDs.
+	 * 
+	 * @param ulid a ULID
+	 */
+	public Ulid(Ulid ulid) {
+		this.msb = ulid.getMostSignificantBits();
+		this.lsb = ulid.getLeastSignificantBits();
+	}
+
+	/**
+	 * Create a new ULID.
+	 * 
+	 * @param mostSignificantBits  the first 8 bytes as a long value
+	 * @param leastSignificantBits the last 8 bytes as a long value
+	 */
 	public Ulid(long mostSignificantBits, long leastSignificantBits) {
 		this.msb = mostSignificantBits;
 		this.lsb = leastSignificantBits;
 	}
 
-	public static Ulid of(Ulid ulid) {
-		return new Ulid(ulid.getMostSignificantBits(), ulid.getLeastSignificantBits());
-	}
+	/**
+	 * Create a new ULID.
+	 * 
+	 * @param time   the time component in milliseconds since 1970-01-01
+	 * @param random the random component in byte array
+	 */
+	public Ulid(long time, byte[] random) {
 
-	public static Ulid of(UUID uuid) {
-		return new Ulid(uuid.getMostSignificantBits(), uuid.getLeastSignificantBits());
-	}
-
-	// TODO: test
-	public static Ulid of(byte[] bytes) {
-
-		if (bytes == null || bytes.length != ULID_BYTES_LENGTH) {
-			throw new IllegalArgumentException("Invalid ULID bytes");
+		// The time component has 48 bits.
+		if ((time & 0xffff000000000000L) != 0) {
+			// ULID specification:
+			// "Any attempt to decode or encode a ULID larger than this (time > 2^48-1)
+			// should be rejected by all implementations, to prevent overflow bugs."
+			throw new IllegalArgumentException("Invalid time value"); // time overflow!
+		}
+		// The random component has 80 bits (10 bytes).
+		if (random == null || random.length != RANDOM_BYTES_LENGTH) {
+			throw new IllegalArgumentException("Invalid random bytes"); // null or wrong length!
 		}
 
 		long long0 = 0;
 		long long1 = 0;
 
-		long0 |= (bytes[0x0] & 0xffL) << 56;
-		long0 |= (bytes[0x1] & 0xffL) << 48;
-		long0 |= (bytes[0x2] & 0xffL) << 40;
-		long0 |= (bytes[0x3] & 0xffL) << 32;
-		long0 |= (bytes[0x4] & 0xffL) << 24;
-		long0 |= (bytes[0x5] & 0xffL) << 16;
-		long0 |= (bytes[0x6] & 0xffL) << 8;
-		long0 |= (bytes[0x7] & 0xffL);
+		long0 |= time << 16;
+		long0 |= (long) (random[0x0] & 0xff) << 8;
+		long0 |= (long) (random[0x1] & 0xff);
 
-		long1 |= (bytes[0x8] & 0xffL) << 56;
-		long1 |= (bytes[0x9] & 0xffL) << 48;
-		long1 |= (bytes[0xa] & 0xffL) << 40;
-		long1 |= (bytes[0xb] & 0xffL) << 32;
-		long1 |= (bytes[0xc] & 0xffL) << 24;
-		long1 |= (bytes[0xd] & 0xffL) << 16;
-		long1 |= (bytes[0xe] & 0xffL) << 8;
-		long1 |= (bytes[0xf] & 0xffL);
+		long1 |= (long) (random[0x2] & 0xff) << 56;
+		long1 |= (long) (random[0x3] & 0xff) << 48;
+		long1 |= (long) (random[0x4] & 0xff) << 40;
+		long1 |= (long) (random[0x5] & 0xff) << 32;
+		long1 |= (long) (random[0x6] & 0xff) << 24;
+		long1 |= (long) (random[0x7] & 0xff) << 16;
+		long1 |= (long) (random[0x8] & 0xff) << 8;
+		long1 |= (long) (random[0x9] & 0xff);
 
-		return new Ulid(long0, long1);
+		this.msb = long0;
+		this.lsb = long1;
 	}
 
-	// TODO: optimize
-	public static Ulid of(String string) {
-
-		final char[] chars = toCharArray(string);
-
-		long tm = 0;
-		long r1 = 0;
-		long r2 = 0;
-
-		tm |= ALPHABET_VALUES[chars[0x00]] << 45;
-		tm |= ALPHABET_VALUES[chars[0x01]] << 40;
-		tm |= ALPHABET_VALUES[chars[0x02]] << 35;
-		tm |= ALPHABET_VALUES[chars[0x03]] << 30;
-		tm |= ALPHABET_VALUES[chars[0x04]] << 25;
-		tm |= ALPHABET_VALUES[chars[0x05]] << 20;
-		tm |= ALPHABET_VALUES[chars[0x06]] << 15;
-		tm |= ALPHABET_VALUES[chars[0x07]] << 10;
-		tm |= ALPHABET_VALUES[chars[0x08]] << 5;
-		tm |= ALPHABET_VALUES[chars[0x09]];
-
-		r1 |= ALPHABET_VALUES[chars[0x0a]] << 35;
-		r1 |= ALPHABET_VALUES[chars[0x0b]] << 30;
-		r1 |= ALPHABET_VALUES[chars[0x0c]] << 25;
-		r1 |= ALPHABET_VALUES[chars[0x0d]] << 20;
-		r1 |= ALPHABET_VALUES[chars[0x0e]] << 15;
-		r1 |= ALPHABET_VALUES[chars[0x0f]] << 10;
-		r1 |= ALPHABET_VALUES[chars[0x10]] << 5;
-		r1 |= ALPHABET_VALUES[chars[0x11]];
-
-		r2 |= ALPHABET_VALUES[chars[0x12]] << 35;
-		r2 |= ALPHABET_VALUES[chars[0x13]] << 30;
-		r2 |= ALPHABET_VALUES[chars[0x14]] << 25;
-		r2 |= ALPHABET_VALUES[chars[0x15]] << 20;
-		r2 |= ALPHABET_VALUES[chars[0x16]] << 15;
-		r2 |= ALPHABET_VALUES[chars[0x17]] << 10;
-		r2 |= ALPHABET_VALUES[chars[0x18]] << 5;
-		r2 |= ALPHABET_VALUES[chars[0x19]];
-
-		final long msb = (tm << 16) | (r1 >>> 24);
-		final long lsb = (r1 << 40) | (r2 & 0xffffffffffL);
-
-		return new Ulid(msb, lsb);
+	/**
+	 * Converts a UUID into a ULID.
+	 * 
+	 * @param uuid a UUID
+	 * @return a ULID
+	 */
+	public static Ulid from(UUID uuid) {
+		return new Ulid(uuid.getMostSignificantBits(), uuid.getLeastSignificantBits());
 	}
 
-	public static Ulid of(long time, byte[] random) {
+	/**
+	 * Converts a byte array into a ULID.
+	 * 
+	 * @param bytes a byte array
+	 * @return a ULID
+	 */
+	public static Ulid from(byte[] bytes) {
 
-		if ((time & 0xffff000000000000L) != 0) {
-			throw new IllegalArgumentException("Invalid time value");
-		}
-		if (random == null || random.length != RANDOM_BYTES_LENGTH) {
-			throw new IllegalArgumentException("Invalid random bytes");
+		if (bytes == null || bytes.length != ULID_BYTES_LENGTH) {
+			throw new IllegalArgumentException("Invalid ULID bytes"); // null or wrong length!
 		}
 
 		long msb = 0;
 		long lsb = 0;
 
-		msb |= time << 16;
-		msb |= (long) (random[0x0] & 0xff) << 8;
-		msb |= (long) (random[0x1] & 0xff);
+		msb |= (bytes[0x0] & 0xffL) << 56;
+		msb |= (bytes[0x1] & 0xffL) << 48;
+		msb |= (bytes[0x2] & 0xffL) << 40;
+		msb |= (bytes[0x3] & 0xffL) << 32;
+		msb |= (bytes[0x4] & 0xffL) << 24;
+		msb |= (bytes[0x5] & 0xffL) << 16;
+		msb |= (bytes[0x6] & 0xffL) << 8;
+		msb |= (bytes[0x7] & 0xffL);
 
-		lsb |= (long) (random[0x2] & 0xff) << 56;
-		lsb |= (long) (random[0x3] & 0xff) << 48;
-		lsb |= (long) (random[0x4] & 0xff) << 40;
-		lsb |= (long) (random[0x5] & 0xff) << 32;
-		lsb |= (long) (random[0x6] & 0xff) << 24;
-		lsb |= (long) (random[0x7] & 0xff) << 16;
-		lsb |= (long) (random[0x8] & 0xff) << 8;
-		lsb |= (long) (random[0x9] & 0xff);
+		lsb |= (bytes[0x8] & 0xffL) << 56;
+		lsb |= (bytes[0x9] & 0xffL) << 48;
+		lsb |= (bytes[0xa] & 0xffL) << 40;
+		lsb |= (bytes[0xb] & 0xffL) << 32;
+		lsb |= (bytes[0xc] & 0xffL) << 24;
+		lsb |= (bytes[0xd] & 0xffL) << 16;
+		lsb |= (bytes[0xe] & 0xffL) << 8;
+		lsb |= (bytes[0xf] & 0xffL);
 
 		return new Ulid(msb, lsb);
 	}
 
+	/**
+	 * Converts a canonical string into a ULID.
+	 * 
+	 * The input string must be 26 characters long and must contain only characters
+	 * from Crockford's base 32 alphabet.
+	 * 
+	 * The first character of the input string must be between 0 and 7.
+	 * 
+	 * @param string a canonical string
+	 * @return a ULID
+	 */
+	public static Ulid from(String string) {
+
+		final char[] chars = toCharArray(string);
+
+		long time = 0;
+		long random0 = 0;
+		long random1 = 0;
+
+		time |= ALPHABET_VALUES[chars[0x00]] << 45;
+		time |= ALPHABET_VALUES[chars[0x01]] << 40;
+		time |= ALPHABET_VALUES[chars[0x02]] << 35;
+		time |= ALPHABET_VALUES[chars[0x03]] << 30;
+		time |= ALPHABET_VALUES[chars[0x04]] << 25;
+		time |= ALPHABET_VALUES[chars[0x05]] << 20;
+		time |= ALPHABET_VALUES[chars[0x06]] << 15;
+		time |= ALPHABET_VALUES[chars[0x07]] << 10;
+		time |= ALPHABET_VALUES[chars[0x08]] << 5;
+		time |= ALPHABET_VALUES[chars[0x09]];
+
+		random0 |= ALPHABET_VALUES[chars[0x0a]] << 35;
+		random0 |= ALPHABET_VALUES[chars[0x0b]] << 30;
+		random0 |= ALPHABET_VALUES[chars[0x0c]] << 25;
+		random0 |= ALPHABET_VALUES[chars[0x0d]] << 20;
+		random0 |= ALPHABET_VALUES[chars[0x0e]] << 15;
+		random0 |= ALPHABET_VALUES[chars[0x0f]] << 10;
+		random0 |= ALPHABET_VALUES[chars[0x10]] << 5;
+		random0 |= ALPHABET_VALUES[chars[0x11]];
+
+		random1 |= ALPHABET_VALUES[chars[0x12]] << 35;
+		random1 |= ALPHABET_VALUES[chars[0x13]] << 30;
+		random1 |= ALPHABET_VALUES[chars[0x14]] << 25;
+		random1 |= ALPHABET_VALUES[chars[0x15]] << 20;
+		random1 |= ALPHABET_VALUES[chars[0x16]] << 15;
+		random1 |= ALPHABET_VALUES[chars[0x17]] << 10;
+		random1 |= ALPHABET_VALUES[chars[0x18]] << 5;
+		random1 |= ALPHABET_VALUES[chars[0x19]];
+
+		final long msb = (time << 16) | (random0 >>> 24);
+		final long lsb = (random0 << 40) | (random1 & 0xffffffffffL);
+
+		return new Ulid(msb, lsb);
+	}
+
+	/**
+	 * Convert the ULID into a UUID.
+	 * 
+	 * If you need a RFC-4122 UUID v4 do this: {@code Ulid.toRfc4122().toUuid()}.
+	 * 
+	 * @return a UUID.
+	 */
 	public UUID toUuid() {
 		return new UUID(this.msb, this.lsb);
 	}
 
-	// TODO: test
-	public UUID toUuid4() {
-		final long msb4 = (this.msb & 0xffffffffffff0fffL) | 0x0000000000004000L; // apply version 4
-		final long lsb4 = (this.lsb & 0x3fffffffffffffffL) | 0x8000000000000000L; // apply variant RFC-4122
-		return new UUID(msb4, lsb4);
-	}
-
-	// TODO: test
+	/**
+	 * Convert the ULID into a byte array.
+	 * 
+	 * @return an byte array.
+	 */
 	public byte[] toBytes() {
 
 		final byte[] bytes = new byte[ULID_BYTES_LENGTH];
@@ -287,64 +345,183 @@ public final class Ulid implements Serializable, Comparable<Ulid> {
 		return bytes;
 	}
 
-	// TODO: test
-	public byte[] toBytes4() {
-		return Ulid.of(this.toUuid4()).toBytes();
-	}
-
-	@Override
-	public String toString() {
-		return this.toUpperCase();
-	}
-
-	// TODO: test
+	/**
+	 * Converts the ULID into a canonical string in upper case.
+	 * 
+	 * The output string is 26 characters long and contains only characters from
+	 * Crockford's base 32 alphabet.
+	 * 
+	 * See: https://www.crockford.com/base32.html
+	 * 
+	 * @return a string
+	 */
 	public String toUpperCase() {
 		return toString(ALPHABET_UPPERCASE);
 	}
 
-	// TODO: test
-	public String toUpperCase4() {
-		return Ulid.of(this.toUuid4()).toUpperCase();
-	}
-
-	// TODO: test
+	/**
+	 * Converts the ULID into a canonical string in lower case.
+	 * 
+	 * The output string is 26 characters long and contains only characters from
+	 * Crockford's base 32 alphabet.
+	 * 
+	 * It is at least twice as fast as {@code Ulid.toString().toLowerCase()}.
+	 * 
+	 * See: https://www.crockford.com/base32.html
+	 * 
+	 * @return a string
+	 */
 	public String toLowerCase() {
 		return toString(ALPHABET_LOWERCASE);
 	}
 
-	// TODO: test
-	public String toLowerCase4() {
-		return Ulid.of(this.toUuid4()).toLowerCase();
+	/**
+	 * Converts the ULID into into another ULID that is compatible with UUID v4.
+	 * 
+	 * The bytes of the returned ULID are compliant with the RFC-4122 version 4.
+	 * 
+	 * If you need a RFC-4122 UUID v4 do this: {@code Ulid.toRfc4122().toUuid()}.
+	 * 
+	 * Read: https://tools.ietf.org/html/rfc4122
+	 * 
+	 * ### RFC-4122 - 4.4. Algorithms for Creating a UUID from Truly Random or
+	 * Pseudo-Random Numbers
+	 * 
+	 * The version 4 UUID is meant for generating UUIDs from truly-random or
+	 * pseudo-random numbers.
+	 * 
+	 * The algorithm is as follows:
+	 * 
+	 * - Set the two most significant bits (bits 6 and 7) of the
+	 * clock_seq_hi_and_reserved to zero and one, respectively.
+	 * 
+	 * - Set the four most significant bits (bits 12 through 15) of the
+	 * time_hi_and_version field to the 4-bit version number from Section 4.1.3.
+	 * 
+	 * - Set all the other bits to randomly (or pseudo-randomly) chosen values.
+	 * 
+	 * @return a ULID
+	 */
+	public Ulid toRfc4122() {
+
+		// set the 4 most significant bits of the 7th byte to 0, 1, 0 and 0
+		final long msb4 = (this.msb & 0xffffffffffff0fffL) | 0x0000000000004000L; // RFC-4122 version 4
+		// set the 2 most significant bits of the 9th byte to 1 and 0
+		final long lsb4 = (this.lsb & 0x3fffffffffffffffL) | 0x8000000000000000L; // RFC-4122 variant 2
+
+		return new Ulid(msb4, lsb4);
 	}
 
-	public long getTime() {
-		return this.msb >>> 16;
-	}
-
+	/**
+	 * Returns the instant of creation.
+	 * 
+	 * The instant of creation is extracted from the time component.
+	 * 
+	 * @return {@link Instant}
+	 */
 	public Instant getInstant() {
 		return Instant.ofEpochMilli(this.getTime());
 	}
 
+	/**
+	 * Returns the time component as a number.
+	 * 
+	 * The time component is a number between 0 and 2^48-1. It is equivalent to the
+	 * count of milliseconds since 1970-01-01 (Unix epoch).
+	 * 
+	 * @return a number of milliseconds.
+	 */
+	public long getTime() {
+		return this.msb >>> 16;
+	}
+
+	/**
+	 * Returns the random component as a byte array.
+	 * 
+	 * The random component is an array of 10 bytes (80 bits).
+	 * 
+	 * @return a byte array
+	 */
+	public byte[] getRandom() {
+		final byte[] bytes = new byte[RANDOM_BYTES_LENGTH];
+		System.arraycopy(this.toBytes(), TIME_BYTES_LENGTH, bytes, 0, RANDOM_BYTES_LENGTH);
+		return bytes;
+	}
+
+	/**
+	 * Returns the most significant bits as a number.
+	 * 
+	 * @return a number.
+	 */
 	public long getMostSignificantBits() {
 		return this.msb;
 	}
 
+	/**
+	 * Returns the least significant bits as a number.
+	 * 
+	 * @return a number.
+	 */
 	public long getLeastSignificantBits() {
 		return this.lsb;
 	}
 
-	// TODO: test
+	/**
+	 * Returns a new ULID by incrementing the random component of the current ULID.
+	 * 
+	 * Since the random component contains 80 bits:
+	 * 
+	 * (1) This method can generate up to 1208925819614629174706176 (2^80) ULIDs per
+	 * millisecond;
+	 * 
+	 * (2) This method can generate monotonic increasing ULIDs 99.999999999999992%
+	 * ((2^80 - 10^9) / (2^80)) of the time, considering an unrealistic rate of
+	 * 1,000,000,000 ULIDs per millisecond.
+	 * 
+	 * Due to (1) and (2), it does not throw the error message recommended by the
+	 * specification. When an overflow occurs in the last 80 bits, the random
+	 * component simply wraps around.
+	 * 
+	 * @return a ULID
+	 */
 	public Ulid increment() {
 
-		long msb1 = this.msb;
-		long lsb1 = this.lsb + 1; // Increment the LSB
+		long newMsb = this.msb;
+		long newLsb = this.lsb + 1; // increment the LEAST significant bits
 
-		if (lsb1 == INCREMENT_OVERFLOW) {
-			// Increment the random bits of the MSB
-			msb1 = (msb1 & 0xffffffffffff0000L) | ((msb1 + 1) & 0x000000000000ffffL);
+		if (newLsb == INCREMENT_OVERFLOW) {
+			// carrying the extra bit by incrementing the MOST significant bits
+			newMsb = (newMsb & 0xffffffffffff0000L) | ((newMsb + 1) & 0x000000000000ffffL);
 		}
 
-		return new Ulid(msb1, lsb1);
+		return new Ulid(newMsb, newLsb);
+	}
+
+	/**
+	 * Checks if the input string is valid.
+	 * 
+	 * The input string must be 26 characters long and must contain only characters
+	 * from Crockford's base 32 alphabet.
+	 * 
+	 * The first character of the input string must be between 0 and 7.
+	 * 
+	 * @param string a string
+	 * @return true if valid
+	 */
+	public static boolean isValid(String string) {
+		return string != null && isValidCharArray(string.toCharArray());
+	}
+
+	/**
+	 * Converts the ULID into a canonical string in upper case.
+	 * 
+	 * It is the same as {@code Ulid.toUpperCase()}.
+	 * 
+	 * @return a ULID string
+	 */
+	@Override
+	public String toString() {
+		return this.toUpperCase();
 	}
 
 	@Override
@@ -385,14 +562,13 @@ public final class Ulid implements Serializable, Comparable<Ulid> {
 		return 0;
 	}
 
-	// TODO: optimize
 	protected String toString(char[] alphabet) {
 
 		final char[] chars = new char[ULID_LENGTH];
 
 		long time = this.msb >>> 16;
-		long random1 = ((this.msb & 0xffffL) << 24) | (this.lsb >>> 40);
-		long random2 = (this.lsb & 0xffffffffffL);
+		long random0 = ((this.msb & 0xffffL) << 24) | (this.lsb >>> 40);
+		long random1 = (this.lsb & 0xffffffffffL);
 
 		chars[0x00] = alphabet[(int) (time >>> 45 & 0b11111)];
 		chars[0x01] = alphabet[(int) (time >>> 40 & 0b11111)];
@@ -405,29 +581,33 @@ public final class Ulid implements Serializable, Comparable<Ulid> {
 		chars[0x08] = alphabet[(int) (time >>> 5 & 0b11111)];
 		chars[0x09] = alphabet[(int) (time & 0b11111)];
 
-		chars[0x0a] = alphabet[(int) (random1 >>> 35 & 0b11111)];
-		chars[0x0b] = alphabet[(int) (random1 >>> 30 & 0b11111)];
-		chars[0x0c] = alphabet[(int) (random1 >>> 25 & 0b11111)];
-		chars[0x0d] = alphabet[(int) (random1 >>> 20 & 0b11111)];
-		chars[0x0e] = alphabet[(int) (random1 >>> 15 & 0b11111)];
-		chars[0x0f] = alphabet[(int) (random1 >>> 10 & 0b11111)];
-		chars[0x10] = alphabet[(int) (random1 >>> 5 & 0b11111)];
-		chars[0x11] = alphabet[(int) (random1 & 0b11111)];
+		chars[0x0a] = alphabet[(int) (random0 >>> 35 & 0b11111)];
+		chars[0x0b] = alphabet[(int) (random0 >>> 30 & 0b11111)];
+		chars[0x0c] = alphabet[(int) (random0 >>> 25 & 0b11111)];
+		chars[0x0d] = alphabet[(int) (random0 >>> 20 & 0b11111)];
+		chars[0x0e] = alphabet[(int) (random0 >>> 15 & 0b11111)];
+		chars[0x0f] = alphabet[(int) (random0 >>> 10 & 0b11111)];
+		chars[0x10] = alphabet[(int) (random0 >>> 5 & 0b11111)];
+		chars[0x11] = alphabet[(int) (random0 & 0b11111)];
 
-		chars[0x12] = alphabet[(int) (random2 >>> 35 & 0b11111)];
-		chars[0x13] = alphabet[(int) (random2 >>> 30 & 0b11111)];
-		chars[0x14] = alphabet[(int) (random2 >>> 25 & 0b11111)];
-		chars[0x15] = alphabet[(int) (random2 >>> 20 & 0b11111)];
-		chars[0x16] = alphabet[(int) (random2 >>> 15 & 0b11111)];
-		chars[0x17] = alphabet[(int) (random2 >>> 10 & 0b11111)];
-		chars[0x18] = alphabet[(int) (random2 >>> 5 & 0b11111)];
-		chars[0x19] = alphabet[(int) (random2 & 0b11111)];
+		chars[0x12] = alphabet[(int) (random1 >>> 35 & 0b11111)];
+		chars[0x13] = alphabet[(int) (random1 >>> 30 & 0b11111)];
+		chars[0x14] = alphabet[(int) (random1 >>> 25 & 0b11111)];
+		chars[0x15] = alphabet[(int) (random1 >>> 20 & 0b11111)];
+		chars[0x16] = alphabet[(int) (random1 >>> 15 & 0b11111)];
+		chars[0x17] = alphabet[(int) (random1 >>> 10 & 0b11111)];
+		chars[0x18] = alphabet[(int) (random1 >>> 5 & 0b11111)];
+		chars[0x19] = alphabet[(int) (random1 & 0b11111)];
 
 		return new String(chars);
 	}
 
-	public static boolean isValidString(String string) {
-		return isValidArray(string == null ? null : string.toCharArray());
+	protected static char[] toCharArray(String string) {
+		char[] chars = string == null ? null : string.toCharArray();
+		if (!isValidCharArray(chars)) {
+			throw new IllegalArgumentException(String.format("Invalid ULID: \"%s\"", string));
+		}
+		return chars;
 	}
 
 	/**
@@ -439,15 +619,22 @@ public final class Ulid implements Serializable, Comparable<Ulid> {
 	 * @param chars a char array
 	 * @return boolean true if valid
 	 */
-	protected static boolean isValidArray(final char[] chars) {
+	protected static boolean isValidCharArray(final char[] chars) {
 
 		if (chars == null || chars.length != ULID_LENGTH) {
 			return false; // null or wrong size!
 		}
 
-		// the two extra bits added by base-32 encoding must be zero
+		// The time component has 48 bits.
+		// The base32 encoded time component has 50 bits.
+		// The time component cannot be greater than than 2^48-1.
+		// So the 2 first bits of the base32 decoded time component must be ZERO.
+		// As a consequence, the 1st char of the input string must be between 0 and 7.
 		if ((ALPHABET_VALUES[chars[0]] & 0b11000) != 0) {
-			return false; // overflow!
+			// ULID specification:
+			// "Any attempt to decode or encode a ULID larger than this (time > 2^48-1)
+			// should be rejected by all implementations, to prevent overflow bugs."
+			return false; // time overflow!
 		}
 
 		for (int i = 0; i < chars.length; i++) {
@@ -457,13 +644,5 @@ public final class Ulid implements Serializable, Comparable<Ulid> {
 		}
 
 		return true; // It seems to be OK.
-	}
-
-	protected static char[] toCharArray(String string) {
-		char[] chars = string == null ? new char[0] : string.toCharArray();
-		if (!isValidArray(chars)) {
-			throw new IllegalArgumentException(String.format("Invalid ULID: \"%s\"", string));
-		}
-		return chars;
 	}
 }

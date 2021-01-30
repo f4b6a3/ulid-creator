@@ -31,6 +31,7 @@ import org.openjdk.jmh.runner.RunnerException;
 import org.openjdk.jmh.runner.options.Options;
 import org.openjdk.jmh.runner.options.OptionsBuilder;
 
+import com.github.f4b6a3.ulid.Ulid;
 import com.github.f4b6a3.ulid.UlidCreator;
 
 @Threads(1)
@@ -42,47 +43,47 @@ public class Benchmarks {
 	@Benchmark
 	@BenchmarkMode(Mode.Throughput)
 	@OutputTimeUnit(TimeUnit.MILLISECONDS)
-	public String getUlidStringThroughput() {
-		return UlidCreator.getUlidString();
+	public UUID getUuid() {
+		return UUID.randomUUID();
 	}
 
-	@Benchmark
-	@BenchmarkMode(Mode.AverageTime)
-	@OutputTimeUnit(TimeUnit.NANOSECONDS)
-	public String getUlidStringAverage() {
-		return UlidCreator.getUlidString();
-	}
-	
 	@Benchmark
 	@BenchmarkMode(Mode.Throughput)
 	@OutputTimeUnit(TimeUnit.MILLISECONDS)
-	public UUID getUlidThroughput() {
-		return UlidCreator.getUlid();
+	public String getUuidString() {
+		return UUID.randomUUID().toString();
 	}
 
 	@Benchmark
-	@BenchmarkMode(Mode.AverageTime)
-	@OutputTimeUnit(TimeUnit.NANOSECONDS)
-	public UUID getUlidAverage() {
+	@BenchmarkMode(Mode.Throughput)
+	@OutputTimeUnit(TimeUnit.MILLISECONDS)
+	public Ulid getUlid() {
 		return UlidCreator.getUlid();
 	}
 
 	@Benchmark
 	@BenchmarkMode(Mode.Throughput)
 	@OutputTimeUnit(TimeUnit.MILLISECONDS)
-	public UUID getRandomUUIDThroughput() {
-		return UUID.randomUUID();
+	public String getUlidString() {
+		return UlidCreator.getUlid().toString();
 	}
 
 	@Benchmark
-	@BenchmarkMode(Mode.AverageTime)
-	@OutputTimeUnit(TimeUnit.NANOSECONDS)
-	public UUID getRandomUUIDAverage() {
-		return UUID.randomUUID();
+	@BenchmarkMode(Mode.Throughput)
+	@OutputTimeUnit(TimeUnit.MILLISECONDS)
+	public Ulid getMonotonicUlid() {
+		return UlidCreator.getMonotonicUlid();
+	}
+
+	@Benchmark
+	@BenchmarkMode(Mode.Throughput)
+	@OutputTimeUnit(TimeUnit.MILLISECONDS)
+	public String getMonotonicUlidString() {
+		return UlidCreator.getMonotonicUlid().toString();
 	}
 
 	public static void main(String[] args) throws RunnerException {
-		Options opt = new OptionsBuilder().include(MyBenchmark.class.getSimpleName()).forks(1).build();
+		Options opt = new OptionsBuilder().include(Benchmarks.class.getSimpleName()).forks(1).build();
 		new Runner(opt).run();
 	}
 }

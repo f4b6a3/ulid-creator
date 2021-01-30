@@ -3,13 +3,13 @@ package com.github.f4b6a3.ulid;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
-import com.github.f4b6a3.ulid.creator.MonotonicUlidSpecCreatorTest;
-import com.github.f4b6a3.ulid.creator.UlidSpecCreatorTest;
+import com.github.f4b6a3.ulid.creator.MonotonicUlidFactoryTest;
+import com.github.f4b6a3.ulid.creator.DefaultUlidFactoryTest;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-	MonotonicUlidSpecCreatorTest.class,
-	UlidSpecCreatorTest.class,
+	MonotonicUlidFactoryTest.class,
+	DefaultUlidFactoryTest.class,
 	UlidTest.class,
 })
 

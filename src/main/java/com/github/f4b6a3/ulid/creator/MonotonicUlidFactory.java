@@ -1,7 +1,7 @@
 /*
  * MIT License
  * 
- * Copyright (c) 2018-2020 Fabio Lima
+ * Copyright (c) 2020 Fabio Lima
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,20 +22,43 @@
  * SOFTWARE.
  */
 
-package com.github.f4b6a3.ulid.strategy;
+package com.github.f4b6a3.ulid.creator;
 
-import java.security.SecureRandom;
-import java.util.Random;
+import com.github.f4b6a3.ulid.Ulid;
 
 /**
- * It uses an instance of {@link java.security.SecureRandom}.
+ * Factory that generates Monotonic ULIDs.
+ * 
+ * The random component is reset to a new value every time the millisecond changes.
+ * 
+ * If more than one ULID is generated within the same millisecond, the random
+ * component is incremented by one.
+ * 
+ * The maximum ULIDs that can be generated per millisecond is 2^80.
  */
-public final class DefaultRandomStrategy implements RandomStrategy {
+public final class MonotonicUlidFactory extends UlidFactory {
 
-	private static final Random SECURE_RANDOM = new SecureRandom();
+	private long lastTime = -1;
+	private Ulid lastUlid = null;
 
+	/**
+	 * Returns a ULID.
+	 * 
+	 * @param time a specific time
+	 * @return a ULID
+	 */
 	@Override
-	public void nextBytes(byte[] bytes) {
-		SECURE_RANDOM.nextBytes(bytes);
+	public synchronized Ulid create(final long time) {
+
+		if (time == this.lastTime) {
+			this.lastUlid = lastUlid.increment();
+		} else {
+			final byte[] random = new byte[Ulid.RANDOM_BYTES_LENGTH];
+			this.randomGenerator.nextBytes(random);
+			this.lastUlid = new Ulid(time, random);
+		}
+
+		this.lastTime = time;
+		return new Ulid(this.lastUlid);
 	}
 }

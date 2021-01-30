@@ -1,7 +1,7 @@
 /*
  * MIT License
  * 
- * Copyright (c) 2018-2020 Fabio Lima
+ * Copyright (c) 2020 Fabio Lima
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,9 +22,29 @@
  * SOFTWARE.
  */
 
-package com.github.f4b6a3.ulid.strategy;
+package com.github.f4b6a3.ulid.creator;
 
-@FunctionalInterface
-public interface RandomStrategy {
-	void nextBytes(byte[] bytes);
+import com.github.f4b6a3.ulid.Ulid;
+
+/**
+ * Factory that generates default ULIDs.
+ * 
+ * The random component is always reset to a new random value.
+ * 
+ * The maximum ULIDs that can be generated per millisecond is 2^80.
+ */
+public class DefaultUlidFactory extends UlidFactory {
+
+	/**
+	 * Returns a ULID.
+	 * 
+	 * @param time a specific time
+	 * @return a ULID
+	 */
+	@Override
+	public Ulid create(final long time) {
+		final byte[] random = new byte[Ulid.RANDOM_BYTES_LENGTH];
+		this.randomGenerator.nextBytes(random);
+		return new Ulid(time, random);
+	}
 }

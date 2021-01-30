@@ -1,7 +1,7 @@
 /*
  * MIT License
  * 
- * Copyright (c) 2020 Fabio Lima
+ * Copyright (c) 2018-2020 Fabio Lima
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,27 +22,20 @@
  * SOFTWARE.
  */
 
-package com.github.f4b6a3.ulid.creator;
+package com.github.f4b6a3.ulid.random;
 
-import com.github.f4b6a3.ulid.Ulid;
+import java.security.SecureRandom;
+import java.util.Random;
 
-public final class MonotonicUlidSpecCreator extends UlidSpecCreator {
+/**
+ * It uses an instance of {@link java.security.SecureRandom}.
+ */
+public final class DefaultRandomGenerator implements RandomGenerator {
 
-	private long lastTime;
-	private Ulid lastUlid;
+	private static final Random SECURE_RANDOM = new SecureRandom();
 
 	@Override
-	public synchronized Ulid create(final long time) {
-		
-		if (time == this.lastTime) {
-			this.lastUlid = lastUlid.increment();
-		} else {
-			final byte[] random = new byte[10];
-			this.randomStrategy.nextBytes(random);
-			this.lastUlid = Ulid.of(time, random);
-		}
-
-		this.lastTime = time;
-		return this.lastUlid;
+	public void nextBytes(byte[] bytes) {
+		SECURE_RANDOM.nextBytes(bytes);
 	}
 }
