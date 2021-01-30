@@ -616,6 +616,8 @@ public final class Ulid implements Serializable, Comparable<Ulid> {
 	 * A valid ULID string is a sequence of 26 characters from Crockford's base 32
 	 * alphabet.
 	 * 
+	 * The first character of the input string must be between 0 and 7.
+	 * 
 	 * @param chars a char array
 	 * @return boolean true if valid
 	 */
