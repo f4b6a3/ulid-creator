@@ -22,60 +22,43 @@
  * SOFTWARE.
  */
 
-package com.github.f4b6a3.ulid.creator;
-
-import java.util.Random;
+package com.github.f4b6a3.ulid.factory;
 
 import com.github.f4b6a3.ulid.Ulid;
-import com.github.f4b6a3.ulid.random.DefaultRandomGenerator;
-import com.github.f4b6a3.ulid.random.RandomGenerator;
 
 /**
- * An abstract factory for generating ULIDs.
+ * Factory that generates Monotonic ULIDs.
  * 
- * The only method that must be implemented is {@link UlidFactory#create(long)}.
+ * The random component is reset to a new value every time the millisecond changes.
+ * 
+ * If more than one ULID is generated within the same millisecond, the random
+ * component is incremented by one.
+ * 
+ * The maximum ULIDs that can be generated per millisecond is 2^80.
  */
-public abstract class UlidFactory {
+public final class MonotonicUlidFactory extends UlidFactory {
 
-	protected RandomGenerator randomGenerator;
-
-	public UlidFactory() {
-		this.randomGenerator = new DefaultRandomGenerator();
-	}
+	private long lastTime = -1;
+	private Ulid lastUlid = null;
 
 	/**
-	 * Returns a UUID.
-	 * 
-	 * @return a ULID
-	 */
-	public Ulid create() {
-		return create(System.currentTimeMillis());
-	}
-
-	/**
-	 * Returns a UUID with a specific time.
-	 * 
-	 * This method must be implemented by all subclasses.
+	 * Returns a ULID.
 	 * 
 	 * @param time a specific time
 	 * @return a ULID
 	 */
-	public abstract Ulid create(final long time);
+	@Override
+	public synchronized Ulid create(final long time) {
 
-	/**
-	 * Replaces the default random generator with another.
-	 * 
-	 * The default random generator uses {@link java.security.SecureRandom}.
-	 * 
-	 * See {@link Random}.
-	 * 
-	 * @param <T>             the type parameter
-	 * @param randomGenerator a random generator
-	 * @return {@link UlidFactory}
-	 */
-	@SuppressWarnings("unchecked")
-	public synchronized <T extends UlidFactory> T withRandomGenerator(RandomGenerator randomGenerator) {
-		this.randomGenerator = randomGenerator;
-		return (T) this;
+		if (time == this.lastTime) {
+			this.lastUlid = lastUlid.increment();
+		} else {
+			final byte[] random = new byte[Ulid.RANDOM_BYTES_LENGTH];
+			this.randomGenerator.nextBytes(random);
+			this.lastUlid = new Ulid(time, random);
+		}
+
+		this.lastTime = time;
+		return new Ulid(this.lastUlid);
 	}
 }

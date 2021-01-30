@@ -1,9 +1,11 @@
-package com.github.f4b6a3.ulid.creator;
+package com.github.f4b6a3.ulid.factory;
 
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
+
+import com.github.f4b6a3.ulid.factory.UlidFactory;
 
 public abstract class UlidFactoryTest {
 

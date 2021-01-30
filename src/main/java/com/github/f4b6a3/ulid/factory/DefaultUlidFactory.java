@@ -22,24 +22,18 @@
  * SOFTWARE.
  */
 
-package com.github.f4b6a3.ulid.creator;
+package com.github.f4b6a3.ulid.factory;
 
 import com.github.f4b6a3.ulid.Ulid;
 
 /**
- * Factory that generates Monotonic ULIDs.
+ * Factory that generates default ULIDs.
  * 
- * The random component is reset to a new value every time the millisecond changes.
- * 
- * If more than one ULID is generated within the same millisecond, the random
- * component is incremented by one.
+ * The random component is always reset to a new random value.
  * 
  * The maximum ULIDs that can be generated per millisecond is 2^80.
  */
-public final class MonotonicUlidFactory extends UlidFactory {
-
-	private long lastTime = -1;
-	private Ulid lastUlid = null;
+public class DefaultUlidFactory extends UlidFactory {
 
 	/**
 	 * Returns a ULID.
@@ -48,17 +42,9 @@ public final class MonotonicUlidFactory extends UlidFactory {
 	 * @return a ULID
 	 */
 	@Override
-	public synchronized Ulid create(final long time) {
-
-		if (time == this.lastTime) {
-			this.lastUlid = lastUlid.increment();
-		} else {
-			final byte[] random = new byte[Ulid.RANDOM_BYTES_LENGTH];
-			this.randomGenerator.nextBytes(random);
-			this.lastUlid = new Ulid(time, random);
-		}
-
-		this.lastTime = time;
-		return new Ulid(this.lastUlid);
+	public Ulid create(final long time) {
+		final byte[] random = new byte[Ulid.RANDOM_BYTES_LENGTH];
+		this.randomGenerator.nextBytes(random);
+		return new Ulid(time, random);
 	}
 }

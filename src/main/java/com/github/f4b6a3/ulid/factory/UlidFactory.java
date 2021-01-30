@@ -22,29 +22,60 @@
  * SOFTWARE.
  */
 
-package com.github.f4b6a3.ulid.creator;
+package com.github.f4b6a3.ulid.factory;
+
+import java.util.Random;
 
 import com.github.f4b6a3.ulid.Ulid;
+import com.github.f4b6a3.ulid.random.DefaultRandomGenerator;
+import com.github.f4b6a3.ulid.random.RandomGenerator;
 
 /**
- * Factory that generates default ULIDs.
+ * An abstract factory for generating ULIDs.
  * 
- * The random component is always reset to a new random value.
- * 
- * The maximum ULIDs that can be generated per millisecond is 2^80.
+ * The only method that must be implemented is {@link UlidFactory#create(long)}.
  */
-public class DefaultUlidFactory extends UlidFactory {
+public abstract class UlidFactory {
+
+	protected RandomGenerator randomGenerator;
+
+	public UlidFactory() {
+		this.randomGenerator = new DefaultRandomGenerator();
+	}
 
 	/**
-	 * Returns a ULID.
+	 * Returns a UUID.
+	 * 
+	 * @return a ULID
+	 */
+	public Ulid create() {
+		return create(System.currentTimeMillis());
+	}
+
+	/**
+	 * Returns a UUID with a specific time.
+	 * 
+	 * This method must be implemented by all subclasses.
 	 * 
 	 * @param time a specific time
 	 * @return a ULID
 	 */
-	@Override
-	public Ulid create(final long time) {
-		final byte[] random = new byte[Ulid.RANDOM_BYTES_LENGTH];
-		this.randomGenerator.nextBytes(random);
-		return new Ulid(time, random);
+	public abstract Ulid create(final long time);
+
+	/**
+	 * Replaces the default random generator with another.
+	 * 
+	 * The default random generator uses {@link java.security.SecureRandom}.
+	 * 
+	 * See {@link Random}.
+	 * 
+	 * @param <T>             the type parameter
+	 * @param randomGenerator a random generator
+	 * @return {@link UlidFactory}
+	 */
+	@SuppressWarnings("unchecked")
+	public synchronized <T extends UlidFactory> T withRandomGenerator(RandomGenerator randomGenerator) {
+		this.randomGenerator = randomGenerator;
+		return (T) this;
 	}
 }

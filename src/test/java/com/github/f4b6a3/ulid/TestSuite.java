@@ -3,8 +3,8 @@ package com.github.f4b6a3.ulid;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
-import com.github.f4b6a3.ulid.creator.MonotonicUlidFactoryTest;
-import com.github.f4b6a3.ulid.creator.DefaultUlidFactoryTest;
+import com.github.f4b6a3.ulid.factory.DefaultUlidFactoryTest;
+import com.github.f4b6a3.ulid.factory.MonotonicUlidFactoryTest;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({

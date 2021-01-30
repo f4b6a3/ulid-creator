@@ -1,9 +1,10 @@
-package com.github.f4b6a3.ulid.creator;
+package com.github.f4b6a3.ulid.factory;
 
 import org.junit.Test;
 
 import com.github.f4b6a3.ulid.Ulid;
 import com.github.f4b6a3.ulid.UlidCreator;
+import com.github.f4b6a3.ulid.factory.UlidFactory;
 
 import static org.junit.Assert.*;
 

@@ -2,7 +2,7 @@ package com.github.f4b6a3.ulid;
 
 import java.util.HashSet;
 import com.github.f4b6a3.ulid.UlidCreator;
-import com.github.f4b6a3.ulid.creator.UlidFactory;
+import com.github.f4b6a3.ulid.factory.UlidFactory;
 
 /**
  * 

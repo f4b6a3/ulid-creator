@@ -24,9 +24,9 @@
 
 package com.github.f4b6a3.ulid;
 
-import com.github.f4b6a3.ulid.creator.MonotonicUlidFactory;
-import com.github.f4b6a3.ulid.creator.UlidFactory;
-import com.github.f4b6a3.ulid.creator.DefaultUlidFactory;
+import com.github.f4b6a3.ulid.factory.DefaultUlidFactory;
+import com.github.f4b6a3.ulid.factory.MonotonicUlidFactory;
+import com.github.f4b6a3.ulid.factory.UlidFactory;
 
 /**
  * Facade to the ULID factories.
