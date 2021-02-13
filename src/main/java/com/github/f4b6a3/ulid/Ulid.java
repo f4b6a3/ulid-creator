@@ -424,6 +424,18 @@ public final class Ulid implements Serializable, Comparable<Ulid> {
 	}
 
 	/**
+	 * Returns the instant of creation.
+	 * 
+	 * The instant of creation is extracted from the time component.
+	 * 
+	 * @param string a canonical string
+	 * @return {@link Instant}
+	 */
+	public static Instant getInstant(String string) {
+		return Instant.ofEpochMilli(getTime(string));
+	}
+
+	/**
 	 * Returns the time component as a number.
 	 * 
 	 * The time component is a number between 0 and 2^48-1. It is equivalent to the
@@ -436,6 +448,35 @@ public final class Ulid implements Serializable, Comparable<Ulid> {
 	}
 
 	/**
+	 * Returns the time component as a number.
+	 * 
+	 * The time component is a number between 0 and 2^48-1. It is equivalent to the
+	 * count of milliseconds since 1970-01-01 (Unix epoch).
+	 * 
+	 * @param string a canonical string
+	 * @return a number of milliseconds.
+	 */
+	public static long getTime(String string) {
+
+		final char[] chars = toCharArray(string);
+
+		long time = 0;
+
+		time |= ALPHABET_VALUES[chars[0x00]] << 45;
+		time |= ALPHABET_VALUES[chars[0x01]] << 40;
+		time |= ALPHABET_VALUES[chars[0x02]] << 35;
+		time |= ALPHABET_VALUES[chars[0x03]] << 30;
+		time |= ALPHABET_VALUES[chars[0x04]] << 25;
+		time |= ALPHABET_VALUES[chars[0x05]] << 20;
+		time |= ALPHABET_VALUES[chars[0x06]] << 15;
+		time |= ALPHABET_VALUES[chars[0x07]] << 10;
+		time |= ALPHABET_VALUES[chars[0x08]] << 5;
+		time |= ALPHABET_VALUES[chars[0x09]];
+
+		return time;
+	}
+
+	/**
 	 * Returns the random component as a byte array.
 	 * 
 	 * The random component is an array of 10 bytes (80 bits).
@@ -443,8 +484,71 @@ public final class Ulid implements Serializable, Comparable<Ulid> {
 	 * @return a byte array
 	 */
 	public byte[] getRandom() {
+
 		final byte[] bytes = new byte[RANDOM_BYTES_LENGTH];
-		System.arraycopy(this.toBytes(), TIME_BYTES_LENGTH, bytes, 0, RANDOM_BYTES_LENGTH);
+
+		bytes[0x0] = (byte) (msb >>> 8);
+		bytes[0x1] = (byte) (msb);
+
+		bytes[0x2] = (byte) (lsb >>> 56);
+		bytes[0x3] = (byte) (lsb >>> 48);
+		bytes[0x4] = (byte) (lsb >>> 40);
+		bytes[0x5] = (byte) (lsb >>> 32);
+		bytes[0x6] = (byte) (lsb >>> 24);
+		bytes[0x7] = (byte) (lsb >>> 16);
+		bytes[0x8] = (byte) (lsb >>> 8);
+		bytes[0x9] = (byte) (lsb);
+
+		return bytes;
+	}
+
+	/**
+	 * Returns the random component as a byte array.
+	 * 
+	 * The random component is an array of 10 bytes (80 bits).
+	 * 
+	 * @param string a canonical string
+	 * @return a byte array
+	 */
+	public static byte[] getRandom(String string) {
+
+		final char[] chars = toCharArray(string);
+
+		long random0 = 0;
+		long random1 = 0;
+
+		random0 |= ALPHABET_VALUES[chars[0x0a]] << 35;
+		random0 |= ALPHABET_VALUES[chars[0x0b]] << 30;
+		random0 |= ALPHABET_VALUES[chars[0x0c]] << 25;
+		random0 |= ALPHABET_VALUES[chars[0x0d]] << 20;
+		random0 |= ALPHABET_VALUES[chars[0x0e]] << 15;
+		random0 |= ALPHABET_VALUES[chars[0x0f]] << 10;
+		random0 |= ALPHABET_VALUES[chars[0x10]] << 5;
+		random0 |= ALPHABET_VALUES[chars[0x11]];
+
+		random1 |= ALPHABET_VALUES[chars[0x12]] << 35;
+		random1 |= ALPHABET_VALUES[chars[0x13]] << 30;
+		random1 |= ALPHABET_VALUES[chars[0x14]] << 25;
+		random1 |= ALPHABET_VALUES[chars[0x15]] << 20;
+		random1 |= ALPHABET_VALUES[chars[0x16]] << 15;
+		random1 |= ALPHABET_VALUES[chars[0x17]] << 10;
+		random1 |= ALPHABET_VALUES[chars[0x18]] << 5;
+		random1 |= ALPHABET_VALUES[chars[0x19]];
+
+		final byte[] bytes = new byte[RANDOM_BYTES_LENGTH];
+
+		bytes[0x0] = (byte) (random0 >>> 32);
+		bytes[0x1] = (byte) (random0 >>> 24);
+		bytes[0x2] = (byte) (random0 >>> 16);
+		bytes[0x3] = (byte) (random0 >>> 8);
+		bytes[0x4] = (byte) (random0);
+		
+		bytes[0x5] = (byte) (random1 >>> 32);
+		bytes[0x6] = (byte) (random1 >>> 24);
+		bytes[0x7] = (byte) (random1 >>> 16);
+		bytes[0x8] = (byte) (random1 >>> 8);
+		bytes[0x9] = (byte) (random1);
+
 		return bytes;
 	}
 

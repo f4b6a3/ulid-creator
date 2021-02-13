@@ -35,13 +35,10 @@ Add these lines to your `pom.xml`.
 <dependency>
   <groupId>com.github.f4b6a3</groupId>
   <artifactId>ulid-creator</artifactId>
-  <version>3.0.1</version>
+  <version>3.1.0</version>
 </dependency>
 ```
 See more options in [maven.org](https://search.maven.org/artifact/com.github.f4b6a3/ulid-creator).
-
-Implementation
-------------------------------------------------------
 
 ### ULID
 
@@ -168,10 +165,20 @@ Get the creation instant of a ULID:
 Instant instant = ulid.getInstant(); // 2007-02-16T02:13:14.633Z
 ```
 
+```java
+// static method
+Instant instant = Ulid.getInstant("0123456789ABCDEFGHJKMNPQRS"); // 2007-02-16T02:13:14.633Z
+```
+
 Get the time component of a ULID:
 
 ```java
 long time = ulid.getTime(); // 1171591994633
+```
+
+```java
+// static method
+long time = Ulid.getTime("0123456789ABCDEFGHJKMNPQRS"); // 1171591994633
 ```
 
 Get the random component of a ULID:
@@ -180,13 +187,18 @@ Get the random component of a ULID:
 byte[] random = ulid.getRandom(); // 10 bytes (80 bits)
 ```
 
+```java
+// static method
+byte[] random = Ulid.getRandom("0123456789ABCDEFGHJKMNPQRS"); // 10 bytes (80 bits)
+```
+
 Use a `UlidFactory` instance with `java.util.Random` to generate ULIDs:
 
 ```java
 Random random = new Random();
 UlidFactory factory = UlidCreator.getDefaultFactory().withRandomGenerator(random::nextBytes);
 
-Ulid ulid = facory.create();
+Ulid ulid = factory.create();
 ```
 
 Use a `UlidFactory` instance with any random generator you like(*) to generate ULIDs:
@@ -196,7 +208,7 @@ import com.github.niceguy.random.AwesomeRandom; // a hypothetical RNG
 AwesomeRandom awesomeRandom = new AwesomeRandom();
 UlidFactory factory = UlidCreator.getDefaultFactory().withRandomGenerator(awesomeRandom::nextBytes);
 
-Ulid ulid = facory.create();
+Ulid ulid = factory.create();
 ```
 
 (*) since it provides a void method like `nextBytes(byte[])`.

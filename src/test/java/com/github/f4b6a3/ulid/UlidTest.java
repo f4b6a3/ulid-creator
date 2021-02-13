@@ -281,19 +281,28 @@ public class UlidTest {
 	public void testGetTimeAndGetRandom() {
 
 		long time = 0;
-		byte[] bytes = new byte[10];
+		byte[] bytes = new byte[Ulid.RANDOM_BYTES_LENGTH];
 		Random random = new Random();
 
 		for (int i = 0; i < 100; i++) {
 
 			time = random.nextLong() & TIME_MASK;
 			random.nextBytes(bytes);
-			Ulid ulid = new Ulid(time, bytes);
 
+			// Instance methods
+			Ulid ulid = new Ulid(time, bytes);
 			assertEquals(time, ulid.getTime()); // test Ulid.getTime()
 			assertEquals(Instant.ofEpochMilli(time), ulid.getInstant()); // test Ulid.getInstant()
 			for (int j = 0; j < bytes.length; j++) {
 				assertEquals(bytes[j], ulid.getRandom()[j]); // test Ulid.getRandom()
+			}
+
+			// Static methods
+			String string = new Ulid(time, bytes).toString();
+			assertEquals(time, Ulid.getTime(string)); // test Ulid.getTime()
+			assertEquals(Instant.ofEpochMilli(time), Ulid.getInstant(string)); // test Ulid.getInstant()
+			for (int j = 0; j < bytes.length; j++) {
+				assertEquals(bytes[j], Ulid.getRandom(string)[j]); // test Ulid.getRandom()
 			}
 		}
 	}
