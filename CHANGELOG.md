@@ -4,7 +4,9 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
-Nothing.
+### Fixed
+
+- Fixed typos in `CHANGELOG.md`
 
 ## [3.1.0] - 2021-02-13
 
@@ -32,7 +34,7 @@ Adds static methods for extracting information from ULIDs.
 
 This version breaks compatibility. It is a rewrite from scratch.
 
-Now the `uuid-creator` can generate two types of ULID: default (non-monotonic) and monotonic. Until version 2.3.3 this library only generated monotonic ULIDs.
+Now the `ulid-creator` can generate two types of ULID: default (non-monotonic) and monotonic. Until version 2.3.3 this library only generated monotonic ULIDs.
 
 ### Added
 
@@ -51,9 +53,9 @@ Now the `uuid-creator` can generate two types of ULID: default (non-monotonic) a
 
 ### Changed
 
-- Rewrited `ulid-creator`
-- Rewrited all `README.md`
-- Rewrited all test cases
+- Rewrote `UlidCreator`
+- Rewrote all `README.md`
+- Rewrote all test cases
 
 ### Removed
 
@@ -65,7 +67,7 @@ Now the `uuid-creator` can generate two types of ULID: default (non-monotonic) a
 - Removed class `InvalidUlidException`, replaced by `IllegalArgumentException`
 - Removed interface `RandomStrategy`, replaced by `RandomGenerator`
 - Removed class `DefaultRandomStrategy`, replaced by `DefaultRandomGenerator`
-- Removed class `OtherRandomStrategy``
+- Removed class `OtherRandomStrategy`
 - Removed interface `TimestampStrategy`
 - Removed class `DefaultTimestampStrategy`
 - Removed class `FixedTimestampStrategy`
