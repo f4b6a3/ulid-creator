@@ -2,7 +2,7 @@
 
 # ULID Creator
 
-A Java library for generating [ULIDs](https://github.com/ulid/spec).
+A Java library for generating [ULIDs](https://github.com/ulid/spec) (Universally Unique Lexicographically Sortable Identifier).
 
 * Generated in lexicographical order;
 * Can be stored as a UUID/GUID;
@@ -35,10 +35,12 @@ Add these lines to your `pom.xml`.
 <dependency>
   <groupId>com.github.f4b6a3</groupId>
   <artifactId>ulid-creator</artifactId>
-  <version>3.1.0</version>
+  <version>3.1.1</version>
 </dependency>
 ```
 See more options in [maven.org](https://search.maven.org/artifact/com.github.f4b6a3/ulid-creator).
+
+Module name: `com.github.f4b6a3.ulid`.
 
 ### ULID
 
@@ -211,7 +213,7 @@ UlidFactory factory = UlidCreator.getDefaultFactory().withRandomGenerator(awesom
 Ulid ulid = factory.create();
 ```
 
-(*) since it provides a void method like `nextBytes(byte[])`.
+(*) as long as it provides a void method like `nextBytes(byte[])`.
 
 Benchmark
 ------------------------------------------------------

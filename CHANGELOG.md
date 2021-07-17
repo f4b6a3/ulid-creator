@@ -4,7 +4,11 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
-Nothing.
+## [3.1.1] - 2021-07-17
+
+### Added
+
+- Added module name for Java 9+
 
 ## [3.1.0] - 2021-02-13
 
@@ -32,7 +36,7 @@ Adds static methods for extracting information from ULIDs.
 
 This version breaks compatibility. It is a rewrite from scratch.
 
-Now the `uuid-creator` can generate two types of ULID: default (non-monotonic) and monotonic. Until version 2.3.3 this library only generated monotonic ULIDs.
+Now the `ulid-creator` can generate two types of ULID: default (non-monotonic) and monotonic. Until version 2.3.3 this library only generated monotonic ULIDs.
 
 ### Added
 
@@ -51,9 +55,9 @@ Now the `uuid-creator` can generate two types of ULID: default (non-monotonic) a
 
 ### Changed
 
-- Rewrited `ulid-creator`
-- Rewrited all `README.md`
-- Rewrited all test cases
+- Rewrote `UlidCreator`
+- Rewrote all `README.md`
+- Rewrote all test cases
 
 ### Removed
 
@@ -65,7 +69,7 @@ Now the `uuid-creator` can generate two types of ULID: default (non-monotonic) a
 - Removed class `InvalidUlidException`, replaced by `IllegalArgumentException`
 - Removed interface `RandomStrategy`, replaced by `RandomGenerator`
 - Removed class `DefaultRandomStrategy`, replaced by `DefaultRandomGenerator`
-- Removed class `OtherRandomStrategy``
+- Removed class `OtherRandomStrategy`
 - Removed interface `TimestampStrategy`
 - Removed class `DefaultTimestampStrategy`
 - Removed class `FixedTimestampStrategy`
@@ -225,7 +229,8 @@ Project created as an alternative Java implementation of [ULID spec](https://git
 - Added `LICENSE`
 - Added test cases
 
-[unreleased]: https://github.com/f4b6a3/ulid-creator/compare/ulid-creator-3.1.0...HEAD
+[unreleased]: https://github.com/f4b6a3/ulid-creator/compare/ulid-creator-3.1.1...HEAD
+[3.1.0]: https://github.com/f4b6a3/ulid-creator/compare/ulid-creator-3.1.0...ulid-creator-3.1.1
 [3.1.0]: https://github.com/f4b6a3/ulid-creator/compare/ulid-creator-3.0.1...ulid-creator-3.1.0
 [3.0.1]: https://github.com/f4b6a3/ulid-creator/compare/ulid-creator-3.0.0...ulid-creator-3.0.1
 [3.0.0]: https://github.com/f4b6a3/ulid-creator/compare/ulid-creator-2.3.3...ulid-creator-3.0.0
