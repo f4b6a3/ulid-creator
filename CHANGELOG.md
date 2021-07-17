@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Fixed
+
+- Fixed typos in `CHANGELOG.md`
+
 ## [3.1.1] - 2021-07-17
 
 ### Added
