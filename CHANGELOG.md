@@ -4,11 +4,17 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
-### Fixed
+## [3.2.0] - 2021-07-17
 
-- Fixed typos in `CHANGELOG.md`
+Simplified the use of `UlidFactory` with other random generators.
+
+### Added
+
+- Added constructors in `UlidFactory` for random generators.
 
 ## [3.1.1] - 2021-07-17
+
+Creates a module name be used in Java 9+.
 
 ### Added
 
@@ -233,7 +239,8 @@ Project created as an alternative Java implementation of [ULID spec](https://git
 - Added `LICENSE`
 - Added test cases
 
-[unreleased]: https://github.com/f4b6a3/ulid-creator/compare/ulid-creator-3.1.1...HEAD
+[unreleased]: https://github.com/f4b6a3/ulid-creator/compare/ulid-creator-3.2.0...HEAD
+[3.1.0]: https://github.com/f4b6a3/ulid-creator/compare/ulid-creator-3.1.1...ulid-creator-3.2.0
 [3.1.0]: https://github.com/f4b6a3/ulid-creator/compare/ulid-creator-3.1.0...ulid-creator-3.1.1
 [3.1.0]: https://github.com/f4b6a3/ulid-creator/compare/ulid-creator-3.0.1...ulid-creator-3.1.0
 [3.0.1]: https://github.com/f4b6a3/ulid-creator/compare/ulid-creator-3.0.0...ulid-creator-3.0.1

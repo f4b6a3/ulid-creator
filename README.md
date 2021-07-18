@@ -35,7 +35,7 @@ Add these lines to your `pom.xml`.
 <dependency>
   <groupId>com.github.f4b6a3</groupId>
   <artifactId>ulid-creator</artifactId>
-  <version>3.1.1</version>
+  <version>3.2.0</version>
 </dependency>
 ```
 See more options in [maven.org](https://search.maven.org/artifact/com.github.f4b6a3/ulid-creator).
@@ -194,22 +194,20 @@ byte[] random = ulid.getRandom(); // 10 bytes (80 bits)
 byte[] random = Ulid.getRandom("0123456789ABCDEFGHJKMNPQRS"); // 10 bytes (80 bits)
 ```
 
-Use a `UlidFactory` instance with `java.util.Random` to generate ULIDs:
+Use a `UlidFactory` with `java.util.Random`:
 
 ```java
-Random random = new Random();
-UlidFactory factory = UlidCreator.getDefaultFactory().withRandomGenerator(random::nextBytes);
-
+// use a `Random` instance
+UlidFactory factory = new DefaultFactory(new Random());
 Ulid ulid = factory.create();
 ```
 
-Use a `UlidFactory` instance with any random generator you like(*) to generate ULIDs:
+Use a `UlidFactory` with a random generator of your choice:
 
 ```java
+// use a method of any RNG with this signature: `void nextBytes(byte[])`
 import com.github.niceguy.random.AwesomeRandom; // a hypothetical RNG
-AwesomeRandom awesomeRandom = new AwesomeRandom();
-UlidFactory factory = UlidCreator.getDefaultFactory().withRandomGenerator(awesomeRandom::nextBytes);
-
+UlidFactory factory = new DefaultFactory(new AwesomeRandom()::nextBytes);
 Ulid ulid = factory.create();
 ```
 
@@ -244,5 +242,6 @@ See: [uuid-creator-benchmark](https://github.com/fabiolimace/uuid-creator-benchm
 Other generators
 -------------------------------------------
 * [UUID Creator](https://github.com/f4b6a3/uuid-creator): for generating UUIDs
-* [TSID Creator](https://github.com/f4b6a3/tsid-creator): for generating Time Sortable IDs
+* [TSID Creator](https://github.com/f4b6a3/tsid-creator): for generating TSIDs
+* [KSUID Creator](https://github.com/f4b6a3/ksuid-creator): for generating KSUIDs
 

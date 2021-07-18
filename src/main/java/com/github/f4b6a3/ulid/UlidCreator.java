@@ -24,8 +24,8 @@
 
 package com.github.f4b6a3.ulid;
 
-import com.github.f4b6a3.ulid.factory.DefaultUlidFactory;
-import com.github.f4b6a3.ulid.factory.MonotonicUlidFactory;
+import com.github.f4b6a3.ulid.factory.DefaultFactory;
+import com.github.f4b6a3.ulid.factory.MonotonicFactory;
 import com.github.f4b6a3.ulid.factory.UlidFactory;
 
 /**
@@ -92,29 +92,11 @@ public final class UlidCreator {
 		return MonotonicFactoryHolder.INSTANCE.create(time);
 	}
 
-	/**
-	 * Returns an instance of the Default ULID factory.
-	 * 
-	 * @return a ULID factory
-	 */
-	public static UlidFactory getDefaultFactory() {
-		return new DefaultUlidFactory();
-	}
-
-	/**
-	 * Returns an instance of the Monotonic ULID factory.
-	 * 
-	 * @return a ULID factory
-	 */
-	public static UlidFactory getMonotonicFactory() {
-		return new MonotonicUlidFactory();
-	}
-
 	private static class DefaultFactoryHolder {
-		static final UlidFactory INSTANCE = getDefaultFactory();
+		static final UlidFactory INSTANCE = new DefaultFactory();
 	}
 
 	private static class MonotonicFactoryHolder {
-		static final UlidFactory INSTANCE = getMonotonicFactory();
+		static final UlidFactory INSTANCE = new MonotonicFactory();
 	}
 }

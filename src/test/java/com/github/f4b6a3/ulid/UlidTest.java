@@ -71,7 +71,7 @@ public class UlidTest {
 		}
 
 		try {
-			long time = 0x1000000000000000L; // negative number
+			long time = 0x8000000000000000L; // negative number
 			byte[] bytes = new byte[Ulid.RANDOM_BYTES_LENGTH];
 			new Ulid(time, bytes);
 			fail("Should throw an exception");

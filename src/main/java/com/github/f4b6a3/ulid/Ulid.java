@@ -365,7 +365,8 @@ public final class Ulid implements Serializable, Comparable<Ulid> {
 	 * The output string is 26 characters long and contains only characters from
 	 * Crockford's base 32 alphabet.
 	 * 
-	 * It is at least twice as fast as {@code Ulid.toString().toLowerCase()}.
+	 * It is a shorthand at least twice as fast as
+	 * {@code Ulid.toString().toLowerCase()}.
 	 * 
 	 * See: https://www.crockford.com/base32.html
 	 * 
@@ -542,7 +543,7 @@ public final class Ulid implements Serializable, Comparable<Ulid> {
 		bytes[0x2] = (byte) (random0 >>> 16);
 		bytes[0x3] = (byte) (random0 >>> 8);
 		bytes[0x4] = (byte) (random0);
-		
+
 		bytes[0x5] = (byte) (random1 >>> 32);
 		bytes[0x6] = (byte) (random1 >>> 24);
 		bytes[0x7] = (byte) (random1 >>> 16);
@@ -619,7 +620,13 @@ public final class Ulid implements Serializable, Comparable<Ulid> {
 	/**
 	 * Converts the ULID into a canonical string in upper case.
 	 * 
-	 * It is the same as {@code Ulid.toUpperCase()}.
+	 * The output string is 26 characters long and contains only characters from
+	 * Crockford's base 32 alphabet.
+	 * 
+	 * For lower case string, use the shorthand {@code Ulid#toLowerCase()}, instead
+	 * of {@code Ulid#toString()#toLowerCase()}.
+	 * 
+	 * See: https://www.crockford.com/base32.html
 	 * 
 	 * @return a ULID string
 	 */

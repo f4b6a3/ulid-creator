@@ -24,10 +24,9 @@
 
 package com.github.f4b6a3.ulid.factory;
 
-import java.util.Random;
+import java.security.SecureRandom;
 
 import com.github.f4b6a3.ulid.Ulid;
-import com.github.f4b6a3.ulid.random.DefaultRandomGenerator;
 import com.github.f4b6a3.ulid.random.RandomGenerator;
 
 /**
@@ -39,8 +38,20 @@ public abstract class UlidFactory {
 
 	protected RandomGenerator randomGenerator;
 
+	/**
+	 * Use the default {@link java.security.SecureRandom}.
+	 */
 	public UlidFactory() {
-		this.randomGenerator = new DefaultRandomGenerator();
+		this(new SecureRandom()::nextBytes);
+	}
+
+	/**
+	 * Use a random generator that inherits from {@link RandomGenerator}.
+	 * 
+	 * @param randomGenerator a {@link RandomGenerator} instance
+	 */
+	public UlidFactory(RandomGenerator randomGenerator) {
+		this.randomGenerator = randomGenerator;
 	}
 
 	/**
@@ -61,21 +72,4 @@ public abstract class UlidFactory {
 	 * @return a ULID
 	 */
 	public abstract Ulid create(final long time);
-
-	/**
-	 * Replaces the default random generator with another.
-	 * 
-	 * The default random generator uses {@link java.security.SecureRandom}.
-	 * 
-	 * See {@link Random}.
-	 * 
-	 * @param <T>             the type parameter
-	 * @param randomGenerator a random generator
-	 * @return {@link UlidFactory}
-	 */
-	@SuppressWarnings("unchecked")
-	public synchronized <T extends UlidFactory> T withRandomGenerator(RandomGenerator randomGenerator) {
-		this.randomGenerator = randomGenerator;
-		return (T) this;
-	}
 }

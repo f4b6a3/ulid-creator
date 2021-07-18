@@ -12,7 +12,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Random;
 
-public class MonotonicUlidFactoryTest extends UlidFactoryTest {
+public class MonotonicFactoryTest extends UlidFactoryTest {
 
 	@Test
 	public void testGetUlid() {
@@ -78,8 +78,7 @@ public class MonotonicUlidFactoryTest extends UlidFactoryTest {
 
 		// Instantiate and start many threads
 		for (int i = 0; i < THREAD_TOTAL; i++) {
-			Random random = new Random();
-			UlidFactory factory = UlidCreator.getMonotonicFactory().withRandomGenerator(random::nextBytes);
+			UlidFactory factory = new MonotonicFactory(new Random());
 			threads[i] = new TestThread(factory, DEFAULT_LOOP_MAX);
 			threads[i].start();
 		}

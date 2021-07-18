@@ -11,7 +11,7 @@ import static org.junit.Assert.*;
 import java.util.HashSet;
 import java.util.Random;
 
-public class DefaultUlidFactoryTest extends UlidFactoryTest {
+public class DefaultFactoryTest extends UlidFactoryTest {
 
 	@Test
 	public void testGetUlid() {
@@ -67,8 +67,7 @@ public class DefaultUlidFactoryTest extends UlidFactoryTest {
 
 		// Instantiate and start many threads
 		for (int i = 0; i < THREAD_TOTAL; i++) {
-			Random random = new Random();
-			UlidFactory factory = UlidCreator.getDefaultFactory().withRandomGenerator(random::nextBytes);
+			UlidFactory factory = new DefaultFactory(new Random());
 			threads[i] = new TestThread(factory, DEFAULT_LOOP_MAX);
 			threads[i].start();
 		}
