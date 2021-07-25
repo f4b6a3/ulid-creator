@@ -244,8 +244,8 @@ Project created as an alternative Java implementation of [ULID spec](https://git
 - Added test cases
 
 [unreleased]: https://github.com/f4b6a3/ulid-creator/compare/ulid-creator-3.2.0...HEAD
-[3.1.0]: https://github.com/f4b6a3/ulid-creator/compare/ulid-creator-3.1.1...ulid-creator-3.2.0
-[3.1.0]: https://github.com/f4b6a3/ulid-creator/compare/ulid-creator-3.1.0...ulid-creator-3.1.1
+[3.2.0]: https://github.com/f4b6a3/ulid-creator/compare/ulid-creator-3.1.1...ulid-creator-3.2.0
+[3.1.1]: https://github.com/f4b6a3/ulid-creator/compare/ulid-creator-3.1.0...ulid-creator-3.1.1
 [3.1.0]: https://github.com/f4b6a3/ulid-creator/compare/ulid-creator-3.0.1...ulid-creator-3.1.0
 [3.0.1]: https://github.com/f4b6a3/ulid-creator/compare/ulid-creator-3.0.0...ulid-creator-3.0.1
 [3.0.0]: https://github.com/f4b6a3/ulid-creator/compare/ulid-creator-2.3.3...ulid-creator-3.0.0
