@@ -219,29 +219,27 @@ Benchmark
 This section shows benchmarks comparing `UlidCreator` to `java.util.UUID`.
 
 ```
-================================================================================
-THROUGHPUT (operations/msec)           Mode  Cnt      Score     Error   Units
-================================================================================
-Throughput.Uuid01_toString              thrpt    5   2876,799 ±  39,938  ops/ms
-Throughput.Uuid02_fromString            thrpt    5   1936,569 ±  38,822  ops/ms
-Throughput.Uuid03_RandomBased           thrpt    5   2011,774 ±  21,198  ops/ms
 --------------------------------------------------------------------------------
-Throughput.UlidCreator01_toString       thrpt    5  29487,382 ± 627,808  ops/ms
-Throughput.UlidCreator02_fromString     thrpt    5  21194,263 ± 706,398  ops/ms
-Throughput.UlidCreator03_Ulid           thrpt    5   2745,123 ±  41,326  ops/ms
-Throughput.UlidCreator04_MonotonicUlid  thrpt    5  19542,344 ± 423,271  ops/ms
-================================================================================
-Total time: 00:09:22
-================================================================================
+THROUGHPUT (operations/msec)            Mode  Cnt      Score     Error   Units
+--------------------------------------------------------------------------------
+UUID_randomUUID                        thrpt    5   2051,918 ±  24,797  ops/ms
+UUID_randomUUID_toString               thrpt    5   1176,382 ±  32,709  ops/ms
+UlidCreator_getUlid                    thrpt    5   2738,998 ±  51,092  ops/ms
+UlidCreator_getUlid_toString           thrpt    5   2548,178 ±  25,484  ops/ms
+UlidCreator_getMonotonicUlid           thrpt    5  19807,920 ± 410,996  ops/ms
+UlidCreator_getMonotonicUlid_toString  thrpt    5  13178,389 ± 147,323  ops/ms
+--------------------------------------------------------------------------------
+Total time: 00:08:01
+--------------------------------------------------------------------------------
 ```
 
 System: JVM 8, Ubuntu 20.04, CPU i5-3330, 8G RAM.
 
-See: [uuid-creator-benchmark](https://github.com/fabiolimace/uuid-creator-benchmark)
+To execute the benchmark, run `./benchmark/run.sh`.
 
-Other generators
+Other identifier generators
 -------------------------------------------
-* [UUID Creator](https://github.com/f4b6a3/uuid-creator): for generating UUIDs
-* [TSID Creator](https://github.com/f4b6a3/tsid-creator): for generating TSIDs
-* [KSUID Creator](https://github.com/f4b6a3/ksuid-creator): for generating KSUIDs
+* [UUID Creator](https://github.com/f4b6a3/uuid-creator)
+* [TSID Creator](https://github.com/f4b6a3/tsid-creator)
+* [KSUID Creator](https://github.com/f4b6a3/ksuid-creator)
 

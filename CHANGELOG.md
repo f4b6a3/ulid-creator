@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## Added
+
+- Add benchmark code to compare ULID with UUID
+
 ## [3.2.0] - 2021-07-17
 
 Simplified the use of `UlidFactory` with other random generators.
