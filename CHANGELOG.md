@@ -4,9 +4,28 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
-## Added
+Nothing unreleased.
 
-- Add benchmark code to compare ULID with UUID
+## [4.0.0] - 2021-08-08
+
+Now you call `UlidFactory.newInstance()` and it's variants to get a new `UlidFactory`.
+
+### Added
+
+- Added `UlidFactory.newInstance()`
+- Added `UlidFactory.newInstance(Random)`
+- Added `UlidFactory.newInstance(Supplier<byte[]>)`
+- Added `UlidFactory.newMonotonicInstance()`
+- Added `UlidFactory.newMonotonicInstance(Random)`
+- Added `UlidFactory.newMonotonicInstance(Supplier<byte[]>)`
+- Added benchmark code to compare ULID with UUID
+
+### Removed
+
+- Removed `DefaultFactory`
+- Removed `MonotonicFactory`
+- Removed `Ulid.toUpperCase()`
+- Removed `RandomGenerator`
 
 ## [3.2.0] - 2021-07-17
 
@@ -243,7 +262,8 @@ Project created as an alternative Java implementation of [ULID spec](https://git
 - Added `LICENSE`
 - Added test cases
 
-[unreleased]: https://github.com/f4b6a3/ulid-creator/compare/ulid-creator-3.2.0...HEAD
+[unreleased]: https://github.com/f4b6a3/ulid-creator/compare/ulid-creator-4.0.0...HEAD
+[4.0.0]: https://github.com/f4b6a3/ulid-creator/compare/ulid-creator-3.2.0...ulid-creator-4.0.0
 [3.2.0]: https://github.com/f4b6a3/ulid-creator/compare/ulid-creator-3.1.1...ulid-creator-3.2.0
 [3.1.1]: https://github.com/f4b6a3/ulid-creator/compare/ulid-creator-3.1.0...ulid-creator-3.1.1
 [3.1.0]: https://github.com/f4b6a3/ulid-creator/compare/ulid-creator-3.0.1...ulid-creator-3.1.0

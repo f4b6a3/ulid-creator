@@ -1,7 +1,7 @@
 /*
  * MIT License
  * 
- * Copyright (c) 2020 Fabio Lima
+ * Copyright (c) 2020-2021 Fabio Lima
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,16 +24,12 @@
 
 package com.github.f4b6a3.ulid;
 
-import com.github.f4b6a3.ulid.factory.DefaultFactory;
-import com.github.f4b6a3.ulid.factory.MonotonicFactory;
-import com.github.f4b6a3.ulid.factory.UlidFactory;
-
 /**
- * Facade to the ULID factories.
+ * A class for generating ULIDs.
  * 
  * The ULID has two components:
  * 
- * - Time component: a part of 48 bits that represent the amount of milliseconds
+ * - Time component: a part of 48 bits that represent the number of milliseconds
  * since Unix Epoch, 1970-01-01.
  * 
  * - Random component: a byte array of 80 bits that has a random value generated
@@ -54,27 +50,28 @@ public final class UlidCreator {
 	 * @return a ULID
 	 */
 	public static Ulid getUlid() {
-		return DefaultFactoryHolder.INSTANCE.create();
+		return UlidFactoryHolder.INSTANCE.create();
 	}
 
 	/**
-	 * Returns a ULID with a specific time.
+	 * Returns a ULID with a given time.
 	 * 
-	 * @param time a specific time
+	 * The time must be the number of milliseconds since 1970-01-01 (Unix epoch).
+	 * 
+	 * @param time a given time
 	 * @return a ULID
 	 */
 	public static Ulid getUlid(final long time) {
-		return DefaultFactoryHolder.INSTANCE.create(time);
+		return UlidFactoryHolder.INSTANCE.create(time);
 	}
 
 	/**
 	 * Returns a Monotonic ULID.
 	 * 
-	 * The random component is reset to a new value every time the millisecond
-	 * changes.
+	 * The random component is reset to a new value whenever the time changes.
 	 * 
-	 * If more than one ULID is generated within the same millisecond, the random
-	 * component is incremented by one.
+	 * If more than one ULID is generated within the same time, the random component
+	 * is incremented by one.
 	 * 
 	 * @return a ULID
 	 */
@@ -83,20 +80,27 @@ public final class UlidCreator {
 	}
 
 	/**
-	 * Returns a Monotonic ULID with a specific time.
+	 * Returns a Monotonic ULID with a given time.
 	 * 
-	 * @param time a specific time
+	 * The time must be the number of milliseconds since 1970-01-01 (Unix epoch).
+	 * 
+	 * The random component is reset to a new value whenever the time changes.
+	 * 
+	 * If more than one ULID is generated within the same time, the random component
+	 * is incremented by one.
+	 * 
+	 * @param time a given time
 	 * @return a ULID
 	 */
 	public static Ulid getMonotonicUlid(final long time) {
 		return MonotonicFactoryHolder.INSTANCE.create(time);
 	}
 
-	private static class DefaultFactoryHolder {
-		static final UlidFactory INSTANCE = new DefaultFactory();
+	private static class UlidFactoryHolder {
+		static final UlidFactory INSTANCE = UlidFactory.newInstance();
 	}
 
 	private static class MonotonicFactoryHolder {
-		static final UlidFactory INSTANCE = new MonotonicFactory();
+		static final UlidFactory INSTANCE = UlidFactory.newMonotonicInstance();
 	}
 }

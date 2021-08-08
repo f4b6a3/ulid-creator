@@ -3,9 +3,6 @@ package com.github.f4b6a3.ulid;
 import java.util.HashSet;
 import java.util.Random;
 
-import com.github.f4b6a3.ulid.factory.MonotonicFactory;
-import com.github.f4b6a3.ulid.factory.UlidFactory;
-
 /**
  * 
  * This test starts many threads that keep requesting thousands of ULIDs to a
@@ -119,7 +116,7 @@ public class UniquenessTest {
 	}
 
 	public static void execute(boolean verbose, int threadCount, int requestCount) {
-		UlidFactory factory = new MonotonicFactory(new Random());
+		UlidFactory factory = UlidFactory.newMonotonicInstance(new Random());
 		UniquenessTest test = new UniquenessTest(threadCount, requestCount, factory, verbose);
 		test.start();
 	}

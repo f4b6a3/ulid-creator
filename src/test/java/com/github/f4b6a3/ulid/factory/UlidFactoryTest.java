@@ -5,7 +5,7 @@ import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 
-import com.github.f4b6a3.ulid.factory.UlidFactory;
+import com.github.f4b6a3.ulid.UlidFactory;
 
 public abstract class UlidFactoryTest {
 

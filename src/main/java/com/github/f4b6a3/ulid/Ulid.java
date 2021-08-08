@@ -1,7 +1,7 @@
 /*
  * MIT License
  * 
- * Copyright (c) 2020 Fabio Lima
+ * Copyright (c) 2020-2021 Fabio Lima
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -48,13 +48,13 @@ public final class Ulid implements Serializable, Comparable<Ulid> {
 	private final long msb; // most significant bits
 	private final long lsb; // least significant bits
 
-	public static final int ULID_LENGTH = 26;
-	public static final int TIME_LENGTH = 10;
-	public static final int RANDOM_LENGTH = 16;
+	public static final int ULID_CHARS = 26;
+	public static final int TIME_CHARS = 10;
+	public static final int RANDOM_CHARS = 16;
 
-	public static final int ULID_BYTES_LENGTH = 16;
-	public static final int TIME_BYTES_LENGTH = 6;
-	public static final int RANDOM_BYTES_LENGTH = 10;
+	public static final int ULID_BYTES = 16;
+	public static final int TIME_BYTES = 6;
+	public static final int RANDOM_BYTES = 10;
 
 	private static final char[] ALPHABET_UPPERCASE = //
 			{ '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', //
@@ -180,7 +180,7 @@ public final class Ulid implements Serializable, Comparable<Ulid> {
 			throw new IllegalArgumentException("Invalid time value"); // time overflow!
 		}
 		// The random component has 80 bits (10 bytes).
-		if (random == null || random.length != RANDOM_BYTES_LENGTH) {
+		if (random == null || random.length != RANDOM_BYTES) {
 			throw new IllegalArgumentException("Invalid random bytes"); // null or wrong length!
 		}
 
@@ -222,7 +222,7 @@ public final class Ulid implements Serializable, Comparable<Ulid> {
 	 */
 	public static Ulid from(byte[] bytes) {
 
-		if (bytes == null || bytes.length != ULID_BYTES_LENGTH) {
+		if (bytes == null || bytes.length != ULID_BYTES) {
 			throw new IllegalArgumentException("Invalid ULID bytes"); // null or wrong length!
 		}
 
@@ -322,7 +322,7 @@ public final class Ulid implements Serializable, Comparable<Ulid> {
 	 */
 	public byte[] toBytes() {
 
-		final byte[] bytes = new byte[ULID_BYTES_LENGTH];
+		final byte[] bytes = new byte[ULID_BYTES];
 
 		bytes[0x0] = (byte) (msb >>> 56);
 		bytes[0x1] = (byte) (msb >>> 48);
@@ -351,11 +351,15 @@ public final class Ulid implements Serializable, Comparable<Ulid> {
 	 * The output string is 26 characters long and contains only characters from
 	 * Crockford's base 32 alphabet.
 	 * 
+	 * For lower case string, use the shorthand {@code Ulid#toLowerCase()}, instead
+	 * of {@code Ulid#toString()#toLowerCase()}.
+	 * 
 	 * See: https://www.crockford.com/base32.html
 	 * 
-	 * @return a string
+	 * @return a ULID string
 	 */
-	public String toUpperCase() {
+	@Override
+	public String toString() {
 		return toString(ALPHABET_UPPERCASE);
 	}
 
@@ -486,7 +490,7 @@ public final class Ulid implements Serializable, Comparable<Ulid> {
 	 */
 	public byte[] getRandom() {
 
-		final byte[] bytes = new byte[RANDOM_BYTES_LENGTH];
+		final byte[] bytes = new byte[RANDOM_BYTES];
 
 		bytes[0x0] = (byte) (msb >>> 8);
 		bytes[0x1] = (byte) (msb);
@@ -536,7 +540,7 @@ public final class Ulid implements Serializable, Comparable<Ulid> {
 		random1 |= ALPHABET_VALUES[chars[0x18]] << 5;
 		random1 |= ALPHABET_VALUES[chars[0x19]];
 
-		final byte[] bytes = new byte[RANDOM_BYTES_LENGTH];
+		final byte[] bytes = new byte[RANDOM_BYTES];
 
 		bytes[0x0] = (byte) (random0 >>> 32);
 		bytes[0x1] = (byte) (random0 >>> 24);
@@ -617,24 +621,6 @@ public final class Ulid implements Serializable, Comparable<Ulid> {
 		return string != null && isValidCharArray(string.toCharArray());
 	}
 
-	/**
-	 * Converts the ULID into a canonical string in upper case.
-	 * 
-	 * The output string is 26 characters long and contains only characters from
-	 * Crockford's base 32 alphabet.
-	 * 
-	 * For lower case string, use the shorthand {@code Ulid#toLowerCase()}, instead
-	 * of {@code Ulid#toString()#toLowerCase()}.
-	 * 
-	 * See: https://www.crockford.com/base32.html
-	 * 
-	 * @return a ULID string
-	 */
-	@Override
-	public String toString() {
-		return this.toUpperCase();
-	}
-
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -675,7 +661,7 @@ public final class Ulid implements Serializable, Comparable<Ulid> {
 
 	protected String toString(char[] alphabet) {
 
-		final char[] chars = new char[ULID_LENGTH];
+		final char[] chars = new char[ULID_CHARS];
 
 		long time = this.msb >>> 16;
 		long random0 = ((this.msb & 0xffffL) << 24) | (this.lsb >>> 40);
@@ -734,7 +720,7 @@ public final class Ulid implements Serializable, Comparable<Ulid> {
 	 */
 	protected static boolean isValidCharArray(final char[] chars) {
 
-		if (chars == null || chars.length != ULID_LENGTH) {
+		if (chars == null || chars.length != ULID_CHARS) {
 			return false; // null or wrong size!
 		}
 

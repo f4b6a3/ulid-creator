@@ -4,7 +4,7 @@ import org.junit.Test;
 
 import com.github.f4b6a3.ulid.Ulid;
 import com.github.f4b6a3.ulid.UlidCreator;
-import com.github.f4b6a3.ulid.factory.UlidFactory;
+import com.github.f4b6a3.ulid.UlidFactory;
 
 import static org.junit.Assert.*;
 
@@ -78,7 +78,7 @@ public class MonotonicFactoryTest extends UlidFactoryTest {
 
 		// Instantiate and start many threads
 		for (int i = 0; i < THREAD_TOTAL; i++) {
-			UlidFactory factory = new MonotonicFactory(new Random());
+			UlidFactory factory = UlidFactory.newMonotonicInstance(new Random());
 			threads[i] = new TestThread(factory, DEFAULT_LOOP_MAX);
 			threads[i].start();
 		}

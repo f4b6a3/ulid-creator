@@ -4,7 +4,7 @@ import org.junit.Test;
 
 import com.github.f4b6a3.ulid.Ulid;
 import com.github.f4b6a3.ulid.UlidCreator;
-import com.github.f4b6a3.ulid.factory.UlidFactory;
+import com.github.f4b6a3.ulid.UlidFactory;
 
 import static org.junit.Assert.*;
 
@@ -67,7 +67,7 @@ public class DefaultFactoryTest extends UlidFactoryTest {
 
 		// Instantiate and start many threads
 		for (int i = 0; i < THREAD_TOTAL; i++) {
-			UlidFactory factory = new DefaultFactory(new Random());
+			UlidFactory factory = UlidFactory.newInstance(new Random());
 			threads[i] = new TestThread(factory, DEFAULT_LOOP_MAX);
 			threads[i].start();
 		}

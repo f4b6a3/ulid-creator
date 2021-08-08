@@ -50,7 +50,7 @@ public class UlidTest {
 			long time = msb >>> 16;
 
 			// get the random bytes
-			ByteBuffer buffer = ByteBuffer.allocate(Ulid.RANDOM_BYTES_LENGTH);
+			ByteBuffer buffer = ByteBuffer.allocate(Ulid.RANDOM_BYTES);
 			buffer.put((byte) ((msb >>> 8) & 0xff));
 			buffer.put((byte) (msb & 0xff));
 			buffer.putLong(lsb);
@@ -63,7 +63,7 @@ public class UlidTest {
 
 		try {
 			long time = 0x0000ffffffffffffL + 1; // greater than 2^48-1
-			byte[] bytes = new byte[Ulid.RANDOM_BYTES_LENGTH];
+			byte[] bytes = new byte[Ulid.RANDOM_BYTES];
 			new Ulid(time, bytes);
 			fail("Should throw an exception");
 		} catch (IllegalArgumentException e) {
@@ -72,7 +72,7 @@ public class UlidTest {
 
 		try {
 			long time = 0x8000000000000000L; // negative number
-			byte[] bytes = new byte[Ulid.RANDOM_BYTES_LENGTH];
+			byte[] bytes = new byte[Ulid.RANDOM_BYTES];
 			new Ulid(time, bytes);
 			fail("Should throw an exception");
 		} catch (IllegalArgumentException e) {
@@ -90,7 +90,7 @@ public class UlidTest {
 
 		try {
 			long time = 0x0000000000000000L;
-			byte[] bytes = new byte[Ulid.RANDOM_BYTES_LENGTH + 1]; // random component with invalid size
+			byte[] bytes = new byte[Ulid.RANDOM_BYTES + 1]; // random component with invalid size
 			new Ulid(time, bytes);
 			fail("Should throw an exception");
 		} catch (IllegalArgumentException e) {
@@ -131,12 +131,12 @@ public class UlidTest {
 			Ulid ulid0 = new Ulid(msb, lsb);
 
 			String string1 = toString(ulid0);
-			String string2 = ulid0.toUpperCase(); // <- test Ulid.toUpperCase()
+			String string2 = ulid0.toString(); // <- test Ulid.toString()
 			assertEquals(string1, string2);
 
 			// RFC-4122 UUID v4
 			UUID uuid0 = new UUID(msb, lsb);
-			String string3 = ulid0.toRfc4122().toUpperCase(); // <- test Ulid.toRfc4122().toUpperCase()
+			String string3 = ulid0.toRfc4122().toString(); // <- test Ulid.toRfc4122().toString()
 			Ulid ulid3 = fromString(string3);
 			UUID uuid3 = new UUID(ulid3.getMostSignificantBits(), ulid3.getLeastSignificantBits());
 			assertEquals(4, uuid3.version()); // check version
@@ -218,11 +218,11 @@ public class UlidTest {
 		Random random = new Random();
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 
-			byte[] bytes0 = new byte[Ulid.ULID_BYTES_LENGTH];
+			byte[] bytes0 = new byte[Ulid.ULID_BYTES];
 			random.nextBytes(bytes0);
 
 			Ulid ulid0 = Ulid.from(bytes0); // <- test Ulid.from(UUID)
-			ByteBuffer buffer = ByteBuffer.allocate(Ulid.ULID_BYTES_LENGTH);
+			ByteBuffer buffer = ByteBuffer.allocate(Ulid.ULID_BYTES);
 			buffer.putLong(ulid0.getMostSignificantBits());
 			buffer.putLong(ulid0.getLeastSignificantBits());
 			byte[] bytes1 = buffer.array();
@@ -241,7 +241,7 @@ public class UlidTest {
 		}
 
 		try {
-			byte[] bytes = new byte[Ulid.ULID_BYTES_LENGTH + 1];
+			byte[] bytes = new byte[Ulid.ULID_BYTES + 1];
 			Ulid.from(bytes);
 			fail("Should throw an exception");
 		} catch (IllegalArgumentException e) {
@@ -281,7 +281,7 @@ public class UlidTest {
 	public void testGetTimeAndGetRandom() {
 
 		long time = 0;
-		byte[] bytes = new byte[Ulid.RANDOM_BYTES_LENGTH];
+		byte[] bytes = new byte[Ulid.RANDOM_BYTES];
 		Random random = new Random();
 
 		for (int i = 0; i < 100; i++) {
