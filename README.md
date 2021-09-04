@@ -35,12 +35,17 @@ Add these lines to your `pom.xml`.
 <dependency>
   <groupId>com.github.f4b6a3</groupId>
   <artifactId>ulid-creator</artifactId>
-  <version>4.0.0</version>
+  <version>4.1.0</version>
 </dependency>
 ```
 See more options in [maven.org](https://search.maven.org/artifact/com.github.f4b6a3/ulid-creator).
 
-Module name: `com.github.f4b6a3.ulid`.
+### Modularity
+
+Module and bundle names are the same as the root package name.
+
+- JPMS module name: `com.github.f4b6a3.ulid`
+- OSGi symbolic name: `com.github.f4b6a3.ulid`
 
 ### ULID
 
