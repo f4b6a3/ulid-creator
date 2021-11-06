@@ -2,11 +2,14 @@ package com.github.f4b6a3.ulid;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.Random;
 import java.util.UUID;
 
@@ -333,6 +336,61 @@ public class UlidTest {
 		}
 		assertEquals(msb + 1, ulid.getMostSignificantBits());
 		assertEquals((loopMax / 2) - 1, ulid.getLeastSignificantBits());
+	}
+
+	@Test
+	public void testEquals() {
+
+		Random random = new Random();
+		byte[] bytes = new byte[Ulid.ULID_BYTES];
+
+		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
+
+			random.nextBytes(bytes);
+			Ulid ulid1 = Ulid.from(bytes);
+			Ulid ulid2 = Ulid.from(bytes);
+			assertEquals(ulid1, ulid2);
+			assertEquals(ulid1.toString(), ulid2.toString());
+			assertEquals(Arrays.toString(ulid1.toBytes()), Arrays.toString(ulid2.toBytes()));
+
+			// change all bytes
+			for (int j = 0; j < bytes.length; j++) {
+				bytes[j]++;
+			}
+			Ulid ulid3 = Ulid.from(bytes);
+			assertNotEquals(ulid1, ulid3);
+			assertNotEquals(ulid1.toString(), ulid3.toString());
+			assertNotEquals(Arrays.toString(ulid1.toBytes()), Arrays.toString(ulid3.toBytes()));
+		}
+	}
+
+	@Test
+	public void testCompareTo() {
+
+		Random random = new Random();
+		byte[] bytes = new byte[Ulid.ULID_BYTES];
+
+		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
+			random.nextBytes(bytes);
+			Ulid ulid1 = Ulid.from(bytes);
+			BigInteger number1 = new BigInteger(1, bytes);
+
+			random.nextBytes(bytes);
+			Ulid ulid2 = Ulid.from(bytes);
+			Ulid ulid3 = Ulid.from(bytes);
+			BigInteger number2 = new BigInteger(1, bytes);
+			BigInteger number3 = new BigInteger(1, bytes);
+
+			// compare numerically
+			assertEquals(number1.compareTo(number2) > 0, ulid1.compareTo(ulid2) > 0);
+			assertEquals(number1.compareTo(number2) < 0, ulid1.compareTo(ulid2) < 0);
+			assertEquals(number2.compareTo(number3) == 0, ulid2.compareTo(ulid3) == 0);
+
+			// compare lexicographically
+			assertEquals(number1.compareTo(number2) > 0, ulid1.toString().compareTo(ulid2.toString()) > 0);
+			assertEquals(number1.compareTo(number2) < 0, ulid1.toString().compareTo(ulid2.toString()) < 0);
+			assertEquals(number2.compareTo(number3) == 0, ulid2.toString().compareTo(ulid3.toString()) == 0);
+		}
 	}
 
 	@Test

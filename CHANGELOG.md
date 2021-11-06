@@ -6,6 +6,10 @@ All notable changes to this project will be documented in this file.
 
 Nothing unreleased.
 
+## [4.1.1] - 2021-11-06
+
+Compare internal fields as unsigned integers.
+
 ## [4.1.1] - 2021-10-03
 
 Regular maintenance.
@@ -274,7 +278,8 @@ Project created as an alternative Java implementation of [ULID spec](https://git
 -   Added `LICENSE`
 -   Added test cases
 
-[unreleased]: https://github.com/f4b6a3/ulid-creator/compare/ulid-creator-4.1.1...HEAD
+[unreleased]: https://github.com/f4b6a3/ulid-creator/compare/ulid-creator-4.1.2...HEAD
+[4.1.2]: https://github.com/f4b6a3/ulid-creator/compare/ulid-creator-4.1.1...ulid-creator-4.1.2
 [4.1.1]: https://github.com/f4b6a3/ulid-creator/compare/ulid-creator-4.1.0...ulid-creator-4.1.1
 [4.1.0]: https://github.com/f4b6a3/ulid-creator/compare/ulid-creator-4.0.0...ulid-creator-4.1.0
 [4.0.0]: https://github.com/f4b6a3/ulid-creator/compare/ulid-creator-3.2.0...ulid-creator-4.0.0

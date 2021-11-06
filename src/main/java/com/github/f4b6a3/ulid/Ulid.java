@@ -648,14 +648,21 @@ public final class Ulid implements Serializable, Comparable<Ulid> {
 
 	@Override
 	public int compareTo(Ulid other) {
-		if (this.msb < other.msb)
-			return -1;
-		if (this.msb > other.msb)
-			return 1;
-		if (this.lsb < other.lsb)
-			return -1;
-		if (this.lsb > other.lsb)
-			return 1;
+
+		final long mask = 0xffffffffL;
+
+		final long[] a = { this.msb >>> 32, this.msb & mask, this.lsb >>> 32, this.lsb & mask };
+		final long[] b = { other.msb >>> 32, other.msb & mask, other.lsb >>> 32, other.lsb & mask };
+
+		// compare as fields unsigned integers
+		for (int i = 0; i < a.length; i++) {
+			if (a[i] > b[i]) {
+				return 1;
+			} else if (a[i] < b[i]) {
+				return -1;
+			}
+		}
+
 		return 0;
 	}
 
