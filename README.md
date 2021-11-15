@@ -205,14 +205,32 @@ Use a `UlidFactory` with `java.util.Random`:
 // use a `java.util.Random` instance for fast generation
 UlidFactory factory = UlidFactory.newInstance(new Random());
 Ulid ulid = factory.create();
+
+// use the factory
 ```
 
-Use a `UlidFactory` with a random generator of your choice:
+Use a `UlidFactory` with a random generator of your choice inside of a `Supplier<byte[]>`:
 
 ```java
 // use a random supplier that returns an array of 10 bytes
 AwesomeRandom awesomeRandom = new AwesomeRandom(); // a hypothetical RNG
 UlidFactory factory = UlidFactory.newInstance(() -> awesomeRandom.nextBytes(Ulid.RANDOM_BYTES));
+
+// use the factory
+Ulid ulid = factory.create();
+```
+
+Use a `UlidFactory` with `ThreadLocalRandom` inside of a `Supplier<byte[]>`:
+
+```java
+// use a random supplier that returns an array of 10 bytes
+UlidFactory factory = UlidFactory.newInstance(() -> {
+	final byte[] bytes = new byte[Ulid.RANDOM_BYTES];
+	ThreadLocalRandom.current().nextBytes(bytes);
+	return bytes;
+});
+
+// use the factory
 Ulid ulid = factory.create();
 ```
 
