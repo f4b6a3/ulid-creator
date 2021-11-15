@@ -225,9 +225,9 @@ Use a `UlidFactory` with `ThreadLocalRandom` inside of a `Supplier<byte[]>`:
 ```java
 // use a random supplier that returns an array of 10 bytes
 UlidFactory factory = UlidFactory.newInstance(() -> {
-	final byte[] bytes = new byte[Ulid.RANDOM_BYTES];
-	ThreadLocalRandom.current().nextBytes(bytes);
-	return bytes;
+    final byte[] bytes = new byte[Ulid.RANDOM_BYTES];
+    ThreadLocalRandom.current().nextBytes(bytes);
+    return bytes;
 });
 
 // use the factory
