@@ -213,7 +213,7 @@ public class KeyGenerator {
 }
 ```
 ```java
-    String key = KeyGenerator.next();
+String key = KeyGenerator.next();
 ```
 
 Use a `UlidFactory` with `java.util.Random`:
