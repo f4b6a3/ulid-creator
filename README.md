@@ -234,6 +234,23 @@ UlidFactory factory = UlidFactory.newInstance(() -> {
 Ulid ulid = factory.create();
 ```
 
+Use a key generator that makes substitution easy if necessary:
+
+```java
+package com.example;
+
+import com.github.f4b6a3.ulid.UlidCreator;
+
+public class KeyGenerator {
+    public static String next() {
+        return UlidCreator.getUlid().toString();
+    }
+}
+```
+```java
+    String key = KeyGenerator.next();
+```
+
 Benchmark
 ------------------------------------------------------
 
