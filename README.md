@@ -199,6 +199,23 @@ byte[] random = ulid.getRandom(); // 10 bytes (80 bits)
 byte[] random = Ulid.getRandom("0123456789ABCDEFGHJKMNPQRS"); // 10 bytes (80 bits)
 ```
 
+Use a key generator that makes substitution easy if necessary:
+
+```java
+package com.example;
+
+import com.github.f4b6a3.ulid.UlidCreator;
+
+public class KeyGenerator {
+    public static String next() {
+        return UlidCreator.getUlid().toString();
+    }
+}
+```
+```java
+    String key = KeyGenerator.next();
+```
+
 Use a `UlidFactory` with `java.util.Random`:
 
 ```java
@@ -232,23 +249,6 @@ UlidFactory factory = UlidFactory.newInstance(() -> {
 
 // use the factory
 Ulid ulid = factory.create();
-```
-
-Use a key generator that makes substitution easy if necessary:
-
-```java
-package com.example;
-
-import com.github.f4b6a3.ulid.UlidCreator;
-
-public class KeyGenerator {
-    public static String next() {
-        return UlidCreator.getUlid().toString();
-    }
-}
-```
-```java
-    String key = KeyGenerator.next();
 ```
 
 Benchmark
