@@ -127,7 +127,7 @@ Sequence of Monotonic ULIDs:
     time      random
 ```
 
-### Other usage examples
+### More Examples
 
 Create a ULID from a canonical string (26 chars):
 
@@ -135,11 +135,7 @@ Create a ULID from a canonical string (26 chars):
 Ulid ulid = Ulid.from("0123456789ABCDEFGHJKMNPQRS");
 ```
 
-Convert a ULID into a canonical string in upper case:
-
-```java
-String string = ulid.toUpperCase(); // 0123456789ABCDEFGHJKMNPQRS
-```
+---
 
 Convert a ULID into a canonical string in lower case:
 
@@ -147,11 +143,15 @@ Convert a ULID into a canonical string in lower case:
 String string = ulid.toLowerCase(); // 0123456789abcdefghjkmnpqrs
 ```
 
+---
+
 Convert a ULID into a UUID:
 
 ```java
 UUID uuid = ulid.toUuid(); // 0110c853-1d09-52d8-d73e-1194e95b5f19
 ```
+
+---
 
 Convert a ULID into a [RFC-4122](https://tools.ietf.org/html/rfc4122) UUID v4:
 
@@ -160,11 +160,15 @@ UUID uuid = ulid.toRfc4122().toUuid(); // 0110c853-1d09-42d8-973e-1194e95b5f19
                                        //               ^ UUID v4
 ```
 
+---
+
 Convert a ULID into a byte array:
 
 ```java
 byte[] bytes = ulid.toBytes(); // 16 bytes (128 bits)
 ```
+
+---
 
 Get the creation instant of a ULID:
 
@@ -177,27 +181,7 @@ Instant instant = ulid.getInstant(); // 2007-02-16T02:13:14.633Z
 Instant instant = Ulid.getInstant("0123456789ABCDEFGHJKMNPQRS"); // 2007-02-16T02:13:14.633Z
 ```
 
-Get the time component of a ULID:
-
-```java
-long time = ulid.getTime(); // 1171591994633
-```
-
-```java
-// static method
-long time = Ulid.getTime("0123456789ABCDEFGHJKMNPQRS"); // 1171591994633
-```
-
-Get the random component of a ULID:
-
-```java
-byte[] random = ulid.getRandom(); // 10 bytes (80 bits)
-```
-
-```java
-// static method
-byte[] random = Ulid.getRandom("0123456789ABCDEFGHJKMNPQRS"); // 10 bytes (80 bits)
-```
+---
 
 Use a key generator that makes substitution easy if necessary:
 
@@ -216,6 +200,8 @@ public class KeyGenerator {
 String key = KeyGenerator.next();
 ```
 
+---
+
 Use a `UlidFactory` with `java.util.Random`:
 
 ```java
@@ -226,16 +212,7 @@ Ulid ulid = factory.create();
 // use the factory
 ```
 
-Use a `UlidFactory` with a random generator of your choice inside of a `Supplier<byte[]>`:
-
-```java
-// use a random supplier that returns an array of 10 bytes
-AwesomeRandom awesomeRandom = new AwesomeRandom(); // a hypothetical RNG
-UlidFactory factory = UlidFactory.newInstance(() -> awesomeRandom.nextBytes(Ulid.RANDOM_BYTES));
-
-// use the factory
-Ulid ulid = factory.create();
-```
+---
 
 Use a `UlidFactory` with `ThreadLocalRandom` inside of a `Supplier<byte[]>`:
 
@@ -250,6 +227,8 @@ UlidFactory factory = UlidFactory.newInstance(() -> {
 // use the factory
 Ulid ulid = factory.create();
 ```
+
+---
 
 Benchmark
 ------------------------------------------------------
@@ -277,6 +256,9 @@ To execute the benchmark, run `./benchmark/run.sh`.
 
 Other identifier generators
 -------------------------------------------
+
+Check out the other ID generators.
+
 * [UUID Creator](https://github.com/f4b6a3/uuid-creator)
 * [TSID Creator](https://github.com/f4b6a3/tsid-creator)
 * [KSUID Creator](https://github.com/f4b6a3/ksuid-creator)
