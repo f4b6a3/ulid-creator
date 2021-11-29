@@ -183,7 +183,7 @@ Instant instant = Ulid.getInstant("0123456789ABCDEFGHJKMNPQRS"); // 2007-02-16T0
 
 ---
 
-Use a key generator that makes substitution easy if necessary:
+A key generator that makes substitution easy if necessary:
 
 ```java
 package com.example;
@@ -202,7 +202,7 @@ String key = KeyGenerator.next();
 
 ---
 
-Use a `UlidFactory` with `java.util.Random`:
+A `UlidFactory` with `java.util.Random`:
 
 ```java
 // use a `java.util.Random` instance for fast generation
@@ -214,7 +214,7 @@ Ulid ulid = factory.create();
 
 ---
 
-Use a `UlidFactory` with `ThreadLocalRandom` inside of a `Supplier<byte[]>`:
+A `UlidFactory` with `ThreadLocalRandom` inside of a `Supplier<byte[]>`:
 
 ```java
 // use a random supplier that returns an array of 10 bytes
