@@ -162,14 +162,6 @@ UUID uuid = ulid.toRfc4122().toUuid(); // 0110c853-1d09-42d8-973e-1194e95b5f19
 
 ---
 
-Convert a ULID into a byte array:
-
-```java
-byte[] bytes = ulid.toBytes(); // 16 bytes (128 bits)
-```
-
----
-
 Get the creation instant of a ULID:
 
 ```java
