@@ -149,8 +149,8 @@ public final class Ulid implements Serializable, Comparable<Ulid> {
 	 * @param ulid a ULID
 	 */
 	public Ulid(Ulid ulid) {
-		this.msb = ulid.getMostSignificantBits();
-		this.lsb = ulid.getLeastSignificantBits();
+		this.msb = ulid.msb;
+		this.lsb = ulid.lsb;
 	}
 
 	/**

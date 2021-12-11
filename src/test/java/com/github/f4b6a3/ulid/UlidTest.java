@@ -313,29 +313,30 @@ public class UlidTest {
 	@Test
 	public void testIncrement() {
 
-		long msb;
-		long lsb;
-		Ulid ulid;
+		final long milliseconds = System.currentTimeMillis();
+		final BigInteger increment = BigInteger.valueOf(DEFAULT_LOOP_MAX);
 
-		final int loopMax = 100;
-
-		msb = 0x0123456789abcdefL;
-		lsb = 0x0123456789abcdefL;
-		ulid = new Ulid(msb, lsb);
-		for (int i = 0; i < loopMax; i++) {
-			ulid = ulid.increment();
+		// Test 1
+		byte[] random1 = { //
+				(byte) 0x00, (byte) 0x11, (byte) 0x22, (byte) 0x33, (byte) 0x44, //
+				(byte) 0x55, (byte) 0x66, (byte) 0x77, (byte) 0x88, (byte) 0x99 };
+		Ulid ulid1 = new Ulid(milliseconds, random1);
+		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
+			ulid1 = ulid1.increment();
 		}
-		assertEquals(msb, ulid.getMostSignificantBits());
-		assertEquals(msb + loopMax, ulid.getLeastSignificantBits());
+		assertEquals(milliseconds, ulid1.getTime());
+		assertEquals(new BigInteger(random1).add(increment), new BigInteger(ulid1.getRandom()));
 
-		msb = 0x0123456789abcdefL;
-		lsb = 0xffffffffffffffffL - (loopMax / 2);
-		ulid = new Ulid(msb, lsb);
-		for (int i = 0; i < loopMax; i++) {
-			ulid = ulid.increment();
+		// Test 2
+		byte[] random2 = { //
+				(byte) 0x00, (byte) 0x11, (byte) 0xff, (byte) 0xff, (byte) 0xff, //
+				(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff };
+		Ulid ulid2 = new Ulid(milliseconds, random2);
+		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
+			ulid2 = ulid2.increment();
 		}
-		assertEquals(msb + 1, ulid.getMostSignificantBits());
-		assertEquals((loopMax / 2) - 1, ulid.getLeastSignificantBits());
+		assertEquals(milliseconds, ulid2.getTime());
+		assertEquals(new BigInteger(random2).add(increment), new BigInteger(ulid2.getRandom()));
 	}
 
 	@Test
