@@ -1,7 +1,7 @@
 /*
  * MIT License
  * 
- * Copyright (c) 2020-2021 Fabio Lima
+ * Copyright (c) 2020-2022 Fabio Lima
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -584,12 +584,12 @@ public final class Ulid implements Serializable, Comparable<Ulid> {
 	 * millisecond;
 	 * 
 	 * (2) This method can generate monotonic increasing ULIDs 99.999999999999992%
-	 * ((2^80 - 10^9) / (2^80)) of the time, considering an unrealistic rate of
-	 * 1,000,000,000 ULIDs per millisecond.
+	 * ((2^80 - 10^9) / (2^80)) of the time within a single millisecond interval,
+	 * considering an unrealistic rate of 1,000,000,000 ULIDs per millisecond.
 	 * 
 	 * Due to (1) and (2), it does not throw the error message recommended by the
-	 * specification. When an overflow occurs in the last 80 bits, the random
-	 * component simply wraps around.
+	 * specification. When an overflow occurs in the random 80 bits, the time
+	 * component is simply incremented.
 	 * 
 	 * @return a ULID
 	 */
@@ -599,8 +599,7 @@ public final class Ulid implements Serializable, Comparable<Ulid> {
 		long newLsb = this.lsb + 1; // increment the LEAST significant bits
 
 		if (newLsb == INCREMENT_OVERFLOW) {
-			// carrying the extra bit by incrementing the MOST significant bits
-			newMsb = (newMsb & 0xffffffffffff0000L) | ((newMsb + 1) & 0x000000000000ffffL);
+			newMsb += 1; // increment the MOST significant bits
 		}
 
 		return new Ulid(newMsb, newLsb);

@@ -1,7 +1,7 @@
 /*
  * MIT License
  * 
- * Copyright (c) 2020-2021 Fabio Lima
+ * Copyright (c) 2020-2022 Fabio Lima
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,6 +25,7 @@
 package com.github.f4b6a3.ulid;
 
 import java.security.SecureRandom;
+import java.time.Clock;
 import java.util.Random;
 import java.util.function.LongFunction;
 import java.util.function.Supplier;
@@ -42,14 +43,20 @@ import java.util.function.Supplier;
  */
 public final class UlidFactory {
 
+	private final Clock clock; // for tests
 	private final LongFunction<Ulid> ulidFunction;
 
 	public UlidFactory() {
-		this.ulidFunction = new UlidFunction();
+		this(new UlidFunction(), null);
 	}
 
 	private UlidFactory(LongFunction<Ulid> ulidFunction) {
+		this(ulidFunction, null);
+	}
+
+	private UlidFactory(LongFunction<Ulid> ulidFunction, Clock clock) {
 		this.ulidFunction = ulidFunction;
+		this.clock = clock != null ? clock : Clock.systemUTC();
 	}
 
 	/**
@@ -86,6 +93,19 @@ public final class UlidFactory {
 	}
 
 	/**
+	 * Returns a new factory.
+	 * 
+	 * The given random supplier must return an array of 10 bytes.
+	 * 
+	 * @param randomSupplier a random supplier that returns 10 bytes
+	 * @param clock          a custom clock instance for tests
+	 * @return {@link UlidFactory}
+	 */
+	protected static UlidFactory newInstance(Supplier<byte[]> randomSupplier, Clock clock) {
+		return new UlidFactory(new UlidFunction(randomSupplier), clock);
+	}
+
+	/**
 	 * Returns a new monotonic factory.
 	 * 
 	 * @return {@link UlidFactory}
@@ -117,12 +137,25 @@ public final class UlidFactory {
 	}
 
 	/**
+	 * Returns a new monotonic factory.
+	 * 
+	 * The given random supplier must return an array of 10 bytes.
+	 * 
+	 * @param randomSupplier a random supplier that returns 10 bytes
+	 * @param clock          a custom clock instance for tests
+	 * @return {@link UlidFactory}
+	 */
+	protected static UlidFactory newMonotonicInstance(Supplier<byte[]> randomSupplier, Clock clock) {
+		return new UlidFactory(new MonotonicFunction(randomSupplier), clock);
+	}
+
+	/**
 	 * Returns a UUID.
 	 * 
 	 * @return a ULID
 	 */
 	public Ulid create() {
-		return create(System.currentTimeMillis());
+		return create(clock.millis());
 	}
 
 	/**
@@ -168,8 +201,13 @@ public final class UlidFactory {
 	 */
 	protected static final class MonotonicFunction implements LongFunction<Ulid> {
 
-		private long lastTime = -1;
+		private long lastTime = 0;
 		private Ulid lastUlid = null;
+
+		// Used to preserve monotonicity when the system clock is
+		// adjusted by NTP after a small clock drift or when the
+		// system clock jumps back by 1 second due to leap second.
+		protected static final int CLOCK_DRIFT_TOLERANCE = 10_000;
 
 		// it must return an array of 10 bytes
 		private Supplier<byte[]> randomSupplier;
@@ -189,13 +227,16 @@ public final class UlidFactory {
 		@Override
 		public synchronized Ulid apply(final long time) {
 
-			if (time == this.lastTime) {
+			// Check if the current time is the same as the previous time or has moved
+			// backwards after a small system clock adjustment or after a leap second.
+			// Drift tolerance = (previous_time - 10s) < current_time <= previous_time
+			if ((time > this.lastTime - CLOCK_DRIFT_TOLERANCE) && (time <= this.lastTime)) {
 				this.lastUlid = lastUlid.increment();
 			} else {
 				this.lastUlid = new Ulid(time, this.randomSupplier.get());
 			}
 
-			this.lastTime = time;
+			this.lastTime = lastUlid.getTime();
 			return new Ulid(this.lastUlid);
 		}
 	}
