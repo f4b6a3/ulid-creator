@@ -16,7 +16,7 @@ public class DemoTest {
 		for (int i = 0; i < max; i++) {
 			System.out.println(UlidCreator.getUlid());
 		}
-		
+
 		System.out.println(HORIZONTAL_LINE);
 		System.out.println("### Monotonic ULID");
 		System.out.println(HORIZONTAL_LINE);

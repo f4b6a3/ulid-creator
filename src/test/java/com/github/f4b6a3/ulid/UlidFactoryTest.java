@@ -1,4 +1,8 @@
-package com.github.f4b6a3.ulid.factory;
+package com.github.f4b6a3.ulid;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.HashSet;
 import java.util.Random;
@@ -25,6 +29,35 @@ public abstract class UlidFactoryTest {
 			processors = 4;
 		}
 		return processors;
+	}
+
+	protected void checkNullOrInvalid(Ulid[] list) {
+		for (Ulid ulid : list) {
+			assertNotNull("ULID is null", ulid);
+		}
+	}
+
+	protected void checkUniqueness(Ulid[] list) {
+
+		HashSet<Ulid> set = new HashSet<>();
+
+		for (Ulid ulid : list) {
+			assertTrue(String.format("ULID is duplicated %s", ulid), set.add(ulid));
+		}
+
+		assertEquals("There are duplicated ULIDs", set.size(), list.length);
+	}
+	
+	protected void checkCreationTime(Ulid[] list, long startTime, long endTime) {
+
+		assertTrue("Start time was after end time", startTime <= endTime);
+
+		for (Ulid ulid : list) {
+			long creationTime = ulid.getTime();
+			assertTrue("Creation time was before start time " + creationTime + " " + startTime,
+					creationTime >= startTime);
+			assertTrue("Creation time was after end time", creationTime <= endTime);
+		}
 	}
 
 	protected static class TestThread extends Thread {
