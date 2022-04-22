@@ -47,7 +47,7 @@ public final class UlidFactory {
 	private final LongFunction<Ulid> ulidFunction;
 
 	public UlidFactory() {
-		this(new UlidFunction(), null);
+		this(new UlidFunction(getRandomSupplier(null)));
 	}
 
 	private UlidFactory(LongFunction<Ulid> ulidFunction) {
@@ -67,7 +67,7 @@ public final class UlidFactory {
 	 * @return {@link UlidFactory}
 	 */
 	public static UlidFactory newInstance() {
-		return new UlidFactory(new UlidFunction());
+		return newInstance(getRandomSupplier(null));
 	}
 
 	/**
@@ -77,7 +77,7 @@ public final class UlidFactory {
 	 * @return {@link UlidFactory}
 	 */
 	public static UlidFactory newInstance(Random random) {
-		return new UlidFactory(new UlidFunction(random));
+		return newInstance(getRandomSupplier(random));
 	}
 
 	/**
@@ -93,25 +93,12 @@ public final class UlidFactory {
 	}
 
 	/**
-	 * Returns a new factory.
-	 * 
-	 * The given random supplier must return an array of 10 bytes.
-	 * 
-	 * @param randomSupplier a random supplier that returns 10 bytes
-	 * @param clock          a custom clock instance for tests
-	 * @return {@link UlidFactory}
-	 */
-	protected static UlidFactory newInstance(Supplier<byte[]> randomSupplier, Clock clock) {
-		return new UlidFactory(new UlidFunction(randomSupplier), clock);
-	}
-
-	/**
 	 * Returns a new monotonic factory.
 	 * 
 	 * @return {@link UlidFactory}
 	 */
 	public static UlidFactory newMonotonicInstance() {
-		return new UlidFactory(new MonotonicFunction());
+		return newMonotonicInstance(getRandomSupplier(null));
 	}
 
 	/**
@@ -121,7 +108,7 @@ public final class UlidFactory {
 	 * @return {@link UlidFactory}
 	 */
 	public static UlidFactory newMonotonicInstance(Random random) {
-		return new UlidFactory(new MonotonicFunction(random));
+		return newMonotonicInstance(getRandomSupplier(random));
 	}
 
 	/**
@@ -178,14 +165,6 @@ public final class UlidFactory {
 		// it must return an array of 10 bytes
 		private Supplier<byte[]> randomSupplier;
 
-		public UlidFunction() {
-			this(new SecureRandom());
-		}
-
-		public UlidFunction(Random random) {
-			this(getRandomSupplier(random));
-		}
-
 		public UlidFunction(Supplier<byte[]> randomSupplier) {
 			this.randomSupplier = randomSupplier;
 		}
@@ -201,8 +180,8 @@ public final class UlidFactory {
 	 */
 	protected static final class MonotonicFunction implements LongFunction<Ulid> {
 
-		private long lastTime = 0;
-		private Ulid lastUlid = null;
+		private long lastTime;
+		private Ulid lastUlid;
 
 		// Used to preserve monotonicity when the system clock is
 		// adjusted by NTP after a small clock drift or when the
@@ -212,16 +191,12 @@ public final class UlidFactory {
 		// it must return an array of 10 bytes
 		private Supplier<byte[]> randomSupplier;
 
-		public MonotonicFunction() {
-			this(new SecureRandom());
-		}
-
-		public MonotonicFunction(Random random) {
-			this(getRandomSupplier(random));
-		}
-
 		public MonotonicFunction(Supplier<byte[]> randomSupplier) {
 			this.randomSupplier = randomSupplier;
+
+			// initialize internal state
+			this.lastTime = Clock.systemUTC().millis();
+			this.lastUlid = new Ulid(lastTime, randomSupplier.get());
 		}
 
 		@Override
@@ -233,10 +208,10 @@ public final class UlidFactory {
 			if ((time > this.lastTime - CLOCK_DRIFT_TOLERANCE) && (time <= this.lastTime)) {
 				this.lastUlid = lastUlid.increment();
 			} else {
+				this.lastTime = time;
 				this.lastUlid = new Ulid(time, this.randomSupplier.get());
 			}
 
-			this.lastTime = lastUlid.getTime();
 			return new Ulid(this.lastUlid);
 		}
 	}
@@ -248,9 +223,10 @@ public final class UlidFactory {
 	 * @return a random supplier that returns 10 bytes
 	 */
 	protected static Supplier<byte[]> getRandomSupplier(Random random) {
+		Random entropy = random != null ? random : new SecureRandom();
 		return () -> {
 			byte[] payload = new byte[Ulid.RANDOM_BYTES];
-			random.nextBytes(payload);
+			entropy.nextBytes(payload);
 			return payload;
 		};
 	}

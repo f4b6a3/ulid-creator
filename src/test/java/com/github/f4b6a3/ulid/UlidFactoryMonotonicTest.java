@@ -36,7 +36,7 @@ public class UlidFactoryMonotonicTest extends UlidFactoryTest {
 	}
 
 	@Test
-	public void testClockDrift() {
+	public void testGetMonotonicUlidAfterClockDrift() {
 
 		long diff = UlidFactory.MonotonicFunction.CLOCK_DRIFT_TOLERANCE;
 		long time = Instant.parse("2021-12-31T23:59:59.000Z").toEpochMilli();
@@ -85,7 +85,7 @@ public class UlidFactoryMonotonicTest extends UlidFactoryTest {
 	}
 
 	@Test
-	public void testLeapSecond() {
+	public void testGetMonotonicUlidAfterLeapSecond() {
 
 		long second = Instant.parse("2021-12-31T23:59:59.000Z").getEpochSecond();
 		long leapSecond = second - 1; // simulate a leap second

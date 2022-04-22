@@ -6,6 +6,10 @@ All notable changes to this project will be documented in this file.
 
 Nothing unreleased.
 
+## [4.2.1] - 2022-04-21
+
+Handle clock drift. #18
+
 ## [4.2.0] - 2022-04-21
 
 Handle clock drift. #18
@@ -282,7 +286,8 @@ Project created as an alternative Java implementation of [ULID spec](https://git
 -   Added `LICENSE`
 -   Added test cases
 
-[unreleased]: https://github.com/f4b6a3/ulid-creator/compare/ulid-creator-4.2.0...HEAD
+[unreleased]: https://github.com/f4b6a3/ulid-creator/compare/ulid-creator-4.2.1...HEAD
+[4.2.1]: https://github.com/f4b6a3/ulid-creator/compare/ulid-creator-4.2.0...ulid-creator-4.2.1
 [4.2.0]: https://github.com/f4b6a3/ulid-creator/compare/ulid-creator-4.1.2...ulid-creator-4.2.0
 [4.1.2]: https://github.com/f4b6a3/ulid-creator/compare/ulid-creator-4.1.1...ulid-creator-4.1.2
 [4.1.1]: https://github.com/f4b6a3/ulid-creator/compare/ulid-creator-4.1.0...ulid-creator-4.1.1
