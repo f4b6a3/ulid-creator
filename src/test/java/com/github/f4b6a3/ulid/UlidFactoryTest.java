@@ -9,8 +9,6 @@ import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 
-import com.github.f4b6a3.ulid.UlidFactory;
-
 public abstract class UlidFactoryTest {
 
 	protected static final int DEFAULT_LOOP_MAX = 10_000;

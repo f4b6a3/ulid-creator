@@ -15,8 +15,6 @@ import java.util.UUID;
 
 import org.junit.Test;
 
-import com.github.f4b6a3.ulid.Ulid;
-
 public class UlidTest {
 
 	private static final int DEFAULT_LOOP_MAX = 1_000;

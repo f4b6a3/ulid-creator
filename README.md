@@ -39,7 +39,7 @@ Add these lines to your `pom.xml`.
 <dependency>
   <groupId>com.github.f4b6a3</groupId>
   <artifactId>ulid-creator</artifactId>
-  <version>4.2.1</version>
+  <version>5.0.0</version>
 </dependency>
 ```
 See more options in [maven.org](https://search.maven.org/artifact/com.github.f4b6a3/ulid-creator).
@@ -198,12 +198,38 @@ Ulid ulid = factory.create();
 
 ---
 
-A `UlidFactory` with `ThreadLocalRandom` inside of a `Supplier<byte[]>`:
+A `UlidFactory` with `SplittableRandom`:
+
+```java
+// use a random function that returns a long value
+SplittableRandom random = new SplittableRandom();
+UlidFactory factory = UlidFactory.newInstance(() -> random.nextLong());
+
+// use the factory
+Ulid ulid = factory.create();
+```
+
+---
+
+A `UlidFactory` with `RandomGenerator` (JDK 17+):
+
+```java
+// use a random function that returns a long value
+RandomGenerator random = RandomGenerator.getDefault();
+UlidFactory factory = UlidFactory.newInstance(() -> random.nextLong());
+
+// use the factory
+Ulid ulid = factory.create();
+```
+
+---
+
+A `UlidFactory` with `ThreadLocalRandom`:
 
 ```java
 // use a random supplier that returns an array of 10 bytes
-UlidFactory factory = UlidFactory.newInstance(() -> {
-    final byte[] bytes = new byte[Ulid.RANDOM_BYTES];
+UlidFactory factory = UlidFactory.newInstance((length) -> {
+    final byte[] bytes = new byte[length];
     ThreadLocalRandom.current().nextBytes(bytes);
     return bytes;
 });

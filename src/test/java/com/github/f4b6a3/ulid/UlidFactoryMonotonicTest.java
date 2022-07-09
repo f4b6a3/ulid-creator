@@ -2,10 +2,6 @@ package com.github.f4b6a3.ulid;
 
 import org.junit.Test;
 
-import com.github.f4b6a3.ulid.Ulid;
-import com.github.f4b6a3.ulid.UlidCreator;
-import com.github.f4b6a3.ulid.UlidFactory;
-
 import static org.junit.Assert.*;
 
 import java.time.Clock;
@@ -13,7 +9,10 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.Random;
-import java.util.function.Supplier;
+import java.util.SplittableRandom;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.IntFunction;
+import java.util.function.LongSupplier;
 
 public class UlidFactoryMonotonicTest extends UlidFactoryTest {
 
@@ -66,7 +65,7 @@ public class UlidFactoryMonotonicTest extends UlidFactoryTest {
 			}
 		};
 
-		Supplier<byte[]> randomSupplier = UlidFactory.getRandomSupplier(new Random());
+		IntFunction<byte[]> randomSupplier = UlidFactory.ByteRandom.newRandomFunction(new Random());
 		UlidFactory factory = UlidFactory.newMonotonicInstance(randomSupplier, clock);
 
 		long ms1 = factory.create().getTime(); // time
@@ -115,7 +114,7 @@ public class UlidFactoryMonotonicTest extends UlidFactoryTest {
 			}
 		};
 
-		Supplier<byte[]> randomSupplier = UlidFactory.getRandomSupplier(new Random());
+		IntFunction<byte[]> randomSupplier = UlidFactory.ByteRandom.newRandomFunction(new Random());
 		UlidFactory factory = UlidFactory.newMonotonicInstance(randomSupplier, clock);
 
 		long ms1 = factory.create().getTime(); // second
@@ -161,6 +160,65 @@ public class UlidFactoryMonotonicTest extends UlidFactoryTest {
 			long time = RANDOM.nextLong() & TIME_MASK;
 			Ulid ulid = UlidCreator.getMonotonicUlid(time);
 			assertEquals(time, ulid.getTime());
+		}
+	}
+
+	@Test
+	public void testWithRandom() {
+		Random random = new Random();
+		UlidFactory factory = UlidFactory.newMonotonicInstance(random);
+		assertNotNull(factory.create());
+	}
+
+	@Test
+	public void testWithRandomNull() {
+		UlidFactory factory = UlidFactory.newMonotonicInstance((Random) null);
+		assertNotNull(factory.create());
+	}
+
+	@Test
+	public void testWithRandomFunction() {
+		{
+			SplittableRandom random = new SplittableRandom();
+			LongSupplier function = () -> random.nextLong();
+			UlidFactory factory = UlidFactory.newMonotonicInstance(function);
+			assertNotNull(factory.create());
+		}
+		{
+			SplittableRandom random = new SplittableRandom();
+			LongSupplier function = () -> random.nextLong();
+			UlidFactory factory = UlidFactory.newMonotonicInstance(function, Clock.systemDefaultZone());
+			assertNotNull(factory.create());
+		}
+		{
+			IntFunction<byte[]> function = (length) -> {
+				byte[] bytes = new byte[length];
+				ThreadLocalRandom.current().nextBytes(bytes);
+				return bytes;
+			};
+			UlidFactory factory = UlidFactory.newMonotonicInstance(function);
+			assertNotNull(factory.create());
+		}
+		{
+			IntFunction<byte[]> function = (length) -> {
+				byte[] bytes = new byte[length];
+				ThreadLocalRandom.current().nextBytes(bytes);
+				return bytes;
+			};
+			UlidFactory factory = UlidFactory.newMonotonicInstance(function, Clock.systemDefaultZone());
+			assertNotNull(factory.create());
+		}
+	}
+
+	@Test
+	public void testWithRandomFunctionNull() {
+		{
+			UlidFactory factory = UlidFactory.newMonotonicInstance((LongSupplier) null);
+			assertNotNull(factory.create());
+		}
+		{
+			UlidFactory factory = UlidFactory.newMonotonicInstance((IntFunction<byte[]>) null);
+			assertNotNull(factory.create());
 		}
 	}
 }

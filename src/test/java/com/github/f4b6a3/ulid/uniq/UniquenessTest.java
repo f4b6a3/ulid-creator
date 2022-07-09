@@ -1,7 +1,11 @@
-package com.github.f4b6a3.ulid;
+package com.github.f4b6a3.ulid.uniq;
 
 import java.util.HashSet;
 import java.util.Random;
+
+import com.github.f4b6a3.ulid.TestSuite;
+import com.github.f4b6a3.ulid.Ulid;
+import com.github.f4b6a3.ulid.UlidFactory;
 
 /**
  * 
