@@ -622,45 +622,45 @@ public final class Ulid implements Serializable, Comparable<Ulid> {
 
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + (int) (lsb ^ (lsb >>> 32));
-		result = prime * result + (int) (msb ^ (msb >>> 32));
-		return result;
+		final long bits = msb ^ lsb;
+		return (int) (bits ^ (bits >>> 32));
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
 		if (obj == null)
 			return false;
-		if (getClass() != obj.getClass())
+		if (obj.getClass() != Ulid.class)
 			return false;
-		Ulid other = (Ulid) obj;
-		if (lsb != other.lsb)
+		Ulid that = (Ulid) obj;
+		if (lsb != that.lsb)
 			return false;
-		if (msb != other.msb)
+		if (msb != that.msb)
 			return false;
 		return true;
 	}
 
 	@Override
-	public int compareTo(Ulid other) {
+	public int compareTo(Ulid that) {
 
-		final long mask = 0xffffffffL;
+		// used to compare as UNSIGNED longs
+		final long min = 0x8000000000000000L;
 
-		final long[] a = { this.msb >>> 32, this.msb & mask, this.lsb >>> 32, this.lsb & mask };
-		final long[] b = { other.msb >>> 32, other.msb & mask, other.lsb >>> 32, other.lsb & mask };
+		final long a = this.msb + min;
+		final long b = that.msb + min;
 
-		// compare as fields unsigned integers
-		for (int i = 0; i < a.length; i++) {
-			if (a[i] > b[i]) {
-				return 1;
-			} else if (a[i] < b[i]) {
-				return -1;
-			}
-		}
+		if (a > b)
+			return 1;
+		else if (a < b)
+			return -1;
+
+		final long c = this.lsb + min;
+		final long d = that.lsb + min;
+
+		if (c > d)
+			return 1;
+		else if (c < d)
+			return -1;
 
 		return 0;
 	}

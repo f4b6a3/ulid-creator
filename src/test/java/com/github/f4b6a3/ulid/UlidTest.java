@@ -338,6 +338,28 @@ public class UlidTest {
 	}
 
 	@Test
+	public void testHashCode() {
+
+		Random random = new Random();
+		byte[] bytes = new byte[Ulid.ULID_BYTES];
+
+		// invoked on the same object
+		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
+			random.nextBytes(bytes);
+			Ulid ulid1 = Ulid.from(bytes);
+			assertEquals(ulid1.hashCode(), ulid1.hashCode());
+		}
+
+		// invoked on two equal objects
+		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
+			random.nextBytes(bytes);
+			Ulid ulid1 = Ulid.from(bytes);
+			Ulid ulid2 = Ulid.from(bytes);
+			assertEquals(ulid1.hashCode(), ulid2.hashCode());
+		}
+	}
+
+	@Test
 	public void testEquals() {
 
 		Random random = new Random();
@@ -366,15 +388,63 @@ public class UlidTest {
 	@Test
 	public void testCompareTo() {
 
+		final long zero = 0L;
 		Random random = new Random();
 		byte[] bytes = new byte[Ulid.ULID_BYTES];
 
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
-			random.nextBytes(bytes);
+
+			bytes = ByteBuffer.allocate(16).putLong(random.nextLong()).putLong(random.nextLong()).array();
 			Ulid ulid1 = Ulid.from(bytes);
 			BigInteger number1 = new BigInteger(1, bytes);
 
-			random.nextBytes(bytes);
+			bytes = ByteBuffer.allocate(16).putLong(random.nextLong()).putLong(random.nextLong()).array();
+			Ulid ulid2 = Ulid.from(bytes);
+			Ulid ulid3 = Ulid.from(bytes);
+			BigInteger number2 = new BigInteger(1, bytes);
+			BigInteger number3 = new BigInteger(1, bytes);
+
+			// compare numerically
+			assertEquals(number1.compareTo(number2) > 0, ulid1.compareTo(ulid2) > 0);
+			assertEquals(number1.compareTo(number2) < 0, ulid1.compareTo(ulid2) < 0);
+			assertEquals(number2.compareTo(number3) == 0, ulid2.compareTo(ulid3) == 0);
+
+			// compare lexicographically
+			assertEquals(number1.compareTo(number2) > 0, ulid1.toString().compareTo(ulid2.toString()) > 0);
+			assertEquals(number1.compareTo(number2) < 0, ulid1.toString().compareTo(ulid2.toString()) < 0);
+			assertEquals(number2.compareTo(number3) == 0, ulid2.toString().compareTo(ulid3.toString()) == 0);
+		}
+
+		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
+
+			bytes = ByteBuffer.allocate(16).putLong(zero).putLong(random.nextLong()).array();
+			Ulid ulid1 = Ulid.from(bytes);
+			BigInteger number1 = new BigInteger(1, bytes);
+
+			bytes = ByteBuffer.allocate(16).putLong(zero).putLong(random.nextLong()).array();
+			Ulid ulid2 = Ulid.from(bytes);
+			Ulid ulid3 = Ulid.from(bytes);
+			BigInteger number2 = new BigInteger(1, bytes);
+			BigInteger number3 = new BigInteger(1, bytes);
+
+			// compare numerically
+			assertEquals(number1.compareTo(number2) > 0, ulid1.compareTo(ulid2) > 0);
+			assertEquals(number1.compareTo(number2) < 0, ulid1.compareTo(ulid2) < 0);
+			assertEquals(number2.compareTo(number3) == 0, ulid2.compareTo(ulid3) == 0);
+
+			// compare lexicographically
+			assertEquals(number1.compareTo(number2) > 0, ulid1.toString().compareTo(ulid2.toString()) > 0);
+			assertEquals(number1.compareTo(number2) < 0, ulid1.toString().compareTo(ulid2.toString()) < 0);
+			assertEquals(number2.compareTo(number3) == 0, ulid2.toString().compareTo(ulid3.toString()) == 0);
+		}
+
+		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
+
+			bytes = ByteBuffer.allocate(16).putLong(random.nextLong()).putLong(zero).array();
+			Ulid ulid1 = Ulid.from(bytes);
+			BigInteger number1 = new BigInteger(1, bytes);
+
+			bytes = ByteBuffer.allocate(16).putLong(random.nextLong()).putLong(zero).array();
 			Ulid ulid2 = Ulid.from(bytes);
 			Ulid ulid3 = Ulid.from(bytes);
 			BigInteger number2 = new BigInteger(1, bytes);
