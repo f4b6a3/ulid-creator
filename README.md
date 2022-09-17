@@ -13,7 +13,11 @@ In summary:
 * String format is encoded to [Crockford's base32](https://www.crockford.com/base32.html);
 * String format is URL safe, is case insensitive, and has no hyphens.
 
-This library contains a good amount of [unit tests](https://github.com/f4b6a3/ulid-creator/tree/master/src/test/java/com/github/f4b6a3/ulid). It also has a [micro benchmark](https://github.com/f4b6a3/ulid-creator/tree/master/benchmark) for you to check if the performance is good enough.
+This project contains a [micro benchmark](https://github.com/f4b6a3/ulid-creator/tree/master/benchmark) and a good amount of [unit tests](https://github.com/f4b6a3/ulid-creator/tree/master/src/test/java/com/github/f4b6a3/ulid).
+
+The jar file can be downloaded directly from [maven.org](https://repo1.maven.org/maven2/com/github/f4b6a3/ulid-creator/).
+
+Read the [Javadocs](https://javadoc.io/doc/com.github.f4b6a3/ulid-creator).
 
 How to Use
 ------------------------------------------------------
@@ -39,7 +43,7 @@ Add these lines to your `pom.xml`.
 <dependency>
   <groupId>com.github.f4b6a3</groupId>
   <artifactId>ulid-creator</artifactId>
-  <version>5.0.1</version>
+  <version>5.0.2</version>
 </dependency>
 ```
 See more options in [maven.org](https://search.maven.org/artifact/com.github.f4b6a3/ulid-creator).
@@ -191,9 +195,9 @@ A `UlidFactory` with `java.util.Random`:
 ```java
 // use a `java.util.Random` instance for fast generation
 UlidFactory factory = UlidFactory.newInstance(new Random());
-Ulid ulid = factory.create();
 
 // use the factory
+Ulid ulid = factory.create();
 ```
 
 ---
@@ -243,26 +247,26 @@ Ulid ulid = factory.create();
 Benchmark
 ------------------------------------------------------
 
-This section shows benchmarks comparing `UlidCreator` to `java.util.UUID`.
+This section shows benchmarks comparing `UlidCreator` to `UUID.randomUUID()`.
 
 ```
 --------------------------------------------------------------------------------
-THROUGHPUT (operations/msec)            Mode  Cnt      Score     Error   Units
+THROUGHPUT (operations/msec)            Mode  Cnt      Score      Error   Units
 --------------------------------------------------------------------------------
-UUID_randomUUID                        thrpt    5   2060,570 ±  37,242  ops/ms
-UUID_randomUUID_toString               thrpt    5   1177,386 ±  39,803  ops/ms
+UUID_randomUUID                        thrpt    5   3459,889 ±   98,257  ops/ms
+UUID_randomUUID_toString               thrpt    5   3148,298 ±  159,507  ops/ms
 -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
-UlidCreator_getUlid                    thrpt    5   2740,609 ±  86,350  ops/ms
-UlidCreator_getUlid_toString           thrpt    5   2526,284 ±  56,726  ops/ms
+UlidCreator_getUlid                    thrpt    5   4276,614 ±   11,069  ops/ms
+UlidCreator_getUlid_toString           thrpt    5   3645,088 ±   85,478  ops/ms
 -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
-UlidCreator_getMonotonicUlid           thrpt    5  19373,150 ± 192,402  ops/ms
-UlidCreator_getMonotonicUlid_toString  thrpt    5  13269,201 ± 254,953  ops/ms
+UlidCreator_getMonotonicUlid           thrpt    5  32921,698 ± 1286,983  ops/ms
+UlidCreator_getMonotonicUlid_toString  thrpt    5  18541,252 ±  710,281  ops/ms
 --------------------------------------------------------------------------------
-Total time: 00:08:01
+Total time: 00:02:01
 --------------------------------------------------------------------------------
 ```
 
-System: JVM 8, Ubuntu 20.04, CPU i5-3330, 8G RAM.
+System: CPU i7-8565U, 16G RAM, Ubuntu 22.04, JVM 11, rng-tools installed.
 
 To execute the benchmark, run `./benchmark/run.sh`.
 
@@ -279,3 +283,4 @@ License
 ------------------------------------------------------
 
 This library is Open Source software released under the [MIT license](https://opensource.org/licenses/MIT).
+

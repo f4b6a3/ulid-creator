@@ -25,17 +25,10 @@
 package com.github.f4b6a3.ulid;
 
 /**
- * A class for generating ULIDs.
- * 
- * The ULID has two components:
- * 
- * - Time component: a part of 48 bits that represent the number of milliseconds
- * since Unix Epoch, 1970-01-01.
- * 
- * - Random component: a byte array of 80 bits that has a random value generated
- * a secure random generator.
- * 
- * The maximum ULIDs that can be generated per millisecond is 2^80.
+ * A class that generates ULIDs.
+ * <p>
+ * Both types of ULID can be easily created by this generator, i.e. monotonic
+ * and non-monotonic.
  */
 public final class UlidCreator {
 
@@ -44,8 +37,6 @@ public final class UlidCreator {
 
 	/**
 	 * Returns a ULID.
-	 * 
-	 * The random component is always reset to a new random value.
 	 * 
 	 * @return a ULID
 	 */
@@ -56,9 +47,7 @@ public final class UlidCreator {
 	/**
 	 * Returns a ULID with a given time.
 	 * 
-	 * The time must be the number of milliseconds since 1970-01-01 (Unix epoch).
-	 * 
-	 * @param time a given time
+	 * @param time a number of milliseconds since 1970-01-01 (Unix epoch).
 	 * @return a ULID
 	 */
 	public static Ulid getUlid(final long time) {
@@ -67,11 +56,6 @@ public final class UlidCreator {
 
 	/**
 	 * Returns a Monotonic ULID.
-	 * 
-	 * The random component is reset to a new value whenever the time changes.
-	 * 
-	 * If more than one ULID is generated within the same time, the random component
-	 * is incremented by one.
 	 * 
 	 * @return a ULID
 	 */
@@ -82,14 +66,7 @@ public final class UlidCreator {
 	/**
 	 * Returns a Monotonic ULID with a given time.
 	 * 
-	 * The time must be the number of milliseconds since 1970-01-01 (Unix epoch).
-	 * 
-	 * The random component is reset to a new value whenever the time changes.
-	 * 
-	 * If more than one ULID is generated within the same time, the random component
-	 * is incremented by one.
-	 * 
-	 * @param time a given time
+	 * @param time a number of milliseconds since 1970-01-01 (Unix epoch).
 	 * @return a ULID
 	 */
 	public static Ulid getMonotonicUlid(final long time) {

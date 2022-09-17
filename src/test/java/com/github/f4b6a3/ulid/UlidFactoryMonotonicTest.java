@@ -123,6 +123,60 @@ public class UlidFactoryMonotonicTest extends UlidFactoryTest {
 		assertEquals(ms1, ms2); // LEAP SECOND! DON'T MOVE BACKWARDS!
 	}
 
+	@Test
+	public void testGetMonotonicUlidAfterRandomBitsOverflowFollowedByTimeBitsIncrement() {
+
+		long time = Instant.parse("2021-12-31T23:59:59.999Z").toEpochMilli();
+		long times[] = { time, time, time + 1, time + 2 };
+
+		Clock clock = new Clock() {
+			private int i;
+
+			@Override
+			public long millis() {
+				return times[i++ % times.length];
+			}
+
+			@Override
+			public ZoneId getZone() {
+				return null;
+			}
+
+			@Override
+			public Clock withZone(ZoneId zone) {
+				return null;
+			}
+
+			@Override
+			public Instant instant() {
+				return null;
+			}
+		};
+
+		LongSupplier randomSupplier = () -> 0xffffffffffffffffL;
+		UlidFactory factory = UlidFactory.newMonotonicInstance(randomSupplier, clock);
+
+		Ulid ulid1 = factory.create();
+		Ulid ulid2 = factory.create(); // time bits should be incremented here
+		Ulid ulid3 = factory.create();
+		Ulid ulid4 = factory.create();
+
+		assertEquals(ulid1.getTime(), time);
+		assertEquals(ulid2.getTime(), time + 1); // check if time bits increment occurred
+		assertEquals(ulid3.getTime(), time + 1);
+		assertEquals(ulid4.getTime(), time + 2);
+
+		assertEquals(ulid1.getMostSignificantBits() & 0xffffL, 0xffffL);
+		assertEquals(ulid2.getMostSignificantBits() & 0xffffL, 0x0000L);
+		assertEquals(ulid3.getMostSignificantBits() & 0xffffL, 0x0000L);
+		assertEquals(ulid4.getMostSignificantBits() & 0xffffL, 0xffffL);
+
+		assertEquals(ulid1.getLeastSignificantBits(), 0xffffffffffffffffL);
+		assertEquals(ulid2.getLeastSignificantBits(), 0x0000000000000000L);
+		assertEquals(ulid3.getLeastSignificantBits(), 0x0000000000000001L);
+		assertEquals(ulid4.getLeastSignificantBits(), 0xffffffffffffffffL);
+	}
+
 	private void checkOrdering(Ulid[] list) {
 		Ulid[] other = Arrays.copyOf(list, list.length);
 		Arrays.sort(other);

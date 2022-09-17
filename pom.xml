@@ -8,7 +8,7 @@
 
 	<name>ulid-creator</name>
 	<url>http://github.com/f4b6a3/ulid-creator</url>
-	<description>A Java library for generating and handling ULIDs (Universally Unique Lexicographically Sortable Identifier).</description>
+	<description>A Java library for generating ULIDs (Universally Unique Lexicographically Sortable Identifier).</description>
 
 
 	<licenses>
