@@ -303,7 +303,7 @@ Project created as an alternative Java implementation of [ULID spec](https://git
 -   Added test cases
 
 [unreleased]: https://github.com/f4b6a3/ulid-creator/compare/ulid-creator-5.1.0...HEAD
-[5.0.2]: https://github.com/f4b6a3/ulid-creator/compare/ulid-creator-5.0.2...ulid-creator-5.1.0
+[5.1.0]: https://github.com/f4b6a3/ulid-creator/compare/ulid-creator-5.0.2...ulid-creator-5.1.0
 [5.0.2]: https://github.com/f4b6a3/ulid-creator/compare/ulid-creator-5.0.1...ulid-creator-5.0.2
 [5.0.1]: https://github.com/f4b6a3/ulid-creator/compare/ulid-creator-5.0.0...ulid-creator-5.0.1
 [5.0.0]: https://github.com/f4b6a3/ulid-creator/compare/ulid-creator-4.2.1...ulid-creator-5.0.0
