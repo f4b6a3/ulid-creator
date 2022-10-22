@@ -43,7 +43,7 @@ Add these lines to your `pom.xml`.
 <dependency>
   <groupId>com.github.f4b6a3</groupId>
   <artifactId>ulid-creator</artifactId>
-  <version>5.0.2</version>
+  <version>5.1.0</version>
 </dependency>
 ```
 See more options in [maven.org](https://search.maven.org/artifact/com.github.f4b6a3/ulid-creator).
@@ -124,6 +124,14 @@ Sequence of Monotonic ULIDs:
 ```
 
 ### More Examples
+
+Create a quick ULID:
+
+```java
+Ulid ulid = Ulid.fast();
+```
+
+---
 
 Create a ULID from a canonical string (26 chars):
 
@@ -253,16 +261,19 @@ This section shows benchmarks comparing `UlidCreator` to `UUID.randomUUID()`.
 --------------------------------------------------------------------------------
 THROUGHPUT (operations/msec)            Mode  Cnt      Score      Error   Units
 --------------------------------------------------------------------------------
-UUID_randomUUID                        thrpt    5   3459,889 ±   98,257  ops/ms
+UUID_randomUUID                        thrpt    5   3459,889 ±   98,257  ops/ms (1.00)
 UUID_randomUUID_toString               thrpt    5   3148,298 ±  159,507  ops/ms
 -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
-UlidCreator_getUlid                    thrpt    5   4276,614 ±   11,069  ops/ms
+Ulid_fast                              thrpt    5  34523,147 ± 1022,114  ops/ms (9.98)
+Ulid_fast_toString                     thrpt    5  19161,375 ±  662,563  ops/ms
+-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
+UlidCreator_getUlid                    thrpt    5   4276,614 ±   11,069  ops/ms (1.23)
 UlidCreator_getUlid_toString           thrpt    5   3645,088 ±   85,478  ops/ms
 -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
-UlidCreator_getMonotonicUlid           thrpt    5  32921,698 ± 1286,983  ops/ms
+UlidCreator_getMonotonicUlid           thrpt    5  32921,698 ± 1286,983  ops/ms (9.51)
 UlidCreator_getMonotonicUlid_toString  thrpt    5  18541,252 ±  710,281  ops/ms
 --------------------------------------------------------------------------------
-Total time: 00:02:01
+Total time: 00:02:41
 --------------------------------------------------------------------------------
 ```
 

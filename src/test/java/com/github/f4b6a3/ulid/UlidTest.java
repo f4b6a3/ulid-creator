@@ -15,7 +15,7 @@ import java.util.UUID;
 
 import org.junit.Test;
 
-public class UlidTest {
+public class UlidTest extends UlidFactoryTest {
 
 	private static final int DEFAULT_LOOP_MAX = 1_000;
 
@@ -575,6 +575,23 @@ public class UlidTest {
 		} catch (IllegalArgumentException e) {
 			// success
 		}
+	}
+
+	@Test
+	public void testUlidFast() {
+		Ulid[] list = new Ulid[DEFAULT_LOOP_MAX];
+
+		long startTime = System.currentTimeMillis();
+
+		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
+			list[i] = Ulid.fast();
+		}
+
+		long endTime = System.currentTimeMillis();
+
+		checkNullOrInvalid(list);
+		checkUniqueness(list);
+		checkCreationTime(list, startTime, endTime);
 	}
 
 	public static Ulid fromString(String string) {

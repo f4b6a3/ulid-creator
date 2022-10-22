@@ -38,6 +38,16 @@ public class Throughput {
 	}
 
 	@Benchmark
+	public Ulid Ulid_fast() {
+		return Ulid.fast();
+	}
+
+	@Benchmark
+	public String Ulid_fast_toString() {
+		return Ulid.fast().toString();
+	}
+
+	@Benchmark
 	public Ulid UlidCreator_getUlid() {
 		return UlidCreator.getUlid();
 	}
@@ -46,7 +56,7 @@ public class Throughput {
 	public String UlidCreator_getUlid_toString() {
 		return UlidCreator.getUlid().toString();
 	}
-	
+
 	@Benchmark
 	public Ulid UlidCreator_getMonotonicUlid() {
 		return UlidCreator.getMonotonicUlid();

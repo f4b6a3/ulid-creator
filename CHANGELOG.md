@@ -6,6 +6,10 @@ All notable changes to this project will be documented in this file.
 
 Nothing unreleased.
 
+## [5.1.0] - 2022-10-22
+
+Add a fast method to generate identifiers. #22
+
 ## [5.0.2] - 2022-09-17
 
 Rewrite docs. #21
@@ -298,8 +302,9 @@ Project created as an alternative Java implementation of [ULID spec](https://git
 -   Added `LICENSE`
 -   Added test cases
 
-[unreleased]: https://github.com/f4b6a3/ulid-creator/compare/ulid-creator-5.0.2...HEAD
-[5.0.2]: https://github.com/f4b6a3/ulid-creator/compare/ulid-creator-5.0.0...ulid-creator-5.0.2
+[unreleased]: https://github.com/f4b6a3/ulid-creator/compare/ulid-creator-5.1.0...HEAD
+[5.0.2]: https://github.com/f4b6a3/ulid-creator/compare/ulid-creator-5.0.2...ulid-creator-5.1.0
+[5.0.2]: https://github.com/f4b6a3/ulid-creator/compare/ulid-creator-5.0.1...ulid-creator-5.0.2
 [5.0.1]: https://github.com/f4b6a3/ulid-creator/compare/ulid-creator-5.0.0...ulid-creator-5.0.1
 [5.0.0]: https://github.com/f4b6a3/ulid-creator/compare/ulid-creator-4.2.1...ulid-creator-5.0.0
 [4.2.1]: https://github.com/f4b6a3/ulid-creator/compare/ulid-creator-4.2.0...ulid-creator-4.2.1

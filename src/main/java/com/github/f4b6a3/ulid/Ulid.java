@@ -26,12 +26,13 @@ package com.github.f4b6a3.ulid;
 
 import java.io.Serializable;
 import java.time.Instant;
+import java.util.SplittableRandom;
 import java.util.UUID;
 
 /**
  * A class that represents ULIDs.
  * <p>
- * ULID is 128-bit value that has two components:
+ * ULID is a 128-bit value that has two components:
  * <ul>
  * <li><b>Time component</b>: a number of milliseconds since 1970-01-01 (Unix
  * epoch).
@@ -235,6 +236,27 @@ public final class Ulid implements Serializable, Comparable<Ulid> {
 
 		this.msb = long0;
 		this.lsb = long1;
+	}
+
+	/**
+	 * Returns a fast new ULID.
+	 * <p>
+	 * This static method is a quick alternative to {@link UlidCreator#getUlid()}.
+	 * <p>
+	 * It employs {@link SplittableRandom} which works very well, although not
+	 * cryptographically strong.
+	 * <p>
+	 * Security-sensitive applications that require a cryptographically secure
+	 * pseudo-random generator should use {@link UlidCreator#getUlid()}.
+	 * 
+	 * @return a ULID
+	 * @see {@link SplittableRandom}
+	 * @since 5.1.0
+	 */
+	public static Ulid fast() {
+		final long time = System.currentTimeMillis();
+		final SplittableRandom random = new SplittableRandom();
+		return new Ulid((time << 16) | (random.nextLong() & 0xffffL), random.nextLong());
 	}
 
 	/**
@@ -677,7 +699,7 @@ public final class Ulid implements Serializable, Comparable<Ulid> {
 	 * Compares two ULIDs as unsigned 128-bit integers.
 	 * <p>
 	 * The first of two ULIDs is greater than the second if the most significant
-	 * byte in which they differ is greater for the first UUID.
+	 * byte in which they differ is greater for the first ULID.
 	 * 
 	 * @param that a ULID to be compared with
 	 * @return -1, 0 or 1 as {@code this} is less than, equal to, or greater than
