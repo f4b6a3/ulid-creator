@@ -26,6 +26,7 @@ package com.github.f4b6a3.ulid;
 
 import java.io.Serializable;
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -98,11 +99,9 @@ public final class Ulid implements Serializable, Comparable<Ulid> {
 					'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'j', 'k', //
 					'm', 'n', 'p', 'q', 'r', 's', 't', 'v', 'w', 'x', 'y', 'z' };
 
-	private static final long[] ALPHABET_VALUES = new long[128];
+	private static final byte[] ALPHABET_VALUES = new byte[256];
 	static {
-		for (int i = 0; i < ALPHABET_VALUES.length; i++) {
-			ALPHABET_VALUES[i] = -1;
-		}
+		Arrays.fill(ALPHABET_VALUES, (byte) -1);
 		// Numbers
 		ALPHABET_VALUES['0'] = 0x00;
 		ALPHABET_VALUES['1'] = 0x01;
@@ -377,34 +376,34 @@ public final class Ulid implements Serializable, Comparable<Ulid> {
 		long random0 = 0;
 		long random1 = 0;
 
-		time |= ALPHABET_VALUES[chars[0x00]] << 45;
-		time |= ALPHABET_VALUES[chars[0x01]] << 40;
-		time |= ALPHABET_VALUES[chars[0x02]] << 35;
-		time |= ALPHABET_VALUES[chars[0x03]] << 30;
-		time |= ALPHABET_VALUES[chars[0x04]] << 25;
-		time |= ALPHABET_VALUES[chars[0x05]] << 20;
-		time |= ALPHABET_VALUES[chars[0x06]] << 15;
-		time |= ALPHABET_VALUES[chars[0x07]] << 10;
-		time |= ALPHABET_VALUES[chars[0x08]] << 5;
-		time |= ALPHABET_VALUES[chars[0x09]];
+		time |= (long) ALPHABET_VALUES[chars[0x00]] << 45;
+		time |= (long) ALPHABET_VALUES[chars[0x01]] << 40;
+		time |= (long) ALPHABET_VALUES[chars[0x02]] << 35;
+		time |= (long) ALPHABET_VALUES[chars[0x03]] << 30;
+		time |= (long) ALPHABET_VALUES[chars[0x04]] << 25;
+		time |= (long) ALPHABET_VALUES[chars[0x05]] << 20;
+		time |= (long) ALPHABET_VALUES[chars[0x06]] << 15;
+		time |= (long) ALPHABET_VALUES[chars[0x07]] << 10;
+		time |= (long) ALPHABET_VALUES[chars[0x08]] << 5;
+		time |= (long) ALPHABET_VALUES[chars[0x09]];
 
-		random0 |= ALPHABET_VALUES[chars[0x0a]] << 35;
-		random0 |= ALPHABET_VALUES[chars[0x0b]] << 30;
-		random0 |= ALPHABET_VALUES[chars[0x0c]] << 25;
-		random0 |= ALPHABET_VALUES[chars[0x0d]] << 20;
-		random0 |= ALPHABET_VALUES[chars[0x0e]] << 15;
-		random0 |= ALPHABET_VALUES[chars[0x0f]] << 10;
-		random0 |= ALPHABET_VALUES[chars[0x10]] << 5;
-		random0 |= ALPHABET_VALUES[chars[0x11]];
+		random0 |= (long) ALPHABET_VALUES[chars[0x0a]] << 35;
+		random0 |= (long) ALPHABET_VALUES[chars[0x0b]] << 30;
+		random0 |= (long) ALPHABET_VALUES[chars[0x0c]] << 25;
+		random0 |= (long) ALPHABET_VALUES[chars[0x0d]] << 20;
+		random0 |= (long) ALPHABET_VALUES[chars[0x0e]] << 15;
+		random0 |= (long) ALPHABET_VALUES[chars[0x0f]] << 10;
+		random0 |= (long) ALPHABET_VALUES[chars[0x10]] << 5;
+		random0 |= (long) ALPHABET_VALUES[chars[0x11]];
 
-		random1 |= ALPHABET_VALUES[chars[0x12]] << 35;
-		random1 |= ALPHABET_VALUES[chars[0x13]] << 30;
-		random1 |= ALPHABET_VALUES[chars[0x14]] << 25;
-		random1 |= ALPHABET_VALUES[chars[0x15]] << 20;
-		random1 |= ALPHABET_VALUES[chars[0x16]] << 15;
-		random1 |= ALPHABET_VALUES[chars[0x17]] << 10;
-		random1 |= ALPHABET_VALUES[chars[0x18]] << 5;
-		random1 |= ALPHABET_VALUES[chars[0x19]];
+		random1 |= (long) ALPHABET_VALUES[chars[0x12]] << 35;
+		random1 |= (long) ALPHABET_VALUES[chars[0x13]] << 30;
+		random1 |= (long) ALPHABET_VALUES[chars[0x14]] << 25;
+		random1 |= (long) ALPHABET_VALUES[chars[0x15]] << 20;
+		random1 |= (long) ALPHABET_VALUES[chars[0x16]] << 15;
+		random1 |= (long) ALPHABET_VALUES[chars[0x17]] << 10;
+		random1 |= (long) ALPHABET_VALUES[chars[0x18]] << 5;
+		random1 |= (long) ALPHABET_VALUES[chars[0x19]];
 
 		final long msb = (time << 16) | (random0 >>> 24);
 		final long lsb = (random0 << 40) | (random1 & 0xffffffffffL);
@@ -563,16 +562,16 @@ public final class Ulid implements Serializable, Comparable<Ulid> {
 
 		long time = 0;
 
-		time |= ALPHABET_VALUES[chars[0x00]] << 45;
-		time |= ALPHABET_VALUES[chars[0x01]] << 40;
-		time |= ALPHABET_VALUES[chars[0x02]] << 35;
-		time |= ALPHABET_VALUES[chars[0x03]] << 30;
-		time |= ALPHABET_VALUES[chars[0x04]] << 25;
-		time |= ALPHABET_VALUES[chars[0x05]] << 20;
-		time |= ALPHABET_VALUES[chars[0x06]] << 15;
-		time |= ALPHABET_VALUES[chars[0x07]] << 10;
-		time |= ALPHABET_VALUES[chars[0x08]] << 5;
-		time |= ALPHABET_VALUES[chars[0x09]];
+		time |= (long) ALPHABET_VALUES[chars[0x00]] << 45;
+		time |= (long) ALPHABET_VALUES[chars[0x01]] << 40;
+		time |= (long) ALPHABET_VALUES[chars[0x02]] << 35;
+		time |= (long) ALPHABET_VALUES[chars[0x03]] << 30;
+		time |= (long) ALPHABET_VALUES[chars[0x04]] << 25;
+		time |= (long) ALPHABET_VALUES[chars[0x05]] << 20;
+		time |= (long) ALPHABET_VALUES[chars[0x06]] << 15;
+		time |= (long) ALPHABET_VALUES[chars[0x07]] << 10;
+		time |= (long) ALPHABET_VALUES[chars[0x08]] << 5;
+		time |= (long) ALPHABET_VALUES[chars[0x09]];
 
 		return time;
 	}
@@ -619,23 +618,23 @@ public final class Ulid implements Serializable, Comparable<Ulid> {
 		long random0 = 0;
 		long random1 = 0;
 
-		random0 |= ALPHABET_VALUES[chars[0x0a]] << 35;
-		random0 |= ALPHABET_VALUES[chars[0x0b]] << 30;
-		random0 |= ALPHABET_VALUES[chars[0x0c]] << 25;
-		random0 |= ALPHABET_VALUES[chars[0x0d]] << 20;
-		random0 |= ALPHABET_VALUES[chars[0x0e]] << 15;
-		random0 |= ALPHABET_VALUES[chars[0x0f]] << 10;
-		random0 |= ALPHABET_VALUES[chars[0x10]] << 5;
-		random0 |= ALPHABET_VALUES[chars[0x11]];
+		random0 |= (long) ALPHABET_VALUES[chars[0x0a]] << 35;
+		random0 |= (long) ALPHABET_VALUES[chars[0x0b]] << 30;
+		random0 |= (long) ALPHABET_VALUES[chars[0x0c]] << 25;
+		random0 |= (long) ALPHABET_VALUES[chars[0x0d]] << 20;
+		random0 |= (long) ALPHABET_VALUES[chars[0x0e]] << 15;
+		random0 |= (long) ALPHABET_VALUES[chars[0x0f]] << 10;
+		random0 |= (long) ALPHABET_VALUES[chars[0x10]] << 5;
+		random0 |= (long) ALPHABET_VALUES[chars[0x11]];
 
-		random1 |= ALPHABET_VALUES[chars[0x12]] << 35;
-		random1 |= ALPHABET_VALUES[chars[0x13]] << 30;
-		random1 |= ALPHABET_VALUES[chars[0x14]] << 25;
-		random1 |= ALPHABET_VALUES[chars[0x15]] << 20;
-		random1 |= ALPHABET_VALUES[chars[0x16]] << 15;
-		random1 |= ALPHABET_VALUES[chars[0x17]] << 10;
-		random1 |= ALPHABET_VALUES[chars[0x18]] << 5;
-		random1 |= ALPHABET_VALUES[chars[0x19]];
+		random1 |= (long) ALPHABET_VALUES[chars[0x12]] << 35;
+		random1 |= (long) ALPHABET_VALUES[chars[0x13]] << 30;
+		random1 |= (long) ALPHABET_VALUES[chars[0x14]] << 25;
+		random1 |= (long) ALPHABET_VALUES[chars[0x15]] << 20;
+		random1 |= (long) ALPHABET_VALUES[chars[0x16]] << 15;
+		random1 |= (long) ALPHABET_VALUES[chars[0x17]] << 10;
+		random1 |= (long) ALPHABET_VALUES[chars[0x18]] << 5;
+		random1 |= (long) ALPHABET_VALUES[chars[0x19]];
 
 		final byte[] bytes = new byte[RANDOM_BYTES];
 
