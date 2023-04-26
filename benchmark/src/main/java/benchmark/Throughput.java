@@ -66,4 +66,14 @@ public class Throughput {
 	public String UlidCreator_getMonotonicUlid_toString() {
 		return UlidCreator.getMonotonicUlid().toString();
 	}
+
+	@Benchmark
+	public Ulid UlidCreator_getHashUlid() {
+		return UlidCreator.getHashUlid(0L, "this is a test");
+	}
+
+	@Benchmark
+	public Ulid UlidCreator_getHashUlidString() {
+		return UlidCreator.getHashUlid(0L, "this is a test").toString();
+	}
 }

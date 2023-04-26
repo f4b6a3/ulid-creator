@@ -1,7 +1,7 @@
 /*
  * MIT License
  * 
- * Copyright (c) 2020-2022 Fabio Lima
+ * Copyright (c) 2020-2023 Fabio Lima
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,8 +26,8 @@ package com.github.f4b6a3.ulid;
 
 import java.io.Serializable;
 import java.time.Instant;
-import java.util.SplittableRandom;
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * A class that represents ULIDs.
@@ -79,6 +79,14 @@ public final class Ulid implements Serializable, Comparable<Ulid> {
 	 * Number of bytes of the random component of a ULID.
 	 */
 	public static final int RANDOM_BYTES = 10;
+	/**
+	 * A special ULID that has all 128 bits set to ZERO.
+	 */
+	public static final Ulid MIN = new Ulid(0x0000000000000000L, 0x0000000000000000L);
+	/**
+	 * A special ULID that has all 128 bits set to ONE.
+	 */
+	public static final Ulid MAX = new Ulid(0xffffffffffffffffL, 0xffffffffffffffffL);
 
 	private static final char[] ALPHABET_UPPERCASE = //
 			{ '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', //
@@ -243,20 +251,62 @@ public final class Ulid implements Serializable, Comparable<Ulid> {
 	 * <p>
 	 * This static method is a quick alternative to {@link UlidCreator#getUlid()}.
 	 * <p>
-	 * It employs {@link SplittableRandom} which works very well, although not
-	 * cryptographically strong.
+	 * It employs {@link ThreadLocalRandom} which works very well, although not
+	 * cryptographically strong. It can be useful, for example, for logging.
 	 * <p>
 	 * Security-sensitive applications that require a cryptographically secure
 	 * pseudo-random generator should use {@link UlidCreator#getUlid()}.
 	 * 
 	 * @return a ULID
-	 * @see {@link SplittableRandom}
+	 * @see {@link ThreadLocalRandom}
 	 * @since 5.1.0
 	 */
 	public static Ulid fast() {
 		final long time = System.currentTimeMillis();
-		final SplittableRandom random = new SplittableRandom();
+		ThreadLocalRandom random = ThreadLocalRandom.current();
 		return new Ulid((time << 16) | (random.nextLong() & 0xffffL), random.nextLong());
+	}
+
+	/**
+	 * Returns the minimum ULID for a given time.
+	 * <p>
+	 * The 48 bits of the time component are filled with the given time and the 80
+	 * bits of the random component are all set to ZERO.
+	 * <p>
+	 * For example, the minimum ULID for 2022-02-22 22:22:22.222 is
+	 * `{@code new Ulid(0x018781ebb25e0000L, 0x0000000000000000L)}`, where
+	 * `{@code 0x018781ebb25e}` is the timestamp in hexadecimal.
+	 * <p>
+	 * It can be useful to find all records before or after a specific timestamp in
+	 * a table without a `{@code created_at}` field.
+	 * 
+	 * @param time the the number of milliseconds since 1970-01-01
+	 * @return a ULID
+	 * @since 5.2.0
+	 */
+	public static Ulid min(long time) {
+		return new Ulid((time << 16) | 0x0000L, 0x0000000000000000L);
+	}
+
+	/**
+	 * Returns the maximum ULID for a given time.
+	 * <p>
+	 * The 48 bits of the time component are filled with the given time and the 80
+	 * bits or the random component are all set to ONE.
+	 * <p>
+	 * For example, the maximum ULID for 2022-02-22 22:22:22.222 is
+	 * `{@code new Ulid(0x018781ebb25effffL, 0xffffffffffffffffL)}`, where
+	 * `{@code 0x018781ebb25e}` is the timestamp in hexadecimal.
+	 * <p>
+	 * It can be useful to find all records before or after a specific timestamp in
+	 * a table without a `{@code created_at}` field.
+	 * 
+	 * @param time the the number of milliseconds since 1970-01-01
+	 * @return a ULID
+	 * @since 5.2.0
+	 */
+	public static Ulid max(long time) {
+		return new Ulid((time << 16) | 0xffffL, 0xffffffffffffffffL);
 	}
 
 	/**

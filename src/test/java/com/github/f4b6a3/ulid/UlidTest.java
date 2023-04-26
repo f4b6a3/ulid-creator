@@ -3,11 +3,15 @@ package com.github.f4b6a3.ulid;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.Random;
@@ -279,11 +283,42 @@ public class UlidTest extends UlidFactoryTest {
 	}
 
 	@Test
+	public void testMinAndMax() {
+
+		long time = 0;
+		Random random = new Random();
+		byte[] bytes = new byte[Ulid.RANDOM_BYTES];
+
+		for (int i = 0; i < 100; i++) {
+
+			time = random.nextLong() & TIME_MASK;
+
+			{
+				// Test MIN
+				Ulid ulid = Ulid.min(time);
+				assertEquals(time, ulid.getTime());
+				for (int j = 0; j < bytes.length; j++) {
+					assertEquals(0, ulid.getRandom()[j]);
+				}
+			}
+
+			{
+				// Test MAX
+				Ulid ulid = Ulid.max(time);
+				assertEquals(time, ulid.getTime());
+				for (int j = 0; j < bytes.length; j++) {
+					assertEquals(-1, ulid.getRandom()[j]);
+				}
+			}
+		}
+	}
+
+	@Test
 	public void testGetTimeAndGetRandom() {
 
 		long time = 0;
-		byte[] bytes = new byte[Ulid.RANDOM_BYTES];
 		Random random = new Random();
+		byte[] bytes = new byte[Ulid.RANDOM_BYTES];
 
 		for (int i = 0; i < 100; i++) {
 
@@ -292,18 +327,18 @@ public class UlidTest extends UlidFactoryTest {
 
 			// Instance methods
 			Ulid ulid = new Ulid(time, bytes);
-			assertEquals(time, ulid.getTime()); // test Ulid.getTime()
-			assertEquals(Instant.ofEpochMilli(time), ulid.getInstant()); // test Ulid.getInstant()
+			assertEquals(time, ulid.getTime());
+			assertEquals(Instant.ofEpochMilli(time), ulid.getInstant());
 			for (int j = 0; j < bytes.length; j++) {
-				assertEquals(bytes[j], ulid.getRandom()[j]); // test Ulid.getRandom()
+				assertEquals(bytes[j], ulid.getRandom()[j]);
 			}
 
 			// Static methods
 			String string = new Ulid(time, bytes).toString();
-			assertEquals(time, Ulid.getTime(string)); // test Ulid.getTime()
-			assertEquals(Instant.ofEpochMilli(time), Ulid.getInstant(string)); // test Ulid.getInstant()
+			assertEquals(time, Ulid.getTime(string));
+			assertEquals(Instant.ofEpochMilli(time), Ulid.getInstant(string));
 			for (int j = 0; j < bytes.length; j++) {
-				assertEquals(bytes[j], Ulid.getRandom(string)[j]); // test Ulid.getRandom()
+				assertEquals(bytes[j], Ulid.getRandom(string)[j]);
 			}
 		}
 	}

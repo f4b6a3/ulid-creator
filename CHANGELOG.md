@@ -4,7 +4,11 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
-Nothing unreleased.
+Add a MIN and MAX constants and methods. #26
+
+## [5.2.0] - 2023-??-??
+
+To be released.
 
 ## [5.1.0] - 2022-10-22
 
@@ -302,7 +306,8 @@ Project created as an alternative Java implementation of [ULID spec](https://git
 -   Added `LICENSE`
 -   Added test cases
 
-[unreleased]: https://github.com/f4b6a3/ulid-creator/compare/ulid-creator-5.1.0...HEAD
+[unreleased]: https://github.com/f4b6a3/ulid-creator/compare/ulid-creator-5.2.0...HEAD
+[5.2.0]: https://github.com/f4b6a3/ulid-creator/compare/ulid-creator-5.1.0...ulid-creator-5.2.0
 [5.1.0]: https://github.com/f4b6a3/ulid-creator/compare/ulid-creator-5.0.2...ulid-creator-5.1.0
 [5.0.2]: https://github.com/f4b6a3/ulid-creator/compare/ulid-creator-5.0.1...ulid-creator-5.0.2
 [5.0.1]: https://github.com/f4b6a3/ulid-creator/compare/ulid-creator-5.0.0...ulid-creator-5.0.1
