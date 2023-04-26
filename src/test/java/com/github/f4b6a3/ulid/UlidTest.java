@@ -629,6 +629,32 @@ public class UlidTest extends UlidFactoryTest {
 		checkCreationTime(list, startTime, endTime);
 	}
 
+	@Test
+	public void testGetHashUlid() throws NoSuchAlgorithmException {
+
+		Ulid prev = Ulid.MIN;
+		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
+
+			long time = (new Random()).nextLong() >>> 16;
+			String string = UUID.randomUUID().toString();
+			Ulid ulid = UlidCreator.getHashUlid(time, string);
+
+			assertNotNull(ulid);
+			assertNotEquals(prev, ulid);
+			assertNotEquals(Ulid.MIN, ulid);
+			assertNotEquals(Ulid.MAX, ulid);
+			assertEquals(time, ulid.getTime());
+			assertEquals(Arrays.toString(ulid.getRandom()), Arrays.toString(ulid.getRandom()));
+
+			MessageDigest md = MessageDigest.getInstance("SHA-256");
+			byte[] utf8 = string.getBytes(StandardCharsets.UTF_8);
+			byte[] hash = Arrays.copyOf(md.digest(utf8), 10);
+			assertEquals(Arrays.toString(ulid.getRandom()), Arrays.toString(hash));
+
+			prev = ulid;
+		}
+	}
+
 	public static Ulid fromString(String string) {
 
 		long time = 0;
