@@ -39,7 +39,8 @@ public class UlidFactoryMonotonicTest extends UlidFactoryTest {
 
 		long diff = UlidFactory.MonotonicFunction.CLOCK_DRIFT_TOLERANCE;
 		long time = Instant.parse("2021-12-31T23:59:59.000Z").toEpochMilli();
-		long times[] = { time, time + 0, time + 1, time + 2, time + 3 - diff, time + 4 - diff, time + 5 };
+		long times[] = { /* init */ 0L, time + 0, time + 1, time + 2, time + 3, time + 4 - diff, time + 5 - diff,
+				time + 6 - diff };
 
 		Clock clock = new Clock() {
 			private int i;
@@ -65,37 +66,63 @@ public class UlidFactoryMonotonicTest extends UlidFactoryTest {
 			}
 		};
 
-		IntFunction<byte[]> randomSupplier = UlidFactory.ByteRandom.newRandomFunction(new Random());
-		UlidFactory factory = UlidFactory.newMonotonicInstance(randomSupplier, clock);
+		LongSupplier randomFunction = () -> 0;
+		UlidFactory factory = UlidFactory.newMonotonicInstance(randomFunction, clock);
 
-		long ms1 = factory.create().getTime(); // time
-		long ms2 = factory.create().getTime(); // time + 0
-		long ms3 = factory.create().getTime(); // time + 1
-		long ms4 = factory.create().getTime(); // time + 2
-		long ms5 = factory.create().getTime(); // time + 3 - 10000 (CLOCK DRIFT)
-		long ms6 = factory.create().getTime(); // time + 4 - 10000 (CLOCK DRIFT)
-		long ms7 = factory.create().getTime(); // time + 5
-		assertEquals(ms1 + 0, ms2); // clock repeats.
-		assertEquals(ms1 + 1, ms3); // clock advanced.
-		assertEquals(ms1 + 2, ms4); // clock advanced.
-		assertEquals(ms1 + 2, ms5); // CLOCK DRIFT! DON'T MOVE BACKWARDS!
-		assertEquals(ms1 + 2, ms6); // CLOCK DRIFT! DON'T MOVE BACKWARDS!
-		assertEquals(ms1 + 5, ms7); // clock advanced.
+		Ulid ulid1 = factory.create();
+		Ulid ulid2 = factory.create();
+		Ulid ulid3 = factory.create();
+		Ulid ulid4 = factory.create();
+		Ulid ulid5 = factory.create();
+		Ulid ulid6 = factory.create();
+		Ulid ulid7 = factory.create();
+
+		long t1 = ulid1.getTime(); // time + 0
+		long t2 = ulid2.getTime(); // time + 1
+		long t3 = ulid3.getTime(); // time + 2
+		long t4 = ulid4.getTime(); // time + 3
+		long t5 = ulid5.getTime(); // time + 4 - 10000 (CLOCK DRIFT)
+		long t6 = ulid6.getTime(); // time + 5 - 10000
+		long t7 = ulid7.getTime(); // time + 6 - 10000
+
+		long r1 = ulid1.getLeastSignificantBits(); // time + 0
+		long r2 = ulid2.getLeastSignificantBits(); // time + 1
+		long r3 = ulid3.getLeastSignificantBits(); // time + 2
+		long r4 = ulid4.getLeastSignificantBits(); // time + 3
+		long r5 = ulid5.getLeastSignificantBits(); // time + 4 - 10000 (CLOCK REGRESSION)
+		long r6 = ulid6.getLeastSignificantBits(); // time + 5 - 10000
+		long r7 = ulid7.getLeastSignificantBits(); // time + 6 - 10000
+
+		assertEquals(time + 0, t1); // time + 0
+		assertEquals(time + 1, t2); // time + 1
+		assertEquals(time + 2, t3); // time + 2
+		assertEquals(time + 3, t4); // time + 3
+		assertEquals(time + 3, t5); // time + 4 - 10000 (CLOCK REGRESSION)
+		assertEquals(time + 3, t6); // time + 5 - 10000
+		assertEquals(time + 3, t7); // time + 5 - 10000
+
+		assertEquals(0, r1); // time + 0
+		assertEquals(0, r2); // time + 1
+		assertEquals(0, r3); // time + 2
+		assertEquals(0, r4); // time + 3
+		assertEquals(1, r5); // time + 4 - 10000 (CLOCK REGRESSION)
+		assertEquals(2, r6); // time + 5 - 10000
+		assertEquals(3, r7); // time + 5 - 10000
 	}
 
 	@Test
 	public void testGetMonotonicUlidAfterLeapSecond() {
 
-		long second = Instant.parse("2021-12-31T23:59:59.000Z").getEpochSecond();
-		long leapSecond = second - 1; // simulate a leap second
-		long times[] = { second, leapSecond };
+		long time = Instant.parse("2021-12-31T23:59:59.000Z").toEpochMilli();
+		long leap = time - 1000; // simulate a leap second
+		long times[] = { time, leap };
 
 		Clock clock = new Clock() {
 			private int i;
 
 			@Override
 			public long millis() {
-				return times[i++ % times.length] * 1000;
+				return times[i++ % times.length];
 			}
 
 			@Override
@@ -114,20 +141,31 @@ public class UlidFactoryMonotonicTest extends UlidFactoryTest {
 			}
 		};
 
-		IntFunction<byte[]> randomSupplier = UlidFactory.ByteRandom.newRandomFunction(new Random());
-		UlidFactory factory = UlidFactory.newMonotonicInstance(randomSupplier, clock);
+		LongSupplier randomFunction = () -> 0;
+		UlidFactory factory = UlidFactory.newMonotonicInstance(randomFunction, clock);
 
-		long ms1 = factory.create().getTime(); // second
-		long ms2 = factory.create().getTime(); // leap second
+		Ulid ulid1 = factory.create();
+		Ulid ulid2 = factory.create();
 
-		assertEquals(ms1, ms2); // LEAP SECOND! DON'T MOVE BACKWARDS!
+		long t1 = ulid1.getTime();
+		long t2 = ulid2.getTime(); // leap second
+
+		long r1 = ulid1.getLeastSignificantBits();
+		long r2 = ulid2.getLeastSignificantBits(); // leap second
+
+		assertEquals(time, t1);
+		assertEquals(time, t2); // leap second
+
+		assertEquals(1, r1);
+		assertEquals(2, r2);
+
 	}
 
 	@Test
 	public void testGetMonotonicUlidAfterRandomBitsOverflowFollowedByTimeBitsIncrement() {
 
 		long time = Instant.parse("2021-12-31T23:59:59.999Z").toEpochMilli();
-		long times[] = { time, time, time + 1, time + 2 };
+		long times[] = { /* init */ 0L, time + 1, time + 2, time + 3, time, time, time };
 
 		Clock clock = new Clock() {
 			private int i;
@@ -156,25 +194,35 @@ public class UlidFactoryMonotonicTest extends UlidFactoryTest {
 		LongSupplier randomSupplier = () -> 0xffffffffffffffffL;
 		UlidFactory factory = UlidFactory.newMonotonicInstance(randomSupplier, clock);
 
+		// System.out.println("time: " + time); // 1640995199999
+
 		Ulid ulid1 = factory.create();
-		Ulid ulid2 = factory.create(); // time bits should be incremented here
+		Ulid ulid2 = factory.create();
 		Ulid ulid3 = factory.create();
 		Ulid ulid4 = factory.create();
+		Ulid ulid5 = factory.create();
+		Ulid ulid6 = factory.create();
 
-		assertEquals(ulid1.getTime(), time);
-		assertEquals(ulid2.getTime(), time + 1); // check if time bits increment occurred
-		assertEquals(ulid3.getTime(), time + 1);
-		assertEquals(ulid4.getTime(), time + 2);
+		assertEquals(time + 1, ulid1.getTime());
+		assertEquals(time + 2, ulid2.getTime());
+		assertEquals(time + 3, ulid3.getTime());
+		assertEquals(time + 4, ulid4.getTime());
+		assertEquals(time + 4, ulid5.getTime());
+		assertEquals(time + 4, ulid6.getTime());
 
-		assertEquals(ulid1.getMostSignificantBits() & 0xffffL, 0xffffL);
-		assertEquals(ulid2.getMostSignificantBits() & 0xffffL, 0x0000L);
-		assertEquals(ulid3.getMostSignificantBits() & 0xffffL, 0x0000L);
-		assertEquals(ulid4.getMostSignificantBits() & 0xffffL, 0xffffL);
+		assertEquals(0xffffL, ulid1.getMostSignificantBits() & 0xffffL);
+		assertEquals(0xffffL, ulid2.getMostSignificantBits() & 0xffffL);
+		assertEquals(0xffffL, ulid3.getMostSignificantBits() & 0xffffL);
+		assertEquals(0x0000L, ulid4.getMostSignificantBits() & 0xffffL);
+		assertEquals(0x0000L, ulid5.getMostSignificantBits() & 0xffffL);
+		assertEquals(0x0000L, ulid6.getMostSignificantBits() & 0xffffL);
 
-		assertEquals(ulid1.getLeastSignificantBits(), 0xffffffffffffffffL);
-		assertEquals(ulid2.getLeastSignificantBits(), 0x0000000000000000L);
-		assertEquals(ulid3.getLeastSignificantBits(), 0x0000000000000001L);
-		assertEquals(ulid4.getLeastSignificantBits(), 0xffffffffffffffffL);
+		assertEquals(0xffffffffffffffffL, ulid1.getLeastSignificantBits());
+		assertEquals(0xffffffffffffffffL, ulid2.getLeastSignificantBits());
+		assertEquals(0xffffffffffffffffL, ulid3.getLeastSignificantBits());
+		assertEquals(0x0000000000000000L, ulid4.getLeastSignificantBits());
+		assertEquals(0x0000000000000001L, ulid5.getLeastSignificantBits());
+		assertEquals(0x0000000000000002L, ulid6.getLeastSignificantBits());
 	}
 
 	private void checkOrdering(Ulid[] list) {

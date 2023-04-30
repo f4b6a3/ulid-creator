@@ -170,7 +170,7 @@ public final class UlidFactory {
 	 * @return {@link UlidFactory}
 	 */
 	static UlidFactory newMonotonicInstance(LongSupplier randomFunction, Clock clock) {
-		return new UlidFactory(new MonotonicFunction(IRandom.newInstance(randomFunction)), clock);
+		return new UlidFactory(new MonotonicFunction(IRandom.newInstance(randomFunction), clock), clock);
 	}
 
 	/**
@@ -183,7 +183,7 @@ public final class UlidFactory {
 	 * @return {@link UlidFactory}
 	 */
 	static UlidFactory newMonotonicInstance(IntFunction<byte[]> randomFunction, Clock clock) {
-		return new UlidFactory(new MonotonicFunction(IRandom.newInstance(randomFunction)), clock);
+		return new UlidFactory(new MonotonicFunction(IRandom.newInstance(randomFunction), clock), clock);
 	}
 
 	// ******************************
@@ -251,9 +251,13 @@ public final class UlidFactory {
 		protected static final int CLOCK_DRIFT_TOLERANCE = 10_000;
 
 		public MonotonicFunction(IRandom random) {
+			this(random, Clock.systemUTC());
+		}
+
+		public MonotonicFunction(IRandom random, Clock clock) {
 			this.random = random;
 			// initialize internal state
-			this.lastUlid = new Ulid(0L, this.random.nextBytes(Ulid.RANDOM_BYTES));
+			this.lastUlid = new Ulid(clock.millis(), this.random.nextBytes(Ulid.RANDOM_BYTES));
 		}
 
 		@Override
