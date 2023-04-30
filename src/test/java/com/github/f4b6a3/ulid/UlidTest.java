@@ -655,6 +655,85 @@ public class UlidTest extends UlidFactoryTest {
 		}
 	}
 
+	@Test
+	public void testAlphabetValues() {
+		byte[] ALPHABET_VALUES = new byte[256];
+		for (int i = 0; i < ALPHABET_VALUES.length; i++) {
+			ALPHABET_VALUES[i] = -1;
+		}
+		// Numbers
+		ALPHABET_VALUES['0'] = 0x00;
+		ALPHABET_VALUES['1'] = 0x01;
+		ALPHABET_VALUES['2'] = 0x02;
+		ALPHABET_VALUES['3'] = 0x03;
+		ALPHABET_VALUES['4'] = 0x04;
+		ALPHABET_VALUES['5'] = 0x05;
+		ALPHABET_VALUES['6'] = 0x06;
+		ALPHABET_VALUES['7'] = 0x07;
+		ALPHABET_VALUES['8'] = 0x08;
+		ALPHABET_VALUES['9'] = 0x09;
+		// Lower case
+		ALPHABET_VALUES['a'] = 0x0a;
+		ALPHABET_VALUES['b'] = 0x0b;
+		ALPHABET_VALUES['c'] = 0x0c;
+		ALPHABET_VALUES['d'] = 0x0d;
+		ALPHABET_VALUES['e'] = 0x0e;
+		ALPHABET_VALUES['f'] = 0x0f;
+		ALPHABET_VALUES['g'] = 0x10;
+		ALPHABET_VALUES['h'] = 0x11;
+		ALPHABET_VALUES['j'] = 0x12;
+		ALPHABET_VALUES['k'] = 0x13;
+		ALPHABET_VALUES['m'] = 0x14;
+		ALPHABET_VALUES['n'] = 0x15;
+		ALPHABET_VALUES['p'] = 0x16;
+		ALPHABET_VALUES['q'] = 0x17;
+		ALPHABET_VALUES['r'] = 0x18;
+		ALPHABET_VALUES['s'] = 0x19;
+		ALPHABET_VALUES['t'] = 0x1a;
+		ALPHABET_VALUES['v'] = 0x1b;
+		ALPHABET_VALUES['w'] = 0x1c;
+		ALPHABET_VALUES['x'] = 0x1d;
+		ALPHABET_VALUES['y'] = 0x1e;
+		ALPHABET_VALUES['z'] = 0x1f;
+		// Lower case OIL
+		ALPHABET_VALUES['o'] = 0x00;
+		ALPHABET_VALUES['i'] = 0x01;
+		ALPHABET_VALUES['l'] = 0x01;
+		// Lower case OIL
+		ALPHABET_VALUES['o'] = 0x00;
+		ALPHABET_VALUES['i'] = 0x01;
+		ALPHABET_VALUES['l'] = 0x01;
+		// Upper case
+		ALPHABET_VALUES['A'] = 0x0a;
+		ALPHABET_VALUES['B'] = 0x0b;
+		ALPHABET_VALUES['C'] = 0x0c;
+		ALPHABET_VALUES['D'] = 0x0d;
+		ALPHABET_VALUES['E'] = 0x0e;
+		ALPHABET_VALUES['F'] = 0x0f;
+		ALPHABET_VALUES['G'] = 0x10;
+		ALPHABET_VALUES['H'] = 0x11;
+		ALPHABET_VALUES['J'] = 0x12;
+		ALPHABET_VALUES['K'] = 0x13;
+		ALPHABET_VALUES['M'] = 0x14;
+		ALPHABET_VALUES['N'] = 0x15;
+		ALPHABET_VALUES['P'] = 0x16;
+		ALPHABET_VALUES['Q'] = 0x17;
+		ALPHABET_VALUES['R'] = 0x18;
+		ALPHABET_VALUES['S'] = 0x19;
+		ALPHABET_VALUES['T'] = 0x1a;
+		ALPHABET_VALUES['V'] = 0x1b;
+		ALPHABET_VALUES['W'] = 0x1c;
+		ALPHABET_VALUES['X'] = 0x1d;
+		ALPHABET_VALUES['Y'] = 0x1e;
+		ALPHABET_VALUES['Z'] = 0x1f;
+		// Upper case OIL
+		ALPHABET_VALUES['O'] = 0x00;
+		ALPHABET_VALUES['I'] = 0x01;
+		ALPHABET_VALUES['L'] = 0x01;
+
+		assertEquals(Arrays.toString(ALPHABET_VALUES), Arrays.toString(Ulid.ALPHABET_VALUES));
+	}
+
 	public static Ulid fromString(String string) {
 
 		long time = 0;

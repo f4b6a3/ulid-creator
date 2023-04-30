@@ -4,12 +4,12 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+Nothing to be released.
+
+## [5.2.0] - 2023-04-30
+
 Add Hash ULID generator methods. #25
 Add a MIN and MAX constants and methods. #26
-
-## [5.2.0] - 2023-??-??
-
-To be released.
 
 ## [5.1.0] - 2022-10-22
 

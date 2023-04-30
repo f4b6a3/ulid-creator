@@ -104,7 +104,7 @@ public final class UlidCreator {
 	 * <pre>{@code
 	 * long time = file.getCreatedAt();
 	 * String name = file.getFileName();
-	 * Ulid ulid = HashUlid.generate(time, name);
+	 * Ulid ulid = UlidCreator.getHashUlid(time, name);
 	 * }</pre>
 	 * 
 	 * @param time   a number of milliseconds since 1970-01-01 (Unix epoch).
@@ -130,7 +130,7 @@ public final class UlidCreator {
 	 * <pre>{@code
 	 * long time = file.getCreatedAt();
 	 * byte[] bytes = file.getFileBinary();
-	 * Ulid ulid = HashUlid.generate(time, bytes);
+	 * Ulid ulid = UlidCreator.getHashUlid(time, bytes);
 	 * }</pre>
 	 * 
 	 * @param time  a number of milliseconds since 1970-01-01 (Unix epoch).
