@@ -19,7 +19,7 @@ The jar file can be downloaded directly from [maven.org](https://repo1.maven.org
 
 Read the [Javadocs](https://javadoc.io/doc/com.github.f4b6a3/ulid-creator).
 
-How to Use
+Usage
 ------------------------------------------------------
 
 Create a ULID:
@@ -34,7 +34,7 @@ Create a Monotonic ULID:
 Ulid ulid = UlidCreator.getMonotonicUlid();
 ```
 
-### Maven dependency
+### Dependency
 
 Add these lines to your `pom.xml`.
 

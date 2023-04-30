@@ -89,9 +89,9 @@ public final class Ulid implements Serializable, Comparable<Ulid> {
 	 */
 	public static final Ulid MAX = new Ulid(0xffffffffffffffffL, 0xffffffffffffffffL);
 
-	protected static final byte[] ALPHABET_VALUES = new byte[256];
-	private static final char[] ALPHABET_UPPERCASE = "0123456789ABCDEFGHJKMNPQRSTVWXYZ".toCharArray();
-	private static final char[] ALPHABET_LOWERCASE = "0123456789abcdefghjkmnpqrstvwxyz".toCharArray();
+	static final byte[] ALPHABET_VALUES = new byte[256];
+	static final char[] ALPHABET_UPPERCASE = "0123456789ABCDEFGHJKMNPQRSTVWXYZ".toCharArray();
+	static final char[] ALPHABET_LOWERCASE = "0123456789abcdefghjkmnpqrstvwxyz".toCharArray();
 
 	static {
 
