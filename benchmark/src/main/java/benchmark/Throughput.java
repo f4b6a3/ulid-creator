@@ -19,7 +19,7 @@ import com.github.f4b6a3.ulid.Ulid;
 import com.github.f4b6a3.ulid.UlidCreator;
 
 @Fork(1)
-@Threads(1)
+@Threads(4)
 @State(Scope.Benchmark)
 @BenchmarkMode(Mode.Throughput)
 @Warmup(iterations = 5, time = 1)
@@ -73,7 +73,7 @@ public class Throughput {
 	}
 
 	@Benchmark
-	public Ulid UlidCreator_getHashUlidString() {
+	public String UlidCreator_getHashUlidString() {
 		return UlidCreator.getHashUlid(0L, "this is a test").toString();
 	}
 }
