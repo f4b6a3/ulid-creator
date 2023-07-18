@@ -143,8 +143,8 @@ public final class UlidFactory {
     /**
      * Returns a new monotonic factory.
      *
-     * @param random a {@link Random} generator
-     * @param timeMillisNow  a function that returns the current time as milliseconds from epoch
+     * @param random        a {@link Random} generator
+     * @param timeMillisNow a function that returns the current time as milliseconds from epoch
      * @return {@link UlidFactory}
      */
     public static UlidFactory newMonotonicInstance(Random random, LongSupplier timeMillisNow) {
@@ -296,7 +296,7 @@ public final class UlidFactory {
         }
 
         public MonotonicFunction(IRandom random, Clock clock) {
-           this(random, clock::millis);
+            this(random, clock::millis);
         }
 
         public MonotonicFunction(IRandom random, LongSupplier timeMillisNow) {
