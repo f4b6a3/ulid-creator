@@ -1,18 +1,18 @@
 /*
  * MIT License
- * 
+ *
  * Copyright (c) 2020-2023 Fabio Lima
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -49,356 +49,401 @@ import java.util.function.LongSupplier;
  */
 public final class UlidFactory {
 
-	private final Clock clock; // for tests
-	private final LongFunction<Ulid> ulidFunction;
+    private final LongSupplier timeMillisNow; // for tests
+    private final LongFunction<Ulid> ulidFunction;
 
-	// ******************************
-	// Constructors
-	// ******************************
+    // ******************************
+    // Constructors
+    // ******************************
 
-	/**
-	 * Default constructor.
-	 */
-	public UlidFactory() {
-		this(new UlidFunction(IRandom.newInstance()));
-	}
+    /**
+     * Default constructor.
+     */
+    public UlidFactory() {
+        this(new UlidFunction(IRandom.newInstance()));
+    }
 
-	private UlidFactory(LongFunction<Ulid> ulidFunction) {
-		this(ulidFunction, null);
-	}
+    private UlidFactory(LongFunction<Ulid> ulidFunction) {
+        this(ulidFunction, (LongSupplier) null);
+    }
 
-	private UlidFactory(LongFunction<Ulid> ulidFunction, Clock clock) {
-		this.ulidFunction = ulidFunction;
-		this.clock = clock != null ? clock : Clock.systemUTC();
-	}
+    private UlidFactory(LongFunction<Ulid> ulidFunction, Clock clock) {
+        this(ulidFunction, clock != null ? clock::millis : null);
+    }
 
-	/**
-	 * Returns a new factory.
-	 * <p>
-	 * It is equivalent to {@code new UlidFactory()}.
-	 * 
-	 * @return {@link UlidFactory}
-	 */
-	public static UlidFactory newInstance() {
-		return new UlidFactory(new UlidFunction(IRandom.newInstance()));
-	}
+    private UlidFactory(LongFunction<Ulid> ulidFunction, LongSupplier timeMillisNow) {
+        this.ulidFunction = ulidFunction;
+        this.timeMillisNow = timeMillisNow != null ? timeMillisNow : Clock.systemUTC()::millis;
+    }
 
-	/**
-	 * Returns a new factory.
-	 * 
-	 * @param random a {@link Random} generator
-	 * @return {@link UlidFactory}
-	 */
-	public static UlidFactory newInstance(Random random) {
-		return new UlidFactory(new UlidFunction(IRandom.newInstance(random)));
-	}
+    /**
+     * Returns a new factory.
+     * <p>
+     * It is equivalent to {@code new UlidFactory()}.
+     *
+     * @return {@link UlidFactory}
+     */
+    public static UlidFactory newInstance() {
+        return new UlidFactory(new UlidFunction(IRandom.newInstance()));
+    }
 
-	/**
-	 * Returns a new factory.
-	 * <p>
-	 * The given random function must return a long value.
-	 * 
-	 * @param randomFunction a random function that returns a long value
-	 * @return {@link UlidFactory}
-	 */
-	public static UlidFactory newInstance(LongSupplier randomFunction) {
-		return new UlidFactory(new UlidFunction(IRandom.newInstance(randomFunction)));
-	}
+    /**
+     * Returns a new factory.
+     *
+     * @param random a {@link Random} generator
+     * @return {@link UlidFactory}
+     */
+    public static UlidFactory newInstance(Random random) {
+        return new UlidFactory(new UlidFunction(IRandom.newInstance(random)));
+    }
 
-	/**
-	 * Returns a new factory.
-	 * <p>
-	 * The given random function must return a byte array.
-	 * 
-	 * @param randomFunction a random function that returns a byte array
-	 * @return {@link UlidFactory}
-	 */
-	public static UlidFactory newInstance(IntFunction<byte[]> randomFunction) {
-		return new UlidFactory(new UlidFunction(IRandom.newInstance(randomFunction)));
-	}
+    /**
+     * Returns a new factory.
+     * <p>
+     * The given random function must return a long value.
+     *
+     * @param randomFunction a random function that returns a long value
+     * @return {@link UlidFactory}
+     */
+    public static UlidFactory newInstance(LongSupplier randomFunction) {
+        return new UlidFactory(new UlidFunction(IRandom.newInstance(randomFunction)));
+    }
 
-	/**
-	 * Returns a new monotonic factory.
-	 * 
-	 * @return {@link UlidFactory}
-	 */
-	public static UlidFactory newMonotonicInstance() {
-		return new UlidFactory(new MonotonicFunction(IRandom.newInstance()));
-	}
+    /**
+     * Returns a new factory.
+     * <p>
+     * The given random function must return a byte array.
+     *
+     * @param randomFunction a random function that returns a byte array
+     * @return {@link UlidFactory}
+     */
+    public static UlidFactory newInstance(IntFunction<byte[]> randomFunction) {
+        return new UlidFactory(new UlidFunction(IRandom.newInstance(randomFunction)));
+    }
 
-	/**
-	 * Returns a new monotonic factory.
-	 * 
-	 * @param random a {@link Random} generator
-	 * @return {@link UlidFactory}
-	 */
-	public static UlidFactory newMonotonicInstance(Random random) {
-		return new UlidFactory(new MonotonicFunction(IRandom.newInstance(random)));
-	}
+    /**
+     * Returns a new monotonic factory.
+     *
+     * @return {@link UlidFactory}
+     */
+    public static UlidFactory newMonotonicInstance() {
+        return new UlidFactory(new MonotonicFunction(IRandom.newInstance()));
+    }
 
-	/**
-	 * Returns a new monotonic factory.
-	 * <p>
-	 * The given random function must return a long value.
-	 * 
-	 * @param randomFunction a random function that returns a long value
-	 * @return {@link UlidFactory}
-	 */
-	public static UlidFactory newMonotonicInstance(LongSupplier randomFunction) {
-		return new UlidFactory(new MonotonicFunction(IRandom.newInstance(randomFunction)));
-	}
+    /**
+     * Returns a new monotonic factory.
+     *
+     * @param random a {@link Random} generator
+     * @return {@link UlidFactory}
+     */
+    public static UlidFactory newMonotonicInstance(Random random) {
+        return new UlidFactory(new MonotonicFunction(IRandom.newInstance(random)));
+    }
 
-	/**
-	 * Returns a new monotonic factory.
-	 * <p>
-	 * The given random function must return a byte array.
-	 * 
-	 * @param randomFunction a random function that returns a byte array
-	 * @return {@link UlidFactory}
-	 */
-	public static UlidFactory newMonotonicInstance(IntFunction<byte[]> randomFunction) {
-		return new UlidFactory(new MonotonicFunction(IRandom.newInstance(randomFunction)));
-	}
+    /**
+     * Returns a new monotonic factory.
+     *
+     * @param random a {@link Random} generator
+     * @param timeMillisNow  a function that returns the current time as milliseconds from epoch
+     * @return {@link UlidFactory}
+     */
+    public static UlidFactory newMonotonicInstance(Random random, LongSupplier timeMillisNow) {
+        return new UlidFactory(new MonotonicFunction(IRandom.newInstance(random), timeMillisNow), timeMillisNow);
+    }
 
-	/**
-	 * Returns a new monotonic factory.
-	 * <p>
-	 * The given random function must return a long value.
-	 * 
-	 * @param randomFunction a random function that returns a long value
-	 * @param clock          a custom clock instance for tests
-	 * @return {@link UlidFactory}
-	 */
-	static UlidFactory newMonotonicInstance(LongSupplier randomFunction, Clock clock) {
-		return new UlidFactory(new MonotonicFunction(IRandom.newInstance(randomFunction), clock), clock);
-	}
+    /**
+     * Returns a new monotonic factory.
+     * <p>
+     * The given random function must return a long value.
+     *
+     * @param randomFunction a random function that returns a long value
+     * @return {@link UlidFactory}
+     */
+    public static UlidFactory newMonotonicInstance(LongSupplier randomFunction) {
+        return new UlidFactory(new MonotonicFunction(IRandom.newInstance(randomFunction)));
+    }
 
-	/**
-	 * Returns a new monotonic factory.
-	 * <p>
-	 * The given random function must return a byte array.
-	 * 
-	 * @param randomFunction a random function that returns a byte array
-	 * @param clock          a custom clock instance for tests
-	 * @return {@link UlidFactory}
-	 */
-	static UlidFactory newMonotonicInstance(IntFunction<byte[]> randomFunction, Clock clock) {
-		return new UlidFactory(new MonotonicFunction(IRandom.newInstance(randomFunction), clock), clock);
-	}
+    /**
+     * Returns a new monotonic factory.
+     * <p>
+     * The given random function must return a byte array.
+     *
+     * @param randomFunction a random function that returns a byte array
+     * @return {@link UlidFactory}
+     */
+    public static UlidFactory newMonotonicInstance(IntFunction<byte[]> randomFunction) {
+        return new UlidFactory(new MonotonicFunction(IRandom.newInstance(randomFunction)));
+    }
 
-	// ******************************
-	// Public methods
-	// ******************************
+    /**
+     * Returns a new monotonic factory.
+     * <p>
+     * The given random function must return a long value.
+     *
+     * @param randomFunction a random function that returns a long value
+     * @param timeMillisNow  a function that returns the current time as milliseconds from epoch
+     * @return {@link UlidFactory}
+     */
+    public static UlidFactory newMonotonicInstance(LongSupplier randomFunction, LongSupplier timeMillisNow) {
+        return new UlidFactory(new MonotonicFunction(IRandom.newInstance(randomFunction), timeMillisNow), timeMillisNow);
+    }
 
-	/**
-	 * Returns a UUID.
-	 * 
-	 * @return a ULID
-	 */
-	public synchronized Ulid create() {
-		return this.ulidFunction.apply(clock.millis());
-	}
+    /**
+     * Returns a new monotonic factory.
+     * <p>
+     * The given random function must return a long value.
+     *
+     * @param randomFunction a random function that returns a long value
+     * @param clock          a custom clock instance for tests
+     * @return {@link UlidFactory}
+     */
+    static UlidFactory newMonotonicInstance(LongSupplier randomFunction, Clock clock) {
+        return UlidFactory.newMonotonicInstance(randomFunction, clock::millis);
+    }
 
-	/**
-	 * Returns a UUID with a specific time.
-	 * 
-	 * @param time a number of milliseconds since 1970-01-01 (Unix epoch).
-	 * @return a ULID
-	 */
-	public synchronized Ulid create(final long time) {
-		return this.ulidFunction.apply(time);
-	}
+    /**
+     * Returns a new monotonic factory.
+     * <p>
+     * The given random function must return a byte array.
+     *
+     * @param randomFunction a random function that returns a byte array
+     * @param timeMillisNow  a function that returns the current time as milliseconds from epoch
+     * @return {@link UlidFactory}
+     */
+    public static UlidFactory newMonotonicInstance(IntFunction<byte[]> randomFunction, LongSupplier timeMillisNow) {
+        return new UlidFactory(new MonotonicFunction(IRandom.newInstance(randomFunction), timeMillisNow), timeMillisNow);
+    }
 
-	// ******************************
-	// Package-private inner classes
-	// ******************************
+    /**
+     * Returns a new monotonic factory.
+     * <p>
+     * The given random function must return a byte array.
+     *
+     * @param randomFunction a random function that returns a byte array
+     * @param clock          a custom clock instance for tests
+     * @return {@link UlidFactory}
+     */
+    static UlidFactory newMonotonicInstance(IntFunction<byte[]> randomFunction, Clock clock) {
+        return UlidFactory.newMonotonicInstance(randomFunction, clock::millis);
+    }
 
-	/**
-	 * Function that creates ULIDs.
-	 */
-	static final class UlidFunction implements LongFunction<Ulid> {
+    // ******************************
+    // Public methods
+    // ******************************
 
-		private final IRandom random;
+    /**
+     * Returns a UUID.
+     *
+     * @return a ULID
+     */
+    public synchronized Ulid create() {
+        return this.ulidFunction.apply(timeMillisNow.getAsLong());
+    }
 
-		public UlidFunction(IRandom random) {
-			this.random = random;
-		}
+    /**
+     * Returns a UUID with a specific time.
+     *
+     * @param time a number of milliseconds since 1970-01-01 (Unix epoch).
+     * @return a ULID
+     */
+    public synchronized Ulid create(final long time) {
+        return this.ulidFunction.apply(time);
+    }
 
-		@Override
-		public Ulid apply(final long time) {
-			if (this.random instanceof ByteRandom) {
-				return new Ulid(time, this.random.nextBytes(Ulid.RANDOM_BYTES));
-			} else {
-				final long msb = (time << 16) | (this.random.nextLong() & 0xffffL);
-				final long lsb = this.random.nextLong();
-				return new Ulid(msb, lsb);
-			}
-		}
-	}
+    // ******************************
+    // Package-private inner classes
+    // ******************************
 
-	/**
-	 * Function that creates Monotonic ULIDs.
-	 */
-	static final class MonotonicFunction implements LongFunction<Ulid> {
+    /**
+     * Function that creates ULIDs.
+     */
+    static final class UlidFunction implements LongFunction<Ulid> {
 
-		private Ulid lastUlid;
+        private final IRandom random;
 
-		private final IRandom random;
+        public UlidFunction(IRandom random) {
+            this.random = random;
+        }
 
-		// Used to preserve monotonicity when the system clock is
-		// adjusted by NTP after a small clock drift or when the
-		// system clock jumps back by 1 second due to leap second.
-		protected static final int CLOCK_DRIFT_TOLERANCE = 10_000;
+        @Override
+        public Ulid apply(final long time) {
+            if (this.random instanceof ByteRandom) {
+                return new Ulid(time, this.random.nextBytes(Ulid.RANDOM_BYTES));
+            } else {
+                final long msb = (time << 16) | (this.random.nextLong() & 0xffffL);
+                final long lsb = this.random.nextLong();
+                return new Ulid(msb, lsb);
+            }
+        }
+    }
 
-		public MonotonicFunction(IRandom random) {
-			this(random, Clock.systemUTC());
-		}
+    /**
+     * Function that creates Monotonic ULIDs.
+     */
+    static final class MonotonicFunction implements LongFunction<Ulid> {
 
-		public MonotonicFunction(IRandom random, Clock clock) {
-			this.random = random;
-			// initialize internal state
-			this.lastUlid = new Ulid(clock.millis(), this.random.nextBytes(Ulid.RANDOM_BYTES));
-		}
+        private Ulid lastUlid;
 
-		@Override
-		public synchronized Ulid apply(final long time) {
+        private final IRandom random;
 
-			final long lastTime = lastUlid.getTime();
+        // Used to preserve monotonicity when the system clock is
+        // adjusted by NTP after a small clock drift or when the
+        // system clock jumps back by 1 second due to leap second.
+        protected static final int CLOCK_DRIFT_TOLERANCE = 10_000;
 
-			// Check if the current time is the same as the previous time or has moved
-			// backwards after a small system clock adjustment or after a leap second.
-			// Drift tolerance = (previous_time - 10s) < current_time <= previous_time
-			if ((time > lastTime - CLOCK_DRIFT_TOLERANCE) && (time <= lastTime)) {
-				this.lastUlid = this.lastUlid.increment();
-			} else {
-				if (this.random instanceof ByteRandom) {
-					this.lastUlid = new Ulid(time, this.random.nextBytes(Ulid.RANDOM_BYTES));
-				} else {
-					final long msb = (time << 16) | (this.random.nextLong() & 0xffffL);
-					final long lsb = this.random.nextLong();
-					this.lastUlid = new Ulid(msb, lsb);
-				}
-			}
+        public MonotonicFunction(IRandom random) {
+            this(random, Clock.systemUTC());
+        }
 
-			return new Ulid(this.lastUlid);
-		}
-	}
+        public MonotonicFunction(IRandom random, Clock clock) {
+           this(random, clock::millis);
+        }
 
-	static interface IRandom {
+        public MonotonicFunction(IRandom random, LongSupplier timeMillisNow) {
+            this.random = random;
+            // initialize internal state
+            this.lastUlid = new Ulid(timeMillisNow.getAsLong(), this.random.nextBytes(Ulid.RANDOM_BYTES));
+        }
 
-		public long nextLong();
+        @Override
+        public synchronized Ulid apply(final long time) {
 
-		public byte[] nextBytes(int length);
+            final long lastTime = lastUlid.getTime();
 
-		static IRandom newInstance() {
-			return new ByteRandom();
-		}
+            // Check if the current time is the same as the previous time or has moved
+            // backwards after a small system clock adjustment or after a leap second.
+            // Drift tolerance = (previous_time - 10s) < current_time <= previous_time
+            if ((time > lastTime - CLOCK_DRIFT_TOLERANCE) && (time <= lastTime)) {
+                this.lastUlid = this.lastUlid.increment();
+            } else {
+                if (this.random instanceof ByteRandom) {
+                    this.lastUlid = new Ulid(time, this.random.nextBytes(Ulid.RANDOM_BYTES));
+                } else {
+                    final long msb = (time << 16) | (this.random.nextLong() & 0xffffL);
+                    final long lsb = this.random.nextLong();
+                    this.lastUlid = new Ulid(msb, lsb);
+                }
+            }
 
-		static IRandom newInstance(Random random) {
-			if (random == null) {
-				return new ByteRandom();
-			} else {
-				if (random instanceof SecureRandom) {
-					return new ByteRandom(random);
-				} else {
-					return new LongRandom(random);
-				}
-			}
-		}
+            return new Ulid(this.lastUlid);
+        }
+    }
 
-		static IRandom newInstance(LongSupplier randomFunction) {
-			return new LongRandom(randomFunction);
-		}
+    static interface IRandom {
 
-		static IRandom newInstance(IntFunction<byte[]> randomFunction) {
-			return new ByteRandom(randomFunction);
-		}
-	}
+        public long nextLong();
 
-	static class LongRandom implements IRandom {
+        public byte[] nextBytes(int length);
 
-		private final LongSupplier randomFunction;
+        static IRandom newInstance() {
+            return new ByteRandom();
+        }
 
-		public LongRandom() {
-			this(newRandomFunction(null));
-		}
+        static IRandom newInstance(Random random) {
+            if (random == null) {
+                return new ByteRandom();
+            } else {
+                if (random instanceof SecureRandom) {
+                    return new ByteRandom(random);
+                } else {
+                    return new LongRandom(random);
+                }
+            }
+        }
 
-		public LongRandom(Random random) {
-			this(newRandomFunction(random));
-		}
+        static IRandom newInstance(LongSupplier randomFunction) {
+            return new LongRandom(randomFunction);
+        }
 
-		public LongRandom(LongSupplier randomFunction) {
-			this.randomFunction = randomFunction != null ? randomFunction : newRandomFunction(null);
-		}
+        static IRandom newInstance(IntFunction<byte[]> randomFunction) {
+            return new ByteRandom(randomFunction);
+        }
+    }
 
-		@Override
-		public long nextLong() {
-			return randomFunction.getAsLong();
-		}
+    static class LongRandom implements IRandom {
 
-		@Override
-		public byte[] nextBytes(int length) {
+        private final LongSupplier randomFunction;
 
-			int shift = 0;
-			long random = 0;
-			final byte[] bytes = new byte[length];
+        public LongRandom() {
+            this(newRandomFunction(null));
+        }
 
-			for (int i = 0; i < length; i++) {
-				if (shift < Byte.SIZE) {
-					shift = Long.SIZE;
-					random = randomFunction.getAsLong();
-				}
-				shift -= Byte.SIZE; // 56, 48, 40...
-				bytes[i] = (byte) (random >>> shift);
-			}
+        public LongRandom(Random random) {
+            this(newRandomFunction(random));
+        }
 
-			return bytes;
-		}
+        public LongRandom(LongSupplier randomFunction) {
+            this.randomFunction = randomFunction != null ? randomFunction : newRandomFunction(null);
+        }
 
-		static LongSupplier newRandomFunction(Random random) {
-			final Random entropy = random != null ? random : new SecureRandom();
-			return entropy::nextLong;
-		}
-	}
+        @Override
+        public long nextLong() {
+            return randomFunction.getAsLong();
+        }
 
-	static class ByteRandom implements IRandom {
+        @Override
+        public byte[] nextBytes(int length) {
 
-		private final IntFunction<byte[]> randomFunction;
+            int shift = 0;
+            long random = 0;
+            final byte[] bytes = new byte[length];
 
-		public ByteRandom() {
-			this(newRandomFunction(null));
-		}
+            for (int i = 0; i < length; i++) {
+                if (shift < Byte.SIZE) {
+                    shift = Long.SIZE;
+                    random = randomFunction.getAsLong();
+                }
+                shift -= Byte.SIZE; // 56, 48, 40...
+                bytes[i] = (byte) (random >>> shift);
+            }
 
-		public ByteRandom(Random random) {
-			this(newRandomFunction(random));
-		}
+            return bytes;
+        }
 
-		public ByteRandom(IntFunction<byte[]> randomFunction) {
-			this.randomFunction = randomFunction != null ? randomFunction : newRandomFunction(null);
-		}
+        static LongSupplier newRandomFunction(Random random) {
+            final Random entropy = random != null ? random : new SecureRandom();
+            return entropy::nextLong;
+        }
+    }
 
-		@Override
-		public long nextLong() {
-			long number = 0;
-			byte[] bytes = this.randomFunction.apply(Long.BYTES);
-			for (int i = 0; i < Long.BYTES; i++) {
-				number = (number << 8) | (bytes[i] & 0xff);
-			}
-			return number;
-		}
+    static class ByteRandom implements IRandom {
 
-		@Override
-		public byte[] nextBytes(int length) {
-			return this.randomFunction.apply(length);
-		}
+        private final IntFunction<byte[]> randomFunction;
 
-		static IntFunction<byte[]> newRandomFunction(Random random) {
-			final Random entropy = random != null ? random : new SecureRandom();
-			return (final int length) -> {
-				final byte[] bytes = new byte[length];
-				entropy.nextBytes(bytes);
-				return bytes;
-			};
-		}
-	}
+        public ByteRandom() {
+            this(newRandomFunction(null));
+        }
+
+        public ByteRandom(Random random) {
+            this(newRandomFunction(random));
+        }
+
+        public ByteRandom(IntFunction<byte[]> randomFunction) {
+            this.randomFunction = randomFunction != null ? randomFunction : newRandomFunction(null);
+        }
+
+        @Override
+        public long nextLong() {
+            long number = 0;
+            byte[] bytes = this.randomFunction.apply(Long.BYTES);
+            for (int i = 0; i < Long.BYTES; i++) {
+                number = (number << 8) | (bytes[i] & 0xff);
+            }
+            return number;
+        }
+
+        @Override
+        public byte[] nextBytes(int length) {
+            return this.randomFunction.apply(length);
+        }
+
+        static IntFunction<byte[]> newRandomFunction(Random random) {
+            final Random entropy = random != null ? random : new SecureRandom();
+            return (final int length) -> {
+                final byte[] bytes = new byte[length];
+                entropy.nextBytes(bytes);
+                return bytes;
+            };
+        }
+    }
 }
