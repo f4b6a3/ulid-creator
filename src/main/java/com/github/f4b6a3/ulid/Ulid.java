@@ -221,8 +221,8 @@ public final class Ulid implements Serializable, Comparable<Ulid> {
 	 * bits of the random component are all set to ZERO.
 	 * <p>
 	 * For example, the minimum ULID for 2022-02-22 22:22:22.222 is
-	 * `{@code new Ulid(0x018781ebb25e0000L, 0x0000000000000000L)}`, where
-	 * `{@code 0x018781ebb25e}` is the timestamp in hexadecimal.
+	 * `{@code new Ulid(0x017f2387460e0000L, 0x0000000000000000L)}`, where
+	 * `{@code 0x017f2387460e}` is the timestamp in hexadecimal.
 	 * <p>
 	 * It can be useful to find all records before or after a specific timestamp in
 	 * a table without a `{@code created_at}` field.
@@ -242,8 +242,8 @@ public final class Ulid implements Serializable, Comparable<Ulid> {
 	 * bits or the random component are all set to ONE.
 	 * <p>
 	 * For example, the maximum ULID for 2022-02-22 22:22:22.222 is
-	 * `{@code new Ulid(0x018781ebb25effffL, 0xffffffffffffffffL)}`, where
-	 * `{@code 0x018781ebb25e}` is the timestamp in hexadecimal.
+	 * `{@code new Ulid(0x017f2387460effffL, 0xffffffffffffffffL)}`, where
+	 * `{@code 0x017f2387460e}` is the timestamp in hexadecimal.
 	 * <p>
 	 * It can be useful to find all records before or after a specific timestamp in
 	 * a table without a `{@code created_at}` field.
