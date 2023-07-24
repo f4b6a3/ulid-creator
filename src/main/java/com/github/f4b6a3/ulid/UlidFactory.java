@@ -26,6 +26,7 @@ package com.github.f4b6a3.ulid;
 
 import java.security.SecureRandom;
 import java.time.Clock;
+import java.util.Objects;
 import java.util.Random;
 import java.util.function.IntFunction;
 import java.util.function.LongFunction;
@@ -42,14 +43,14 @@ import java.util.function.LongSupplier;
  * Instances of this class can behave in one of two ways: monotonic or
  * non-monotonic (default).
  * <p>
- * If the factory is monotonic, the random component is incremented by 1 If more
+ * If the factory is monotonic, the random component is incremented by 1 if more
  * than one ULID is generated within the same millisecond.
  * <p>
  * The maximum ULIDs that can be generated per millisecond is 2^80.
  */
 public final class UlidFactory {
 
-	private final LongSupplier timeMillisNow; // for tests
+	private final LongSupplier timeFunction;
 	private final LongFunction<Ulid> ulidFunction;
 
 	// ******************************
@@ -60,31 +61,36 @@ public final class UlidFactory {
 	 * Default constructor.
 	 */
 	public UlidFactory() {
-		this(new UlidFunction(IRandom.newInstance()));
+		this(new UlidFunction());
 	}
 
 	private UlidFactory(LongFunction<Ulid> ulidFunction) {
-		this(ulidFunction, (LongSupplier) null);
+		this(ulidFunction, System::currentTimeMillis);
 	}
 
-	private UlidFactory(LongFunction<Ulid> ulidFunction, Clock clock) {
-		this(ulidFunction, clock != null ? clock::millis : null);
-	}
+	private UlidFactory(LongFunction<Ulid> ulidFunction, LongSupplier timeFunction) {
 
-	private UlidFactory(LongFunction<Ulid> ulidFunction, LongSupplier timeMillisNow) {
+		Objects.requireNonNull(ulidFunction, "ULID function must not be null");
+		Objects.requireNonNull(timeFunction, "Time function must not be null");
+
 		this.ulidFunction = ulidFunction;
-		this.timeMillisNow = timeMillisNow != null ? timeMillisNow : Clock.systemUTC()::millis;
+		this.timeFunction = timeFunction;
+
+		if (this.ulidFunction instanceof MonotonicFunction) {
+			// initialize the internal state of the monotonic function
+			((MonotonicFunction) this.ulidFunction).initialize(this.timeFunction);
+		}
 	}
 
 	/**
 	 * Returns a new factory.
 	 * <p>
-	 * It is equivalent to {@code new UlidFactory()}.
+	 * It is equivalent to the default constructor {@code new UlidFactory()}.
 	 * 
 	 * @return {@link UlidFactory}
 	 */
 	public static UlidFactory newInstance() {
-		return new UlidFactory(new UlidFunction(IRandom.newInstance()));
+		return new UlidFactory(new UlidFunction());
 	}
 
 	/**
@@ -94,7 +100,7 @@ public final class UlidFactory {
 	 * @return {@link UlidFactory}
 	 */
 	public static UlidFactory newInstance(Random random) {
-		return new UlidFactory(new UlidFunction(IRandom.newInstance(random)));
+		return new UlidFactory(new UlidFunction(random));
 	}
 
 	/**
@@ -106,7 +112,7 @@ public final class UlidFactory {
 	 * @return {@link UlidFactory}
 	 */
 	public static UlidFactory newInstance(LongSupplier randomFunction) {
-		return new UlidFactory(new UlidFunction(IRandom.newInstance(randomFunction)));
+		return new UlidFactory(new UlidFunction(randomFunction));
 	}
 
 	/**
@@ -118,7 +124,7 @@ public final class UlidFactory {
 	 * @return {@link UlidFactory}
 	 */
 	public static UlidFactory newInstance(IntFunction<byte[]> randomFunction) {
-		return new UlidFactory(new UlidFunction(IRandom.newInstance(randomFunction)));
+		return new UlidFactory(new UlidFunction(randomFunction));
 	}
 
 	/**
@@ -127,7 +133,7 @@ public final class UlidFactory {
 	 * @return {@link UlidFactory}
 	 */
 	public static UlidFactory newMonotonicInstance() {
-		return new UlidFactory(new MonotonicFunction(IRandom.newInstance()));
+		return new UlidFactory(new MonotonicFunction());
 	}
 
 	/**
@@ -137,19 +143,7 @@ public final class UlidFactory {
 	 * @return {@link UlidFactory}
 	 */
 	public static UlidFactory newMonotonicInstance(Random random) {
-		return new UlidFactory(new MonotonicFunction(IRandom.newInstance(random)));
-	}
-
-	/**
-	 * Returns a new monotonic factory.
-	 * 
-	 * @param random        a {@link Random} generator
-	 * @param timeMillisNow a function that returns the current time as milliseconds
-	 *                      from epoch
-	 * @return {@link UlidFactory}
-	 */
-	public static UlidFactory newMonotonicInstance(Random random, LongSupplier timeMillisNow) {
-		return new UlidFactory(new MonotonicFunction(IRandom.newInstance(random), timeMillisNow), timeMillisNow);
+		return new UlidFactory(new MonotonicFunction(random));
 	}
 
 	/**
@@ -161,7 +155,7 @@ public final class UlidFactory {
 	 * @return {@link UlidFactory}
 	 */
 	public static UlidFactory newMonotonicInstance(LongSupplier randomFunction) {
-		return new UlidFactory(new MonotonicFunction(IRandom.newInstance(randomFunction)));
+		return new UlidFactory(new MonotonicFunction(randomFunction));
 	}
 
 	/**
@@ -173,22 +167,21 @@ public final class UlidFactory {
 	 * @return {@link UlidFactory}
 	 */
 	public static UlidFactory newMonotonicInstance(IntFunction<byte[]> randomFunction) {
-		return new UlidFactory(new MonotonicFunction(IRandom.newInstance(randomFunction)));
+		return new UlidFactory(new MonotonicFunction(randomFunction));
 	}
 
 	/**
 	 * Returns a new monotonic factory.
-	 * <p>
-	 * The given random function must return a long value.
 	 * 
-	 * @param randomFunction a random function that returns a long value
-	 * @param timeMillisNow  a function that returns the current time as
-	 *                       milliseconds from epoch
+	 * @param random a {@link Random} generator
+	 * @param clock  a clock instance that provides the current time in
+	 *               milliseconds, measured from the UNIX epoch of 1970-01-01T00:00Z
+	 *               (UTC)
 	 * @return {@link UlidFactory}
 	 */
-	public static UlidFactory newMonotonicInstance(LongSupplier randomFunction, LongSupplier timeMillisNow) {
-		return new UlidFactory(new MonotonicFunction(IRandom.newInstance(randomFunction), timeMillisNow),
-				timeMillisNow);
+	static UlidFactory newMonotonicInstance(Random random, Clock clock) {
+		Objects.requireNonNull(clock, "Clock instant must not be null");
+		return new UlidFactory(new MonotonicFunction(random), clock::millis);
 	}
 
 	/**
@@ -197,11 +190,14 @@ public final class UlidFactory {
 	 * The given random function must return a long value.
 	 * 
 	 * @param randomFunction a random function that returns a long value
-	 * @param clock          a custom clock instance for tests
+	 * @param clock          a clock instance that provides the current time in
+	 *                       milliseconds, measured from the UNIX epoch of
+	 *                       1970-01-01T00:00Z (UTC)
 	 * @return {@link UlidFactory}
 	 */
 	static UlidFactory newMonotonicInstance(LongSupplier randomFunction, Clock clock) {
-		return UlidFactory.newMonotonicInstance(randomFunction, clock::millis);
+		Objects.requireNonNull(clock, "Clock instant must not be null");
+		return new UlidFactory(new MonotonicFunction(randomFunction), clock::millis);
 	}
 
 	/**
@@ -210,26 +206,56 @@ public final class UlidFactory {
 	 * The given random function must return a byte array.
 	 * 
 	 * @param randomFunction a random function that returns a byte array
-	 * @param timeMillisNow  a function that returns the current time as
-	 *                       milliseconds from epoch
-	 * @return {@link UlidFactory}
-	 */
-	public static UlidFactory newMonotonicInstance(IntFunction<byte[]> randomFunction, LongSupplier timeMillisNow) {
-		return new UlidFactory(new MonotonicFunction(IRandom.newInstance(randomFunction), timeMillisNow),
-				timeMillisNow);
-	}
-
-	/**
-	 * Returns a new monotonic factory.
-	 * <p>
-	 * The given random function must return a byte array.
-	 * 
-	 * @param randomFunction a random function that returns a byte array
-	 * @param clock          a custom clock instance for tests
+	 * @param clock          a clock instance that provides the current time in
+	 *                       milliseconds, measured from the UNIX epoch of
+	 *                       1970-01-01T00:00Z (UTC)
 	 * @return {@link UlidFactory}
 	 */
 	static UlidFactory newMonotonicInstance(IntFunction<byte[]> randomFunction, Clock clock) {
-		return UlidFactory.newMonotonicInstance(randomFunction, clock::millis);
+		Objects.requireNonNull(clock, "Clock instant must not be null");
+		return new UlidFactory(new MonotonicFunction(randomFunction), clock::millis);
+	}
+
+	/**
+	 * Returns a new monotonic factory.
+	 * 
+	 * @param random       a {@link Random} generator
+	 * @param timeFunction a function that returns the current time in milliseconds,
+	 *                     measured from the UNIX epoch of 1970-01-01T00:00Z (UTC)
+	 * @return {@link UlidFactory}
+	 */
+	public static UlidFactory newMonotonicInstance(Random random, LongSupplier timeFunction) {
+		return new UlidFactory(new MonotonicFunction(random), timeFunction);
+	}
+
+	/**
+	 * Returns a new monotonic factory.
+	 * <p>
+	 * The given random function must return a long value.
+	 * 
+	 * @param randomFunction a random function that returns a long value
+	 * @param timeFunction   a function that returns the current time in
+	 *                       milliseconds, measured from the UNIX epoch of
+	 *                       1970-01-01T00:00Z (UTC)
+	 * @return {@link UlidFactory}
+	 */
+	public static UlidFactory newMonotonicInstance(LongSupplier randomFunction, LongSupplier timeFunction) {
+		return new UlidFactory(new MonotonicFunction(randomFunction), timeFunction);
+	}
+
+	/**
+	 * Returns a new monotonic factory.
+	 * <p>
+	 * The given random function must return a byte array.
+	 * 
+	 * @param randomFunction a random function that returns a byte array
+	 * @param timeFunction   a function that returns the current time in
+	 *                       milliseconds, measured from the UNIX epoch of
+	 *                       1970-01-01T00:00Z (UTC)
+	 * @return {@link UlidFactory}
+	 */
+	public static UlidFactory newMonotonicInstance(IntFunction<byte[]> randomFunction, LongSupplier timeFunction) {
+		return new UlidFactory(new MonotonicFunction(randomFunction), timeFunction);
 	}
 
 	// ******************************
@@ -237,18 +263,19 @@ public final class UlidFactory {
 	// ******************************
 
 	/**
-	 * Returns a UUID.
+	 * Returns a new ULID.
 	 * 
 	 * @return a ULID
 	 */
 	public synchronized Ulid create() {
-		return this.ulidFunction.apply(timeMillisNow.getAsLong());
+		return this.ulidFunction.apply(timeFunction.getAsLong());
 	}
 
 	/**
-	 * Returns a UUID with a specific time.
+	 * Returns a new ULID.
 	 * 
-	 * @param time a number of milliseconds since 1970-01-01 (Unix epoch).
+	 * @param time the current time in milliseconds, measured from the UNIX epoch of
+	 *             1970-01-01T00:00Z (UTC)
 	 * @return a ULID
 	 */
 	public synchronized Ulid create(final long time) {
@@ -266,8 +293,24 @@ public final class UlidFactory {
 
 		private final IRandom random;
 
-		public UlidFunction(IRandom random) {
+		private UlidFunction(IRandom random) {
 			this.random = random;
+		}
+
+		public UlidFunction() {
+			this(IRandom.newInstance());
+		}
+
+		public UlidFunction(Random random) {
+			this(IRandom.newInstance(random));
+		}
+
+		public UlidFunction(LongSupplier randomFunction) {
+			this(IRandom.newInstance(randomFunction));
+		}
+
+		public UlidFunction(IntFunction<byte[]> randomFunction) {
+			this(IRandom.newInstance(randomFunction));
 		}
 
 		@Override
@@ -294,20 +337,30 @@ public final class UlidFactory {
 		// Used to preserve monotonicity when the system clock is
 		// adjusted by NTP after a small clock drift or when the
 		// system clock jumps back by 1 second due to leap second.
-		protected static final int CLOCK_DRIFT_TOLERANCE = 10_000;
+		static final int CLOCK_DRIFT_TOLERANCE = 10_000;
 
-		public MonotonicFunction(IRandom random) {
-			this(random, Clock.systemUTC());
-		}
-
-		public MonotonicFunction(IRandom random, Clock clock) {
-			this(random, clock::millis);
-		}
-
-		public MonotonicFunction(IRandom random, LongSupplier timeMillisNow) {
+		private MonotonicFunction(IRandom random) {
 			this.random = random;
-			// initialize internal state
-			this.lastUlid = new Ulid(timeMillisNow.getAsLong(), this.random.nextBytes(Ulid.RANDOM_BYTES));
+		}
+
+		public MonotonicFunction() {
+			this(IRandom.newInstance());
+		}
+
+		public MonotonicFunction(Random random) {
+			this(IRandom.newInstance(random));
+		}
+
+		public MonotonicFunction(LongSupplier randomFunction) {
+			this(IRandom.newInstance(randomFunction));
+		}
+
+		public MonotonicFunction(IntFunction<byte[]> randomFunction) {
+			this(IRandom.newInstance(randomFunction));
+		}
+
+		void initialize(LongSupplier timeFunction) {
+			this.lastUlid = new Ulid(timeFunction.getAsLong(), this.random.nextBytes(Ulid.RANDOM_BYTES));
 		}
 
 		@Override

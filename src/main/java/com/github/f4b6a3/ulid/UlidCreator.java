@@ -59,7 +59,8 @@ public final class UlidCreator {
 	 * <p>
 	 * The random component is reset for each new ULID generated.
 	 * 
-	 * @param time a number of milliseconds since 1970-01-01 (Unix epoch).
+	 * @param time the current time in milliseconds, measured from the UNIX epoch of
+	 *             1970-01-01T00:00Z (UTC)
 	 * @return a ULID
 	 */
 	public static Ulid getUlid(final long time) {
@@ -84,7 +85,8 @@ public final class UlidCreator {
 	 * The random component is incremented for each new ULID generated in the same
 	 * millisecond.
 	 * 
-	 * @param time a number of milliseconds since 1970-01-01 (Unix epoch).
+	 * @param time the current time in milliseconds, measured from the UNIX epoch of
+	 *             1970-01-01T00:00Z (UTC)
 	 * @return a ULID
 	 */
 	public static Ulid getMonotonicUlid(final long time) {
@@ -107,7 +109,8 @@ public final class UlidCreator {
 	 * Ulid ulid = UlidCreator.getHashUlid(time, name);
 	 * }</pre>
 	 * 
-	 * @param time   a number of milliseconds since 1970-01-01 (Unix epoch).
+	 * @param time   the time in milliseconds, measured from the UNIX epoch of
+	 *               1970-01-01T00:00Z (UTC)
 	 * @param string a string to be hashed using SHA-256 algorithm.
 	 * @return a ULID
 	 * @since 5.2.0
@@ -133,7 +136,8 @@ public final class UlidCreator {
 	 * Ulid ulid = UlidCreator.getHashUlid(time, bytes);
 	 * }</pre>
 	 * 
-	 * @param time  a number of milliseconds since 1970-01-01 (Unix epoch).
+	 * @param time  the time in milliseconds, measured from the UNIX epoch of
+	 *              1970-01-01T00:00Z (UTC)
 	 * @param bytes a byte array to be hashed using SHA-256 algorithm.
 	 * @return a ULID
 	 * @since 5.2.0
