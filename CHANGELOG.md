@@ -4,7 +4,9 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
-Nothing to be released.
+## [5.2.1] - 2023-07-27
+
+- Add factory methods that accept a `LongSuplier` that returns the current time in milliseconds. (by Michele Sollecito) #27
 
 ## [5.2.0] - 2023-04-30
 
@@ -308,7 +310,8 @@ Project created as an alternative Java implementation of [ULID spec](https://git
 -   Added `LICENSE`
 -   Added test cases
 
-[unreleased]: https://github.com/f4b6a3/ulid-creator/compare/ulid-creator-5.2.0...HEAD
+[unreleased]: https://github.com/f4b6a3/ulid-creator/compare/ulid-creator-5.2.1...HEAD
+[5.2.1]: https://github.com/f4b6a3/ulid-creator/compare/ulid-creator-5.2.0...ulid-creator-5.2.1
 [5.2.0]: https://github.com/f4b6a3/ulid-creator/compare/ulid-creator-5.1.0...ulid-creator-5.2.0
 [5.1.0]: https://github.com/f4b6a3/ulid-creator/compare/ulid-creator-5.0.2...ulid-creator-5.1.0
 [5.0.2]: https://github.com/f4b6a3/ulid-creator/compare/ulid-creator-5.0.1...ulid-creator-5.0.2
