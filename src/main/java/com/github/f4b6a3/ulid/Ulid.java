@@ -436,6 +436,58 @@ public final class Ulid implements Serializable, Comparable<Ulid> {
 	}
 
 	/**
+	 * Converts the ULID into a canonical string in upper case for only the time part which is the first 48 bits.
+	 * <p>
+	 * The output string is 10 characters long and contains only characters from
+	 * Crockford's Base 32 alphabet.
+	 *
+	 * @return a time part string
+	 * @see <a href="https://www.crockford.com/base32.html">Crockford's Base 32</a>
+	 */
+	public String toTimePartUppercaseString() {
+		return deriveTimePartString(ALPHABET_UPPERCASE);
+	}
+
+	/**
+	 * Converts the ULID into a canonical string in lower case for only the time part which is the first 48 bits.
+	 * <p>
+	 * The output string is 10 characters long and contains only characters from
+	 * Crockford's Base 32 alphabet.
+	 *
+	 * @return a time part string
+	 * @see <a href="https://www.crockford.com/base32.html">Crockford's Base 32</a>
+	 */
+	public String toTimePartLowercaseString() {
+		return deriveTimePartString(ALPHABET_LOWERCASE);
+	}
+
+	/**
+	 * Converts the ULID into a canonical string in upper case for only the random part which is the first 80 bits.
+	 * <p>
+	 * The output string is 16 characters long and contains only characters from
+	 * Crockford's Base 32 alphabet.
+	 *
+	 * @return a random part string
+	 * @see <a href="https://www.crockford.com/base32.html">Crockford's Base 32</a>
+	 */
+	public String toRandomPartUppercaseString() {
+		return deriveRandomPartString(ALPHABET_UPPERCASE);
+	}
+
+	/**
+	 * Converts the ULID into a canonical string in lower case for only the random part which is the first 80 bits.
+	 * <p>
+	 * The output string is 16 characters long and contains only characters from
+	 * Crockford's Base 32 alphabet.
+	 *
+	 * @return a random part string
+	 * @see <a href="https://www.crockford.com/base32.html">Crockford's Base 32</a>
+	 */
+	public String toRandomPartLowercaseString() {
+		return deriveRandomPartString(ALPHABET_LOWERCASE);
+	}
+
+	/**
 	 * Converts the ULID into into another ULID that is compatible with UUIDv4.
 	 * <p>
 	 * The bytes of the returned ULID are compliant with the RFC-4122 version 4.
@@ -728,13 +780,13 @@ public final class Ulid implements Serializable, Comparable<Ulid> {
 	}
 
 	String toString(char[] alphabet) {
+		return deriveTimePartString(alphabet) + deriveRandomPartString(alphabet);
+	}
 
-		final char[] chars = new char[ULID_CHARS];
+	private String deriveTimePartString(char[] alphabet) {
+		final long time = getTime();
 
-		long time = this.msb >>> 16;
-		long random0 = ((this.msb & 0xffffL) << 24) | (this.lsb >>> 40);
-		long random1 = (this.lsb & 0xffffffffffL);
-
+		final char[] chars = new char[TIME_CHARS];
 		chars[0x00] = alphabet[(int) (time >>> 45 & 0b11111)];
 		chars[0x01] = alphabet[(int) (time >>> 40 & 0b11111)];
 		chars[0x02] = alphabet[(int) (time >>> 35 & 0b11111)];
@@ -745,25 +797,31 @@ public final class Ulid implements Serializable, Comparable<Ulid> {
 		chars[0x07] = alphabet[(int) (time >>> 10 & 0b11111)];
 		chars[0x08] = alphabet[(int) (time >>> 5 & 0b11111)];
 		chars[0x09] = alphabet[(int) (time & 0b11111)];
+		return new String(chars);
+	}
 
-		chars[0x0a] = alphabet[(int) (random0 >>> 35 & 0b11111)];
-		chars[0x0b] = alphabet[(int) (random0 >>> 30 & 0b11111)];
-		chars[0x0c] = alphabet[(int) (random0 >>> 25 & 0b11111)];
-		chars[0x0d] = alphabet[(int) (random0 >>> 20 & 0b11111)];
-		chars[0x0e] = alphabet[(int) (random0 >>> 15 & 0b11111)];
-		chars[0x0f] = alphabet[(int) (random0 >>> 10 & 0b11111)];
-		chars[0x10] = alphabet[(int) (random0 >>> 5 & 0b11111)];
-		chars[0x11] = alphabet[(int) (random0 & 0b11111)];
+	private String deriveRandomPartString(char[] alphabet) {
+		final long random0 = ((this.msb & 0xffffL) << 24) | (this.lsb >>> 40);
+		final long random1 = (this.lsb & 0xffffffffffL);
 
-		chars[0x12] = alphabet[(int) (random1 >>> 35 & 0b11111)];
-		chars[0x13] = alphabet[(int) (random1 >>> 30 & 0b11111)];
-		chars[0x14] = alphabet[(int) (random1 >>> 25 & 0b11111)];
-		chars[0x15] = alphabet[(int) (random1 >>> 20 & 0b11111)];
-		chars[0x16] = alphabet[(int) (random1 >>> 15 & 0b11111)];
-		chars[0x17] = alphabet[(int) (random1 >>> 10 & 0b11111)];
-		chars[0x18] = alphabet[(int) (random1 >>> 5 & 0b11111)];
-		chars[0x19] = alphabet[(int) (random1 & 0b11111)];
+		final char[] chars = new char[RANDOM_CHARS];
+		chars[0x00] = alphabet[(int) (random0 >>> 35 & 0b11111)];
+		chars[0x01] = alphabet[(int) (random0 >>> 30 & 0b11111)];
+		chars[0x02] = alphabet[(int) (random0 >>> 25 & 0b11111)];
+		chars[0x03] = alphabet[(int) (random0 >>> 20 & 0b11111)];
+		chars[0x04] = alphabet[(int) (random0 >>> 15 & 0b11111)];
+		chars[0x05] = alphabet[(int) (random0 >>> 10 & 0b11111)];
+		chars[0x06] = alphabet[(int) (random0 >>> 5 & 0b11111)];
+		chars[0x07] = alphabet[(int) (random0 & 0b11111)];
 
+		chars[0x08] = alphabet[(int) (random1 >>> 35 & 0b11111)];
+		chars[0x09] = alphabet[(int) (random1 >>> 30 & 0b11111)];
+		chars[0x0a] = alphabet[(int) (random1 >>> 25 & 0b11111)];
+		chars[0x0b] = alphabet[(int) (random1 >>> 20 & 0b11111)];
+		chars[0x0c] = alphabet[(int) (random1 >>> 15 & 0b11111)];
+		chars[0x0d] = alphabet[(int) (random1 >>> 10 & 0b11111)];
+		chars[0x0e] = alphabet[(int) (random1 >>> 5 & 0b11111)];
+		chars[0x0f] = alphabet[(int) (random1 & 0b11111)];
 		return new String(chars);
 	}
 

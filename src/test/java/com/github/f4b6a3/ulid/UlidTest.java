@@ -734,6 +734,50 @@ public class UlidTest extends UlidFactoryTest {
 		assertEquals(Arrays.toString(ALPHABET_VALUES), Arrays.toString(Ulid.ALPHABET_VALUES));
 	}
 
+	@Test
+	public void testToTimePartUppercaseString() {
+		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
+			UUID uuid0 = UUID.randomUUID();
+			String ulidStr = toString(uuid0);
+			String timePartUppercaseStr = Ulid.from(uuid0).toTimePartUppercaseString(); // <- test Ulid.toTimePartUppercaseString()
+
+			assertEquals(ulidStr.substring(0, 10), timePartUppercaseStr);
+		}
+	}
+
+	@Test
+	public void testToTimePartLowercaseString() {
+		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
+			UUID uuid0 = UUID.randomUUID();
+			String lowercaseUlidStr = toString(uuid0).toLowerCase();
+			String timePartLowercaseStr = Ulid.from(uuid0).toTimePartLowercaseString(); // <- test Ulid.toTimePartLowercaseString()
+
+			assertEquals(lowercaseUlidStr.substring(0, 10), timePartLowercaseStr);
+		}
+	}
+
+	@Test
+	public void testToRandomPartUppercaseString() {
+		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
+			UUID uuid0 = UUID.randomUUID();
+			String ulidStr = toString(uuid0);
+			String randomPartUppercaseStr = Ulid.from(uuid0).toRandomPartUppercaseString(); // <- test Ulid.toRandomPartUppercaseString()
+
+			assertEquals(ulidStr.substring(10, 26), randomPartUppercaseStr);
+		}
+	}
+
+	@Test
+	public void testToRandomPartLowercaseString() {
+		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
+			UUID uuid0 = UUID.randomUUID();
+			String lowercaseUlidStr = toString(uuid0).toLowerCase();
+			String randomPartLowercaseStr = Ulid.from(uuid0).toRandomPartLowercaseString(); // <- test Ulid.toRandomPartLowercaseString()
+
+			assertEquals(lowercaseUlidStr.substring(10, 26), randomPartLowercaseStr);
+		}
+	}
+
 	public static Ulid fromString(String string) {
 
 		long time = 0;
