@@ -26,6 +26,7 @@ package com.github.f4b6a3.ulid;
 
 import java.security.SecureRandom;
 import java.time.Clock;
+import java.time.Instant;
 import java.util.Objects;
 import java.util.Random;
 import java.util.function.IntFunction;
@@ -360,7 +361,7 @@ public final class UlidFactory {
 		}
 
 		void initialize(LongSupplier timeFunction) {
-			this.lastUlid = new Ulid(timeFunction.getAsLong(), this.random.nextBytes(Ulid.RANDOM_BYTES));
+			this.lastUlid = new Ulid(Instant.MIN.toEpochMilli(), this.random.nextBytes(Ulid.RANDOM_BYTES));
 		}
 
 		@Override
