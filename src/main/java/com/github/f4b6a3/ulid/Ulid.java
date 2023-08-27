@@ -154,7 +154,7 @@ public final class Ulid implements Serializable, Comparable<Ulid> {
 	 * <p>
 	 * Random parameter must be an array of 10 bytes.
 	 * 
-	 * @param time   the the number of milliseconds since 1970-01-01
+	 * @param time   the number of milliseconds since 1970-01-01
 	 * @param random an array of 10 bytes
 	 * @throws IllegalArgumentException if time is negative or larger than 2^48-1
 	 * @throws IllegalArgumentException if random is null or its length is not 10
@@ -227,7 +227,7 @@ public final class Ulid implements Serializable, Comparable<Ulid> {
 	 * It can be useful to find all records before or after a specific timestamp in
 	 * a table without a `{@code created_at}` field.
 	 * 
-	 * @param time the the number of milliseconds since 1970-01-01
+	 * @param time the number of milliseconds since 1970-01-01
 	 * @return a ULID
 	 * @since 5.2.0
 	 */
@@ -248,7 +248,7 @@ public final class Ulid implements Serializable, Comparable<Ulid> {
 	 * It can be useful to find all records before or after a specific timestamp in
 	 * a table without a `{@code created_at}` field.
 	 * 
-	 * @param time the the number of milliseconds since 1970-01-01
+	 * @param time the number of milliseconds since 1970-01-01
 	 * @return a ULID
 	 * @since 5.2.0
 	 */
@@ -375,7 +375,7 @@ public final class Ulid implements Serializable, Comparable<Ulid> {
 	/**
 	 * Convert the ULID into a byte array.
 	 * 
-	 * @return an byte array.
+	 * @return a byte array.
 	 */
 	public byte[] toBytes() {
 
@@ -436,7 +436,7 @@ public final class Ulid implements Serializable, Comparable<Ulid> {
 	}
 
 	/**
-	 * Converts the ULID into into another ULID that is compatible with UUIDv4.
+	 * Converts the ULID into another ULID that is compatible with UUIDv4.
 	 * <p>
 	 * The bytes of the returned ULID are compliant with the RFC-4122 version 4.
 	 * <p>
