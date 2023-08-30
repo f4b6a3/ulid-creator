@@ -201,10 +201,14 @@ Get the creation instant of a ULID:
 Instant instant = ulid.getInstant(); // 2007-02-16T02:13:14.633Z
 ```
 
+---
+
 ```java
 // static method
 Instant instant = Ulid.getInstant("0123456789ABCDEFGHJKMNPQRS"); // 2007-02-16T02:13:14.633Z
 ```
+
+---
 
 Get only the time component substring:
 
@@ -213,12 +217,16 @@ String ulidTimePart = ulid.toString()
                           .substring(0, Ulid.TIME_CHARS); // 0123456789
 ```
 
+---
+
 Get only the random component substring:
 
 ```java
 String ulidRandPart = ulid.toString()
                           .substring(Ulid.TIME_CHARS, Ulid.RANDOM_CHARS); // ABCDEFGHJKMNPQRS
 ```
+
+---
 
 Insert a string between the time and random components efficiently (avoiding concatenation) ([#29](https://github.com/f4b6a3/ulid-creator/pull/29)):
 
