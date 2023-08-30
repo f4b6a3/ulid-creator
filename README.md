@@ -206,6 +206,28 @@ Instant instant = ulid.getInstant(); // 2007-02-16T02:13:14.633Z
 Instant instant = Ulid.getInstant("0123456789ABCDEFGHJKMNPQRS"); // 2007-02-16T02:13:14.633Z
 ```
 
+Get only the time component substring:
+
+```java
+String ulidTimePart = ulid.toString()
+                          .substring(0, Ulid.TIME_CHARS); // 0123456789
+```
+
+Get only the random component substring:
+
+```java
+String ulidRandPart = ulid.toString()
+                          .substring(Ulid.TIME_CHARS, Ulid.RANDOM_CHARS); // ABCDEFGHJKMNPQRS
+```
+
+Insert a string between the time and random components efficiently (avoiding concatenation) ([#29](https://github.com/f4b6a3/ulid-creator/pull/29)):
+
+```java
+String ulidExpanded = new StringBuilder(ulid.toString())
+                          .insert(Ulid.TIME_CHARS, "-INSERTED-")
+                          .toString(); // 0123456789-INSERTED-ABCDEFGHJKMNPQRS
+```
+
 ---
 
 A key generator that makes substitution easy if necessary:
