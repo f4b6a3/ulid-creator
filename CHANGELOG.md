@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [5.2.2] - 2023-09-03
+
+Initialize the monotonic factory with the minimum timestamp.
+
 ## [5.2.1] - 2023-07-27
 
 - Add factory methods that accept a `LongSuplier` that returns the current time in milliseconds. (by Michele Sollecito) #27
@@ -310,7 +314,8 @@ Project created as an alternative Java implementation of [ULID spec](https://git
 -   Added `LICENSE`
 -   Added test cases
 
-[unreleased]: https://github.com/f4b6a3/ulid-creator/compare/ulid-creator-5.2.1...HEAD
+[unreleased]: https://github.com/f4b6a3/ulid-creator/compare/ulid-creator-5.2.2...HEAD
+[5.2.2]: https://github.com/f4b6a3/ulid-creator/compare/ulid-creator-5.2.1...ulid-creator-5.2.2
 [5.2.1]: https://github.com/f4b6a3/ulid-creator/compare/ulid-creator-5.2.0...ulid-creator-5.2.1
 [5.2.0]: https://github.com/f4b6a3/ulid-creator/compare/ulid-creator-5.1.0...ulid-creator-5.2.0
 [5.1.0]: https://github.com/f4b6a3/ulid-creator/compare/ulid-creator-5.0.2...ulid-creator-5.1.0
