@@ -360,7 +360,8 @@ public final class UlidFactory {
 		}
 
 		void initialize(LongSupplier timeFunction) {
-			this.lastUlid = new Ulid(timeFunction.getAsLong(), this.random.nextBytes(Ulid.RANDOM_BYTES));
+			// initialize the factory with the instant 1970-01-01 00:00:00.000 UTC
+			this.lastUlid = new Ulid(0L, this.random.nextBytes(Ulid.RANDOM_BYTES));
 		}
 
 		@Override

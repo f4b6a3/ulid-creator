@@ -39,8 +39,7 @@ public class UlidFactoryMonotonicTest extends UlidFactoryTest {
 
 		long diff = UlidFactory.MonotonicFunction.CLOCK_DRIFT_TOLERANCE;
 		long time = Instant.parse("2021-12-31T23:59:59.000Z").toEpochMilli();
-		long times[] = { /* init */ 0L, time + 0, time + 1, time + 2, time + 3, time + 4 - diff, time + 5 - diff,
-				time + 6 - diff };
+		long times[] = { time + 0, time + 1, time + 2, time + 3, time + 4 - diff, time + 5 - diff, time + 6 - diff };
 
 		Clock clock = new Clock() {
 			private int i;
@@ -113,8 +112,11 @@ public class UlidFactoryMonotonicTest extends UlidFactoryTest {
 	@Test
 	public void testGetMonotonicUlidAfterLeapSecond() {
 
+		// The best article about leap seconds:
+		// (Unfortunately it can't be translated)
+		// https://ntp.br/conteudo/artigo-leap-second/
 		long time = Instant.parse("2021-12-31T23:59:59.000Z").toEpochMilli();
-		long leap = time - 1000; // simulate a leap second
+		long leap = time - 1000; // moving the clock hands 1 second backwards
 		long times[] = { time, leap };
 
 		Clock clock = new Clock() {
@@ -144,28 +146,26 @@ public class UlidFactoryMonotonicTest extends UlidFactoryTest {
 		LongSupplier randomFunction = () -> 0;
 		UlidFactory factory = UlidFactory.newMonotonicInstance(randomFunction, clock);
 
+		// the clock moved normally
 		Ulid ulid1 = factory.create();
-		Ulid ulid2 = factory.create();
-
 		long t1 = ulid1.getTime();
-		long t2 = ulid2.getTime(); // leap second
-
 		long r1 = ulid1.getLeastSignificantBits();
-		long r2 = ulid2.getLeastSignificantBits(); // leap second
-
 		assertEquals(time, t1);
-		assertEquals(time, t2); // leap second
+		assertEquals(0, r1);
 
-		assertEquals(1, r1);
-		assertEquals(2, r2);
-
+		// the clock moved backwards
+		Ulid ulid2 = factory.create();
+		long t2 = ulid2.getTime();
+		long r2 = ulid2.getLeastSignificantBits();
+		assertEquals(time, t2); // should freeze
+		assertEquals(1, r2); // should increment
 	}
 
 	@Test
 	public void testGetMonotonicUlidAfterRandomBitsOverflowFollowedByTimeBitsIncrement() {
 
 		long time = Instant.parse("2021-12-31T23:59:59.999Z").toEpochMilli();
-		long times[] = { /* init */ 0L, time + 1, time + 2, time + 3, time, time, time };
+		long times[] = { time + 1, time + 2, time + 3, time, time, time };
 
 		Clock clock = new Clock() {
 			private int i;
@@ -193,8 +193,6 @@ public class UlidFactoryMonotonicTest extends UlidFactoryTest {
 
 		LongSupplier randomSupplier = () -> 0xffffffffffffffffL;
 		UlidFactory factory = UlidFactory.newMonotonicInstance(randomSupplier, clock);
-
-		// System.out.println("time: " + time); // 1640995199999
 
 		Ulid ulid1 = factory.create();
 		Ulid ulid2 = factory.create();

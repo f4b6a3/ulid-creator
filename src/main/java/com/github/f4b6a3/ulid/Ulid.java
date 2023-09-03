@@ -149,10 +149,14 @@ public final class Ulid implements Serializable, Comparable<Ulid> {
 	/**
 	 * Creates a new ULID.
 	 * <p>
-	 * Time parameter is the number of milliseconds since 1970-01-01 (Unix epoch).
-	 * It must be a positive number not larger than 2^48-1.
+	 * The time parameter is the number of milliseconds since 1970-01-01, also known
+	 * as Unix epoch. It must be a positive number not larger than 2^48-1.
 	 * <p>
-	 * Random parameter must be an array of 10 bytes.
+	 * The random parameter must be an arbitrary array of 10 bytes.
+	 * <p>
+	 * Note: ULIDs cannot be composed of dates before 1970-01-01, as their embedded
+	 * timestamp is internally treated as an unsigned integer, i.e., it can only
+	 * represent the set of natural numbers including zero, up to 2^48-1.
 	 * 
 	 * @param time   the number of milliseconds since 1970-01-01
 	 * @param random an array of 10 bytes
