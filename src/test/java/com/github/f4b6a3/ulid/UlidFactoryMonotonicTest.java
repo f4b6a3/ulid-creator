@@ -6,11 +6,11 @@ import static org.junit.Assert.*;
 
 import java.time.Clock;
 import java.time.Instant;
-import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.Random;
 import java.util.SplittableRandom;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.IntFunction;
 import java.util.function.LongSupplier;
 
@@ -41,32 +41,11 @@ public class UlidFactoryMonotonicTest extends UlidFactoryTest {
 		long time = Instant.parse("2021-12-31T23:59:59.000Z").toEpochMilli();
 		long times[] = { time + 0, time + 1, time + 2, time + 3, time + 4 - diff, time + 5 - diff, time + 6 - diff };
 
-		Clock clock = new Clock() {
-			private int i;
-
-			@Override
-			public long millis() {
-				return times[i++ % times.length];
-			}
-
-			@Override
-			public ZoneId getZone() {
-				return null;
-			}
-
-			@Override
-			public Clock withZone(ZoneId zone) {
-				return null;
-			}
-
-			@Override
-			public Instant instant() {
-				return null;
-			}
-		};
+		AtomicInteger i = new AtomicInteger();
+		LongSupplier timeFunction = () -> times[i.getAndIncrement() % times.length];
 
 		LongSupplier randomFunction = () -> 0;
-		UlidFactory factory = UlidFactory.newMonotonicInstance(randomFunction, clock);
+		UlidFactory factory = UlidFactory.newMonotonicInstance(randomFunction, timeFunction);
 
 		Ulid ulid1 = factory.create();
 		Ulid ulid2 = factory.create();
@@ -119,32 +98,11 @@ public class UlidFactoryMonotonicTest extends UlidFactoryTest {
 		long leap = time - 1000; // moving the clock hands 1 second backwards
 		long times[] = { time, leap };
 
-		Clock clock = new Clock() {
-			private int i;
-
-			@Override
-			public long millis() {
-				return times[i++ % times.length];
-			}
-
-			@Override
-			public ZoneId getZone() {
-				return null;
-			}
-
-			@Override
-			public Clock withZone(ZoneId zone) {
-				return null;
-			}
-
-			@Override
-			public Instant instant() {
-				return null;
-			}
-		};
+		AtomicInteger i = new AtomicInteger();
+		LongSupplier timeFunction = () -> times[i.getAndIncrement() % times.length];
 
 		LongSupplier randomFunction = () -> 0;
-		UlidFactory factory = UlidFactory.newMonotonicInstance(randomFunction, clock);
+		UlidFactory factory = UlidFactory.newMonotonicInstance(randomFunction, timeFunction);
 
 		// the clock moved normally
 		Ulid ulid1 = factory.create();
@@ -167,32 +125,11 @@ public class UlidFactoryMonotonicTest extends UlidFactoryTest {
 		long time = Instant.parse("2021-12-31T23:59:59.999Z").toEpochMilli();
 		long times[] = { time + 1, time + 2, time + 3, time, time, time };
 
-		Clock clock = new Clock() {
-			private int i;
-
-			@Override
-			public long millis() {
-				return times[i++ % times.length];
-			}
-
-			@Override
-			public ZoneId getZone() {
-				return null;
-			}
-
-			@Override
-			public Clock withZone(ZoneId zone) {
-				return null;
-			}
-
-			@Override
-			public Instant instant() {
-				return null;
-			}
-		};
+		AtomicInteger i = new AtomicInteger();
+		LongSupplier timeFunction = () -> times[i.getAndIncrement() % times.length];
 
 		LongSupplier randomSupplier = () -> 0xffffffffffffffffL;
-		UlidFactory factory = UlidFactory.newMonotonicInstance(randomSupplier, clock);
+		UlidFactory factory = UlidFactory.newMonotonicInstance(randomSupplier, timeFunction);
 
 		Ulid ulid1 = factory.create();
 		Ulid ulid2 = factory.create();
@@ -287,7 +224,7 @@ public class UlidFactoryMonotonicTest extends UlidFactoryTest {
 		{
 			SplittableRandom random = new SplittableRandom();
 			LongSupplier function = () -> random.nextLong();
-			UlidFactory factory = UlidFactory.newMonotonicInstance(function, Clock.systemDefaultZone());
+			UlidFactory factory = UlidFactory.newMonotonicInstance(function, () -> Clock.systemUTC().millis());
 			assertNotNull(factory.create());
 		}
 		{
@@ -305,7 +242,7 @@ public class UlidFactoryMonotonicTest extends UlidFactoryTest {
 				ThreadLocalRandom.current().nextBytes(bytes);
 				return bytes;
 			};
-			UlidFactory factory = UlidFactory.newMonotonicInstance(function, Clock.systemDefaultZone());
+			UlidFactory factory = UlidFactory.newMonotonicInstance(function, () -> Clock.systemUTC().millis());
 			assertNotNull(factory.create());
 		}
 	}

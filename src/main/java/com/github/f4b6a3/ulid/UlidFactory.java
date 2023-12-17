@@ -25,7 +25,6 @@
 package com.github.f4b6a3.ulid;
 
 import java.security.SecureRandom;
-import java.time.Clock;
 import java.util.Objects;
 import java.util.Random;
 import java.util.function.IntFunction;
@@ -168,52 +167,6 @@ public final class UlidFactory {
 	 */
 	public static UlidFactory newMonotonicInstance(IntFunction<byte[]> randomFunction) {
 		return new UlidFactory(new MonotonicFunction(randomFunction));
-	}
-
-	/**
-	 * Returns a new monotonic factory.
-	 * 
-	 * @param random a {@link Random} generator
-	 * @param clock  a clock instance that provides the current time in
-	 *               milliseconds, measured from the UNIX epoch of 1970-01-01T00:00Z
-	 *               (UTC)
-	 * @return {@link UlidFactory}
-	 */
-	static UlidFactory newMonotonicInstance(Random random, Clock clock) {
-		Objects.requireNonNull(clock, "Clock instant must not be null");
-		return new UlidFactory(new MonotonicFunction(random), clock::millis);
-	}
-
-	/**
-	 * Returns a new monotonic factory.
-	 * <p>
-	 * The given random function must return a long value.
-	 * 
-	 * @param randomFunction a random function that returns a long value
-	 * @param clock          a clock instance that provides the current time in
-	 *                       milliseconds, measured from the UNIX epoch of
-	 *                       1970-01-01T00:00Z (UTC)
-	 * @return {@link UlidFactory}
-	 */
-	static UlidFactory newMonotonicInstance(LongSupplier randomFunction, Clock clock) {
-		Objects.requireNonNull(clock, "Clock instant must not be null");
-		return new UlidFactory(new MonotonicFunction(randomFunction), clock::millis);
-	}
-
-	/**
-	 * Returns a new monotonic factory.
-	 * <p>
-	 * The given random function must return a byte array.
-	 * 
-	 * @param randomFunction a random function that returns a byte array
-	 * @param clock          a clock instance that provides the current time in
-	 *                       milliseconds, measured from the UNIX epoch of
-	 *                       1970-01-01T00:00Z (UTC)
-	 * @return {@link UlidFactory}
-	 */
-	static UlidFactory newMonotonicInstance(IntFunction<byte[]> randomFunction, Clock clock) {
-		Objects.requireNonNull(clock, "Clock instant must not be null");
-		return new UlidFactory(new MonotonicFunction(randomFunction), clock::millis);
 	}
 
 	/**
