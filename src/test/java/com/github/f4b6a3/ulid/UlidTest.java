@@ -104,7 +104,7 @@ public class UlidTest extends UlidFactoryTest {
 	}
 
 	@Test
-	public void testFromStrings() {
+	public void testFromString() {
 		Random random = new Random();
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 			final long msb = random.nextLong();
@@ -604,6 +604,16 @@ public class UlidTest extends UlidFactoryTest {
 		}
 
 		ulid = "8ZZZZZZZZZABCDEFGHJKMNPQRS"; // time > (2^48)-1
+		try {
+			Ulid.toCharArray(ulid);
+			fail("Should throw an exception");
+		} catch (IllegalArgumentException e) {
+			// success
+		}
+
+		// https://github.com/f4b6a3/ulid-creator/issues/32
+		// https://www.compart.com/en/unicode/U+3617 (㘗: whisper; to whistle)
+		ulid = "0123456789ABCDEFGHJKMNPQR\u3617";
 		try {
 			Ulid.toCharArray(ulid);
 			fail("Should throw an exception");

@@ -793,6 +793,16 @@ public final class Ulid implements Serializable, Comparable<Ulid> {
 			return false; // null or wrong size!
 		}
 
+		for (int i = 0; i < chars.length; i++) {
+			try {
+				if (ALPHABET_VALUES[chars[i]] == -1) {
+					return false; // invalid character!
+				}
+			} catch (ArrayIndexOutOfBoundsException e) {
+				return false; // Multibyte character!
+			}
+		}
+
 		// The time component has 48 bits.
 		// The base32 encoded time component has 50 bits.
 		// The time component cannot be greater than than 2^48-1.
@@ -803,12 +813,6 @@ public final class Ulid implements Serializable, Comparable<Ulid> {
 			// "Any attempt to decode or encode a ULID larger than this (time > 2^48-1)
 			// should be rejected by all implementations, to prevent overflow bugs."
 			return false; // time overflow!
-		}
-
-		for (int i = 0; i < chars.length; i++) {
-			if (ALPHABET_VALUES[chars[i]] == -1) {
-				return false; // invalid character!
-			}
 		}
 
 		return true; // It seems to be OK.
