@@ -52,8 +52,14 @@ public final class Ulid implements Serializable, Comparable<Ulid> {
 
 	private static final long serialVersionUID = 2625269413446854731L;
 
-	private final long msb; // most significant bits
-	private final long lsb; // least significant bits
+	/**
+	 * The most significant bits
+	 */
+	private final long msb;
+	/**
+	 * The least significant bits
+	 */
+	private final long lsb;
 
 	/**
 	 * Number of characters of a ULID.
@@ -209,7 +215,6 @@ public final class Ulid implements Serializable, Comparable<Ulid> {
 	 * pseudo-random generator should use {@link UlidCreator#getUlid()}.
 	 * 
 	 * @return a ULID
-	 * @see {@link ThreadLocalRandom}
 	 * @since 5.1.0
 	 */
 	public static Ulid fast() {

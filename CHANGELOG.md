@@ -4,9 +4,11 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
-## [5.2.3] - 2023-12-17
+## [5.2.3] - 2024-01-02
 
-Remove factory methods that accept an optinal `Clock`.
+- Fix `ArrayIndexOutOfBoundsException` on input with multiple bytes for a character. #32
+- Replace `synchronized` keyword with `ReentrantLock`.
+- Remove factory methods that accept an optional `Clock` (for tests).
 
 ## [5.2.2] - 2023-09-03
 
