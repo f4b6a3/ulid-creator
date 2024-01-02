@@ -27,6 +27,7 @@ package com.github.f4b6a3.ulid;
 import java.security.SecureRandom;
 import java.util.Objects;
 import java.util.Random;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.IntFunction;
 import java.util.function.LongFunction;
 import java.util.function.LongSupplier;
@@ -51,6 +52,7 @@ public final class UlidFactory {
 
 	private final LongSupplier timeFunction;
 	private final LongFunction<Ulid> ulidFunction;
+	private final ReentrantLock lock = new ReentrantLock();
 
 	// ******************************
 	// Constructors
@@ -220,8 +222,8 @@ public final class UlidFactory {
 	 * 
 	 * @return a ULID
 	 */
-	public synchronized Ulid create() {
-		return this.ulidFunction.apply(timeFunction.getAsLong());
+	public Ulid create() {
+		return create(timeFunction.getAsLong());
 	}
 
 	/**
@@ -231,8 +233,13 @@ public final class UlidFactory {
 	 *             1970-01-01T00:00Z (UTC)
 	 * @return a ULID
 	 */
-	public synchronized Ulid create(final long time) {
-		return this.ulidFunction.apply(time);
+	public Ulid create(final long time) {
+		lock.lock();
+		try {
+			return this.ulidFunction.apply(time);
+		} finally {
+			lock.unlock();
+		}
 	}
 
 	// ******************************
@@ -318,7 +325,7 @@ public final class UlidFactory {
 		}
 
 		@Override
-		public synchronized Ulid apply(final long time) {
+		public Ulid apply(final long time) {
 
 			final long lastTime = lastUlid.getTime();
 
