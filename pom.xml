@@ -25,7 +25,7 @@
 	</developers>
 
 	<properties>
-		<jdk.version>8</jdk.version>
+		<jdk.version>11</jdk.version>
 		<package.name>com.github.f4b6a3.ulid</package.name>
 		<maven.compiler.source>${jdk.version}</maven.compiler.source>
 		<maven.compiler.target>${jdk.version}</maven.compiler.target>
@@ -68,8 +68,6 @@
 				<configuration>
 					<archive>
 						<manifestEntries>
-							<!-- Java Modularity -->
-							<Automatic-Module-Name>${package.name}</Automatic-Module-Name>
 							<!-- OSGi Modularity -->
 							<Bundle-ManifestVersion>2</Bundle-ManifestVersion>
 							<Bundle-Name>${project.artifactId}</Bundle-Name>
