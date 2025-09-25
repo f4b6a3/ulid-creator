@@ -51,7 +51,7 @@ public final class UlidCreator {
 	 * @return a ULID
 	 */
 	public static Ulid getUlid() {
-		return UlidFactoryHolder.INSTANCE.create();
+		return UlidFactoryHolder.instance().create();
 	}
 
 	/**
@@ -64,7 +64,7 @@ public final class UlidCreator {
 	 * @return a ULID
 	 */
 	public static Ulid getUlid(final long time) {
-		return UlidFactoryHolder.INSTANCE.create(time);
+		return UlidFactoryHolder.instance().create(time);
 	}
 
 	/**
@@ -76,7 +76,7 @@ public final class UlidCreator {
 	 * @return a ULID
 	 */
 	public static Ulid getMonotonicUlid() {
-		return MonotonicFactoryHolder.INSTANCE.create();
+		return MonotonicFactoryHolder.instance().create();
 	}
 
 	/**
@@ -90,7 +90,7 @@ public final class UlidCreator {
 	 * @return a ULID
 	 */
 	public static Ulid getMonotonicUlid(final long time) {
-		return MonotonicFactoryHolder.INSTANCE.create(time);
+		return MonotonicFactoryHolder.instance().create(time);
 	}
 
 	/**
@@ -158,10 +158,24 @@ public final class UlidCreator {
 	}
 
 	private static class UlidFactoryHolder {
-		static final UlidFactory INSTANCE = UlidFactory.newInstance();
+		static UlidFactory instance;
+
+        static UlidFactory instance() {
+            if (instance == null) {
+                instance = UlidFactory.newInstance();
+            }
+            return instance;
+        }
 	}
 
 	private static class MonotonicFactoryHolder {
-		static final UlidFactory INSTANCE = UlidFactory.newMonotonicInstance();
+        static UlidFactory instance;
+
+        static UlidFactory instance() {
+            if (instance == null) {
+                instance = UlidFactory.newMonotonicInstance();
+            }
+            return instance;
+        }
 	}
 }
