@@ -1,22 +1,12 @@
 
 package benchmark;
 
+import io.github.f4b6a3.ulid.Ulid;
+import io.github.f4b6a3.ulid.UlidCreator;
+import org.openjdk.jmh.annotations.*;
+
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
-
-import org.openjdk.jmh.annotations.Benchmark;
-import org.openjdk.jmh.annotations.BenchmarkMode;
-import org.openjdk.jmh.annotations.Fork;
-import org.openjdk.jmh.annotations.Measurement;
-import org.openjdk.jmh.annotations.Mode;
-import org.openjdk.jmh.annotations.OutputTimeUnit;
-import org.openjdk.jmh.annotations.Scope;
-import org.openjdk.jmh.annotations.State;
-import org.openjdk.jmh.annotations.Threads;
-import org.openjdk.jmh.annotations.Warmup;
-
-import com.github.f4b6a3.ulid.Ulid;
-import com.github.f4b6a3.ulid.UlidCreator;
 
 @Fork(1)
 @Threads(4)

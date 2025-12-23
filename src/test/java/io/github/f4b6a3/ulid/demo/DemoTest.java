@@ -1,6 +1,6 @@
-package com.github.f4b6a3.ulid.demo;
+package io.github.f4b6a3.ulid.demo;
 
-import com.github.f4b6a3.ulid.UlidCreator;
+import io.github.f4b6a3.ulid.UlidCreator;
 
 public class DemoTest {
 

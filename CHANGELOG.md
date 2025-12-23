@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [5.2.4] - 2025-12-24
+
+- use new release mechanism, see this [blog post](https://central.sonatype.org/news/20250326_ossrh_sunset/#support-for-gradle-and-other-publishers).
+
 ## [5.2.3] - 2024-01-02
 
 - Fix `ArrayIndexOutOfBoundsException` on input with multiple bytes for a character. #32

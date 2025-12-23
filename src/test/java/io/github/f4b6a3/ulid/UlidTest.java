@@ -1,4 +1,4 @@
-package com.github.f4b6a3.ulid;
+package io.github.f4b6a3.ulid;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
