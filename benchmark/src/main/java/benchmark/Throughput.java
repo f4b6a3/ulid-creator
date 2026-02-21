@@ -1,8 +1,8 @@
 
 package benchmark;
 
-import io.github.f4b6a3.ulid.Ulid;
-import io.github.f4b6a3.ulid.UlidCreator;
+import com.github.f4b6a3.ulid.Ulid;
+import com.github.f4b6a3.ulid.UlidCreator;
 import org.openjdk.jmh.annotations.*;
 
 import java.util.UUID;

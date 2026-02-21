@@ -10,5 +10,5 @@ cd "${SCRIPT_DIR}/.."
 rm -rf docs/javadoc
 
 # generate new docs
-find src/main/java/io/github/f4b6a3/ulid/ -name "*.java" | xargs javadoc -d docs/javadoc
+find src/main/java/com/github/f4b6a3/ulid/ -name "*.java" | xargs javadoc -d docs/javadoc
 

@@ -1,4 +1,4 @@
-package io.github.f4b6a3.ulid;
+package com.github.f4b6a3.ulid;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -8,6 +8,9 @@ import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
+
+import com.github.f4b6a3.ulid.Ulid;
+import com.github.f4b6a3.ulid.UlidFactory;
 
 public abstract class UlidFactoryTest {
 

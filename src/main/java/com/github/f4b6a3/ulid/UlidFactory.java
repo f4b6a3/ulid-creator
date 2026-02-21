@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package io.github.f4b6a3.ulid;
+package com.github.f4b6a3.ulid;
 
 import java.security.SecureRandom;
 import java.util.Objects;
