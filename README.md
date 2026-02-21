@@ -13,11 +13,11 @@ In summary:
 * String format is encoded to [Crockford's base32](https://www.crockford.com/base32.html);
 * String format is URL safe, is case insensitive, and has no hyphens.
 
-This project contains a [micro benchmark](https://github.com/f4b6a3/ulid-creator/tree/master/benchmark) and a good amount of [unit tests](https://github.com/f4b6a3/ulid-creator/tree/master/src/test/java/com/github/f4b6a3/ulid).
+This project contains a [micro benchmark](https://github.com/f4b6a3/ulid-creator/tree/master/benchmark) and a good amount of [unit tests](https://github.com/f4b6a3/ulid-creator/tree/master/src/test/java/io/github/f4b6a3/ulid).
 
-The jar file can be downloaded directly from [maven.org](https://repo1.maven.org/maven2/com/github/f4b6a3/ulid-creator/).
+The jar file can be downloaded directly from [maven.org](https://repo1.maven.org/maven2/io/github/f4b6a3/ulid-creator/).
 
-Read the [Javadocs](https://javadoc.io/doc/com.github.f4b6a3/ulid-creator).
+Read the [Javadocs](https://javadoc.io/doc/io.github.f4b6a3/ulid-creator).
 
 Usage
 ------------------------------------------------------
@@ -39,21 +39,21 @@ Ulid ulid = UlidCreator.getMonotonicUlid();
 Add these lines to your `pom.xml`.
 
 ```xml
-<!-- https://search.maven.org/artifact/com.github.f4b6a3/ulid-creator -->
+<!-- https://search.maven.org/artifact/io.github.f4b6a3/ulid-creator -->
 <dependency>
-  <groupId>com.github.f4b6a3</groupId>
+  <groupId>io.github.f4b6a3</groupId>
   <artifactId>ulid-creator</artifactId>
   <version>5.2.3</version>
 </dependency>
 ```
-See more options in [maven.org](https://search.maven.org/artifact/com.github.f4b6a3/ulid-creator).
+See more options in [maven.org](https://search.maven.org/artifact/io.github.f4b6a3/ulid-creator).
 
 ### Modularity
 
 Module and bundle names are the same as the root package name.
 
-- JPMS module name: `com.github.f4b6a3.ulid`
-- OSGi symbolic name: `com.github.f4b6a3.ulid`
+- JPMS module name: `io.github.f4b6a3.ulid`
+- OSGi symbolic name: `io.github.f4b6a3.ulid`
 
 ### ULID
 
@@ -243,7 +243,7 @@ A key generator that makes substitution easy if necessary:
 ```java
 package com.example;
 
-import com.github.f4b6a3.ulid.UlidCreator;
+import io.github.f4b6a3.ulid.UlidCreator;
 
 public class KeyGenerator {
     public static String next() {

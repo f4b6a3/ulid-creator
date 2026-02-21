@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package com.github.f4b6a3.ulid;
+package io.github.f4b6a3.ulid;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
