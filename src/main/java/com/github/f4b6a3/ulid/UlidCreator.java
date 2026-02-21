@@ -28,6 +28,8 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
+import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.Supplier;
 
 /**
  * A class that generates ULIDs.
@@ -51,7 +53,7 @@ public final class UlidCreator {
 	 * @return a ULID
 	 */
 	public static Ulid getUlid() {
-		return UlidFactoryHolder.INSTANCE.create();
+		return FACTORY.create();
 	}
 
 	/**
@@ -64,7 +66,7 @@ public final class UlidCreator {
 	 * @return a ULID
 	 */
 	public static Ulid getUlid(final long time) {
-		return UlidFactoryHolder.INSTANCE.create(time);
+		return FACTORY.create(time);
 	}
 
 	/**
@@ -76,7 +78,7 @@ public final class UlidCreator {
 	 * @return a ULID
 	 */
 	public static Ulid getMonotonicUlid() {
-		return MonotonicFactoryHolder.INSTANCE.create();
+		return MONOTONIC_FACTORY.create();
 	}
 
 	/**
@@ -90,7 +92,7 @@ public final class UlidCreator {
 	 * @return a ULID
 	 */
 	public static Ulid getMonotonicUlid(final long time) {
-		return MonotonicFactoryHolder.INSTANCE.create(time);
+		return MONOTONIC_FACTORY.create(time);
 	}
 
 	/**
@@ -157,11 +159,42 @@ public final class UlidCreator {
 		}
 	}
 
-	private static class UlidFactoryHolder {
-		static final UlidFactory INSTANCE = UlidFactory.newInstance();
-	}
+	private static final Proxy FACTORY = new Proxy(UlidFactory::newInstance);
+	private static final Proxy MONOTONIC_FACTORY = new Proxy(UlidFactory::newMonotonicInstance);
 
-	private static class MonotonicFactoryHolder {
-		static final UlidFactory INSTANCE = UlidFactory.newMonotonicInstance();
+	private static class Proxy {
+
+		private UlidFactory factory = null;
+		private Supplier<UlidFactory> supplier;
+		private static final ReentrantLock lock = new ReentrantLock();
+
+		public Proxy(Supplier<UlidFactory> supplier) {
+			this.supplier = supplier;
+		}
+
+		private UlidFactory get() {
+
+			if (factory != null) {
+				return factory;
+			}
+
+			lock.lock();
+			try {
+				if (factory == null) {
+					this.factory = supplier.get();
+				}
+				return this.factory;
+			} finally {
+				lock.unlock();
+			}
+		}
+
+		public Ulid create() {
+			return get().create();
+		}
+
+		public Ulid create(long time) {
+			return get().create(time);
+		}
 	}
 }
