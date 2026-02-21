@@ -39,11 +39,11 @@ Ulid ulid = UlidCreator.getMonotonicUlid();
 Add these lines to your `pom.xml`.
 
 ```xml
-<!-- https://search.maven.org/artifact/com.github.f4b6a3/ulid-creator -->
+<!-- https://central.sonatype.com/artifact/com.github.f4b6a3/ulid-creator -->
 <dependency>
   <groupId>com.github.f4b6a3</groupId>
   <artifactId>ulid-creator</artifactId>
-  <version>5.2.3</version>
+  <version>5.2.4</version>
 </dependency>
 ```
 See more options in [maven.org](https://search.maven.org/artifact/com.github.f4b6a3/ulid-creator).

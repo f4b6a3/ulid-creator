@@ -4,8 +4,9 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
-## [5.2.4] - 2025-12-24
+## [5.2.4] - 2026-02-21
 
+- Change UlidCreator to use thread-safe lazy initialization and to be more friendly with GraalVM native compilation. #36
 - use new release mechanism, see this [blog post](https://central.sonatype.org/news/20250326_ossrh_sunset/#support-for-gradle-and-other-publishers).
 
 ## [5.2.3] - 2024-01-02
@@ -324,7 +325,8 @@ Project created as an alternative Java implementation of [ULID spec](https://git
 -   Added `LICENSE`
 -   Added test cases
 
-[unreleased]: https://github.com/f4b6a3/ulid-creator/compare/ulid-creator-5.2.3...HEAD
+[unreleased]: https://github.com/f4b6a3/ulid-creator/compare/ulid-creator-5.2.4...HEAD
+[5.2.4]: https://github.com/f4b6a3/ulid-creator/compare/ulid-creator-5.2.3...ulid-creator-5.2.4
 [5.2.3]: https://github.com/f4b6a3/ulid-creator/compare/ulid-creator-5.2.2...ulid-creator-5.2.3
 [5.2.2]: https://github.com/f4b6a3/ulid-creator/compare/ulid-creator-5.2.1...ulid-creator-5.2.2
 [5.2.1]: https://github.com/f4b6a3/ulid-creator/compare/ulid-creator-5.2.0...ulid-creator-5.2.1
